@@ -91,7 +91,7 @@ final class OpenAI_Client {
 			. '{' . "\n"
 			. '  "recommendations": [' . "\n"
 			. '    {' . "\n"
-			. '      "product_id": <integer>,' . "\n"
+			. '      "product_id": "<product id from input as string>",' . "\n"
 			. '      "score": <integer 0-100>,' . "\n"
 			. '      "reasons": ["<short reason 1>", "<short reason 2>"]' . "\n"
 			. '    }' . "\n"

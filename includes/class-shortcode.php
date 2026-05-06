@@ -103,18 +103,16 @@ final class Shortcode {
 			}
 		}
 
-		$option_images = (array) ( $settings['option_images'] ?? [] );
-
 		$wizard_cfg = [
 			'forced_category_id'  => $forced_category_id,
 			'forced_product'      => $forced_product,
 			'categories'          => $categories,
 			'enable_application'  => ! empty( $settings['enable_application'] ),
-			'application_options' => $this->options_with_images( $this->lines_to_array( $settings['application_options'] ?? '' ), 'application', $option_images ),
+			'application_options' => $this->lines_to_array( $settings['application_options'] ?? '' ),
 			'enable_materials'    => ! empty( $settings['enable_materials'] ),
-			'materials_options'   => $this->options_with_images( $this->lines_to_array( $settings['materials_options'] ?? '' ), 'materials', $option_images ),
+			'materials_options'   => $this->lines_to_array( $settings['materials_options'] ?? '' ),
 			'enable_volume'       => ! empty( $settings['enable_volume'] ),
-			'volume_options'      => $this->options_with_images( $this->lines_to_array( $settings['volume_options'] ?? '' ), 'volume', $option_images ),
+			'volume_options'      => $this->lines_to_array( $settings['volume_options'] ?? '' ),
 			'privacy_url'         => $settings['privacy_url'] ?? '',
 			'fallback_email'      => $this->fallback_contact_email(),
 			'enable_captcha'      => ! empty( $settings['enable_captcha'] ),
@@ -135,8 +133,8 @@ final class Shortcode {
 
 			// Matchmaker.
 			'enable_matchmaker'   => ! empty( $settings['enable_matchmaker'] ),
-			'matchmaker_format_options' => $this->options_with_images( $this->lines_to_array( $settings['matchmaker_format_options'] ?? '' ), 'format', $option_images ),
-			'matchmaker_budget_options' => $this->options_with_images( $this->lines_to_array( $settings['matchmaker_budget_options'] ?? '' ), 'budget', $option_images ),
+			'matchmaker_format_options' => $this->lines_to_array( $settings['matchmaker_format_options'] ?? '' ),
+			'matchmaker_budget_options' => $this->lines_to_array( $settings['matchmaker_budget_options'] ?? '' ),
 
 			// Redirect.
 			'redirect_url'        => $notif['redirect_url'] ?? '',
@@ -191,19 +189,6 @@ final class Shortcode {
 		unload_textdomain( 'bomedia-quote-wizard' );
 		load_plugin_textdomain( 'bomedia-quote-wizard', false, dirname( plugin_basename( BQW_PLUGIN_FILE ) ) . '/languages' );
 		return true;
-	}
-
-	private function options_with_images( array $labels, string $context, array $option_images ): array {
-		$out = [];
-		foreach ( $labels as $label ) {
-			$key = $context . '|' . $label;
-			$aid = isset( $option_images[ $key ] ) ? (int) $option_images[ $key ] : 0;
-			$out[] = [
-				'label' => $label,
-				'image' => $aid ? (string) wp_get_attachment_image_url( $aid, 'medium' ) : '',
-			];
-		}
-		return $out;
 	}
 
 	private function parse_trust_lines( string $raw ): array {
@@ -288,6 +273,8 @@ final class Shortcode {
 			'format'        => __( 'Format', 'bomedia-quote-wizard' ),
 			'budget'        => __( 'Budget', 'bomedia-quote-wizard' ),
 			'aiFailed'      => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
+			'viewProduct'   => __( 'View product →', 'bomedia-quote-wizard' ),
+			'pickThis'      => __( 'Pick', 'bomedia-quote-wizard' ),
 		];
 	}
 

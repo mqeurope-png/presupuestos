@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.5.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.6.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -10,10 +10,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: bomedia-quote-wizard\n"
 
+msgid "%1$s ago · %2$d products cached"
+msgstr ""
+
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr ""
 
 msgid "A valid email is required."
+msgstr ""
+
+msgid "AI Catalog source"
 msgstr ""
 
 msgid "AI Recommendations (OpenAI)"
@@ -97,9 +103,6 @@ msgstr ""
 msgid "Budget"
 msgstr ""
 
-msgid "Budget (matchmaker)"
-msgstr ""
-
 msgid "Budget options"
 msgstr ""
 
@@ -110,6 +113,15 @@ msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-
 msgstr ""
 
 msgid "Captcha provider"
+msgstr ""
+
+msgid "Catalog API key"
+msgstr ""
+
+msgid "Catalog URL"
+msgstr ""
+
+msgid "Catalog uploaded: %d products cached."
 msgstr ""
 
 msgid "Change"
@@ -160,6 +172,9 @@ msgstr ""
 msgid "Could not parse the JSON file."
 msgstr ""
 
+msgid "Could not parse the catalog JSON."
+msgstr ""
+
 msgid "Country"
 msgstr "País"
 
@@ -167,6 +182,9 @@ msgid "Customer is not sure, asks for help."
 msgstr ""
 
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
+msgstr ""
+
+msgid "Daily"
 msgstr ""
 
 msgid "Date"
@@ -214,6 +232,12 @@ msgstr "Volume mensal estimado"
 msgid "Estimated monthly volume?"
 msgstr ""
 
+msgid "Every 6 hours"
+msgstr ""
+
+msgid "Every hour"
+msgstr ""
+
 msgid "Expand"
 msgstr ""
 
@@ -230,9 +254,6 @@ msgid "Forbidden"
 msgstr ""
 
 msgid "Format"
-msgstr ""
-
-msgid "Format (matchmaker)"
 msgstr ""
 
 msgid "Format options"
@@ -277,6 +298,9 @@ msgstr ""
 msgid "Last call:"
 msgstr ""
 
+msgid "Last fetch"
+msgstr ""
+
 msgid "Last name"
 msgstr "Apelido"
 
@@ -286,6 +310,9 @@ msgstr ""
 msgid "Lead data missing or corrupt."
 msgstr ""
 
+msgid "Leave empty to use the default Bomedia Composer endpoint."
+msgstr ""
+
 msgid "Loading models…"
 msgstr "A carregar modelos…"
 
@@ -293,6 +320,9 @@ msgid "Machines of interest"
 msgstr "Máquinas de interesse"
 
 msgid "Machines of interest:"
+msgstr ""
+
+msgid "Manual catalog upload"
 msgstr ""
 
 msgid "Marketing opt-in"
@@ -364,6 +394,9 @@ msgstr ""
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
 msgstr ""
 
+msgid "Never"
+msgstr ""
+
 msgid "Next"
 msgstr "Seguinte"
 
@@ -421,17 +454,14 @@ msgstr ""
 msgid "OpenAI returned malformed data."
 msgstr ""
 
-msgid "Option images"
-msgstr ""
-
-msgid "Optional images shown above each option card. The plugin renders a generic icon if none is set."
-msgstr ""
-
 msgid "Phone"
 msgstr "Telefone"
 
 msgid "Phone is required."
 msgstr "O telefone é obrigatório."
+
+msgid "Pick"
+msgstr ""
 
 msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr ""
@@ -491,6 +521,12 @@ msgid "REST API Key"
 msgstr ""
 
 msgid "Recipient emails"
+msgstr ""
+
+msgid "Refresh interval"
+msgstr ""
+
+msgid "Refresh now"
 msgstr ""
 
 msgid "Remove"
@@ -580,6 +616,9 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
+msgstr ""
+
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr ""
 
@@ -603,6 +642,9 @@ msgstr ""
 
 msgid "Thanks! We received your request."
 msgstr "Obrigado! Recebemos o seu pedido."
+
+msgid "The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted."
+msgstr ""
 
 msgid "The verification answer is incorrect. Please try again."
 msgstr "A resposta de verificação está incorreta. Tente novamente."
@@ -631,16 +673,28 @@ msgstr ""
 msgid "Turnstile verification failed."
 msgstr ""
 
+msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
+msgstr ""
+
+msgid "Upload manual JSON"
+msgstr ""
+
 msgid "Usage today"
 msgstr ""
 
 msgid "Use AI for recommendations"
 msgstr ""
 
+msgid "View product →"
+msgstr ""
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr ""
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
+msgstr ""
+
+msgid "Weekly"
 msgstr ""
 
 msgid "What do you want to produce?"

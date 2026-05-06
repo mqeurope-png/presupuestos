@@ -71,7 +71,10 @@ final class Ajax {
 			] );
 		}
 
-		$products = self::build_matchmaker_products();
+		$lang_code = substr( get_locale(), 0, 2 );
+
+		// Source the catalogue from Supabase (only products + brands, no PII).
+		$products = self::build_matchmaker_products_from_catalog( $lang_code );
 		if ( empty( $products ) ) {
 			wp_send_json_success( [
 				'recommendations' => [],
@@ -80,9 +83,8 @@ final class Ajax {
 			] );
 		}
 
-		$lang_code = substr( get_locale(), 0, 2 );
-		$client    = new OpenAI_Client();
-		$result    = $client->recommend(
+		$client = new OpenAI_Client();
+		$result = $client->recommend(
 			[
 				'application' => $applications,
 				'materials'   => $materials,
@@ -106,40 +108,29 @@ final class Ajax {
 		$recs    = isset( $result['recommendations'] ) && is_array( $result['recommendations'] ) ? $result['recommendations'] : [];
 		$fallback = isset( $result['fallback_message'] ) ? (string) $result['fallback_message'] : '';
 
-		// Hydrate recommendations with image, sku, primary category.
+		// Hydrate Supabase recommendations using the cached catalog.
+		$catalog_index = [];
+		foreach ( Catalog_Client::get_products() as $p ) {
+			$slug = (string) ( $p['id'] ?? '' );
+			if ( '' !== $slug ) {
+				$catalog_index[ $slug ] = $p;
+			}
+		}
+
 		$cards = [];
 		foreach ( $recs as $r ) {
-			$pid = isset( $r['product_id'] ) ? (int) $r['product_id'] : 0;
-			if ( ! $pid ) {
+			$slug = isset( $r['product_id'] ) ? (string) $r['product_id'] : '';
+			if ( '' === $slug || ! isset( $catalog_index[ $slug ] ) ) {
 				continue;
 			}
-			$post = get_post( $pid );
-			if ( ! $post || 'product' !== $post->post_type ) {
-				continue;
-			}
-			$primary_cat_name = '';
-			$primary_cat_slug = '';
-			$primary_cat_id   = 0;
-			$ts = wp_get_post_terms( $pid, 'product_cat' );
-			if ( $ts && ! is_wp_error( $ts ) ) {
-				$primary_cat_name = $ts[0]->name;
-				$primary_cat_slug = $ts[0]->slug;
-				$primary_cat_id   = (int) $ts[0]->term_id;
-			}
+			$loc = Catalog_Client::localize_product( $catalog_index[ $slug ], $lang_code );
 			$reasons = isset( $r['reasons'] ) && is_array( $r['reasons'] ) ? array_slice( array_map( 'sanitize_text_field', $r['reasons'] ), 0, 2 ) : [];
 			$score   = (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) );
-
-			$cards[] = [
-				'id'           => $pid,
-				'name'         => $post->post_title,
-				'sku'          => self::get_product_sku( $pid ),
-				'image'        => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
-				'score'        => $score,
-				'reasons'      => $reasons,
-				'categoryId'   => $primary_cat_id,
-				'categorySlug' => $primary_cat_slug,
-				'categoryName' => $primary_cat_name,
-			];
+			$cards[] = array_merge( $loc, [
+				'score'   => $score,
+				'reasons' => $reasons,
+				'source'  => 'catalog',
+			] );
 		}
 
 		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
@@ -153,67 +144,37 @@ final class Ajax {
 	}
 
 	/**
-	 * Builds the products payload the AI will consider. Limited to 50 items;
-	 * prioritises featured products and best sellers when truncating.
+	 * Builds the products payload from the Supabase catalog cache, localized
+	 * to the user's language. Truncates to 50 if needed, prioritising the
+	 * earlier entries in the upstream feed.
 	 */
-	private static function build_matchmaker_products(): array {
-		$cat_ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
-		$args = [
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => 200,
-			'no_found_rows'  => true,
-			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
-		];
-		if ( $cat_ids ) {
-			$args['tax_query'] = [
-				[
-					'taxonomy'         => 'product_cat',
-					'field'            => 'term_id',
-					'terms'            => $cat_ids,
-					'include_children' => false,
-				],
-			];
-		}
-		$query    = new \WP_Query( $args );
+	private static function build_matchmaker_products_from_catalog( string $lang_code ): array {
+		$cached = Catalog_Client::get_products();
 		$products = [];
-		foreach ( $query->posts as $p ) {
-			$pid = (int) $p->ID;
-			$cats = [];
-			$ts = wp_get_post_terms( $pid, 'product_cat' );
-			if ( $ts && ! is_wp_error( $ts ) ) {
-				foreach ( $ts as $t ) {
-					$cats[] = $t->name;
-				}
+		foreach ( $cached as $p ) {
+			if ( ! is_array( $p ) ) {
+				continue;
 			}
-			$short = (string) $p->post_excerpt;
-			if ( '' === $short ) {
-				$short = (string) $p->post_content;
+			$loc = Catalog_Client::localize_product( $p, $lang_code );
+			if ( '' === $loc['id'] || '' === $loc['name'] ) {
+				continue;
 			}
-			$short = wp_strip_all_tags( $short );
-			$short = mb_substr( $short, 0, 300 );
-
-			$wc_product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
-			$is_featured = $wc_product ? (bool) $wc_product->is_featured() : false;
-
 			$products[] = [
-				'id'                  => $pid,
-				'name'                => $p->post_title,
-				'slug'                => $p->post_name,
-				'categories'          => $cats,
-				'short_description'   => $short,
-				'internal_notes'      => (string) get_post_meta( $pid, Product_Meta::META_KEY, true ),
-				'featured'            => $is_featured,
-				'featured_image_url'  => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
+				'product_id'  => $loc['id'], // slug — what OpenAI returns.
+				'name'        => $loc['name'],
+				'brand'       => $loc['brand'],
+				'area'        => $loc['area'],
+				'feat1'       => $loc['feat1'],
+				'feat2'       => $loc['feat2'],
+				'desc'        => $loc['desc'],
+				'price'       => $loc['price'],
 			];
 		}
 
 		if ( count( $products ) > 50 ) {
-			Logger::info( 'Matchmaker: truncating product list to 50', [ 'total' => count( $products ) ] );
-			usort( $products, static function ( $a, $b ) { return ( $b['featured'] ? 1 : 0 ) <=> ( $a['featured'] ? 1 : 0 ); } );
+			Logger::info( 'Matchmaker: truncating Supabase catalog to 50', [ 'total' => count( $products ) ] );
 			$products = array_slice( $products, 0, 50 );
 		}
-
 		return $products;
 	}
 
@@ -523,11 +484,47 @@ final class Ajax {
 	}
 
 	private static function sanitize_selected_products( array $raw ): array {
+		// Build a Supabase catalog index for slug lookups (used by matchmaker).
+		$catalog_index = [];
+		foreach ( Catalog_Client::get_products() as $p ) {
+			$slug = (string) ( $p['id'] ?? '' );
+			if ( '' !== $slug ) {
+				$catalog_index[ $slug ] = $p;
+			}
+		}
+		$lang_code = substr( get_locale(), 0, 2 );
+
 		$out = [];
 		foreach ( $raw as $entry ) {
 			if ( ! is_array( $entry ) ) {
 				continue;
 			}
+			$source = isset( $entry['source'] ) && 'catalog' === $entry['source'] ? 'catalog' : 'woo';
+
+			if ( 'catalog' === $source ) {
+				$slug = sanitize_text_field( (string) ( $entry['id'] ?? '' ) );
+				if ( '' === $slug || ! isset( $catalog_index[ $slug ] ) ) {
+					continue;
+				}
+				$loc = Catalog_Client::localize_product( $catalog_index[ $slug ], $lang_code );
+				$out[] = [
+					'id'           => $slug,
+					'name'         => $loc['name'],
+					'sku'          => '',
+					'brand'        => $loc['brand'],
+					'price'        => $loc['price'],
+					'area'         => $loc['area'],
+					'link'         => $loc['link'],
+					'image'        => $loc['img'],
+					'source'       => 'catalog',
+					'categoryId'   => 0,
+					'categorySlug' => sanitize_title( $loc['brand'] ),
+					'categoryName' => $loc['brand'],
+				];
+				continue;
+			}
+
+			// WooCommerce-sourced selection (classic flow).
 			$id = absint( $entry['id'] ?? 0 );
 			if ( ! $id ) {
 				continue;
@@ -540,6 +537,7 @@ final class Ajax {
 				'id'           => $id,
 				'name'         => $post->post_title,
 				'sku'          => self::get_product_sku( $id ),
+				'source'       => 'woo',
 				'categoryId'   => absint( $entry['categoryId'] ?? 0 ),
 				'categorySlug' => sanitize_title( (string) ( $entry['categorySlug'] ?? '' ) ),
 				'categoryName' => sanitize_text_field( (string) ( $entry['categoryName'] ?? '' ) ),
@@ -556,6 +554,20 @@ final class Ajax {
 				$tags[] = $slug;
 			}
 		}
+		// Brand tags coming from Supabase-sourced selections.
+		$brands_seen = [];
+		foreach ( (array) ( $data['selected_products'] ?? [] ) as $sp ) {
+			if ( ! empty( $sp['brand'] ) ) {
+				$brand_slug = sanitize_title( (string) $sp['brand'] );
+				if ( '' !== $brand_slug ) {
+					$tags[] = $brand_slug;
+					$brands_seen[ $brand_slug ] = true;
+				}
+			}
+		}
+		if ( count( $brands_seen ) > 1 ) {
+			$tags[] = 'multi-brand-lead';
+		}
 		if ( ! empty( $data['email_optin'] ) ) {
 			$tags[] = 'marketing-optin';
 		}
@@ -571,7 +583,7 @@ final class Ajax {
 			[ 'type' => 'CUSTOM', 'name' => 'Application',     'value' => $data['application'] ],
 			[ 'type' => 'CUSTOM', 'name' => 'Materials',       'value' => implode( ', ', (array) $data['materials'] ) ],
 			[ 'type' => 'CUSTOM', 'name' => 'Monthly_Volume',  'value' => $data['volume'] ],
-			[ 'type' => 'CUSTOM', 'name' => 'Model_Interest',  'value' => $data['product_name'] ],
+			[ 'type' => 'CUSTOM', 'name' => 'Model_Interest',  'value' => self::format_model_interest( $data ) ],
 			[ 'type' => 'CUSTOM', 'name' => 'Source_URL',      'value' => $data['source_url'] ],
 			[ 'type' => 'CUSTOM', 'name' => 'Source_Site',     'value' => $data['source_site'] ],
 			[ 'type' => 'CUSTOM', 'name' => 'Marketing_Optin', 'value' => ! empty( $data['email_optin'] ) ? 'yes' : 'no' ],
@@ -584,6 +596,21 @@ final class Ajax {
 		];
 	}
 
+	private static function format_model_interest( array $data ): string {
+		if ( empty( $data['selected_products'] ) ) {
+			return $data['product_name'] ?? '';
+		}
+		$parts = [];
+		foreach ( $data['selected_products'] as $p ) {
+			$label = (string) $p['name'];
+			if ( ! empty( $p['price'] ) ) {
+				$label .= ' (' . $p['price'] . ')';
+			}
+			$parts[] = $label;
+		}
+		return implode( ', ', $parts );
+	}
+
 	private static function build_note_text( array $data ): string {
 		$lines   = [];
 		$lines[] = 'Lead recibido desde ' . ( $data['source_site'] ?? '' );
@@ -594,14 +621,14 @@ final class Ajax {
 			$lines[] = '  - (Cliente no está seguro, pide ayuda para elegir)';
 		} elseif ( ! empty( $data['selected_products'] ) ) {
 			foreach ( $data['selected_products'] as $p ) {
-				$line = '  - ' . $p['name'];
-				if ( ! empty( $p['sku'] ) ) {
-					$line .= ' [SKU: ' . $p['sku'] . ']';
-				}
-				if ( ! empty( $p['categoryName'] ) ) {
-					$line .= ' (' . $p['categoryName'] . ')';
-				}
-				$lines[] = $line;
+				$bits = [ '  - ' . $p['name'] ];
+				if ( ! empty( $p['brand'] ) )  $bits[] = 'brand: ' . $p['brand'];
+				if ( ! empty( $p['area'] ) )   $bits[] = 'area: ' . $p['area'];
+				if ( ! empty( $p['price'] ) )  $bits[] = 'price: ' . $p['price'];
+				if ( ! empty( $p['sku'] ) )    $bits[] = 'SKU: ' . $p['sku'];
+				if ( ! empty( $p['categoryName'] ) && empty( $p['brand'] ) ) $bits[] = 'cat: ' . $p['categoryName'];
+				if ( ! empty( $p['link'] ) )   $bits[] = $p['link'];
+				$lines[] = implode( ' | ', $bits );
 			}
 		}
 		$lines[] = '';

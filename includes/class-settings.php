@@ -35,8 +35,10 @@ final class Settings {
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'wp_ajax_bqw_test_connection', [ $this, 'ajax_test_connection' ] );
 		add_action( 'wp_ajax_bqw_test_openai', [ $this, 'ajax_test_openai' ] );
+		add_action( 'wp_ajax_bqw_refresh_catalog', [ $this, 'ajax_refresh_catalog' ] );
 		add_action( 'admin_post_bqw_export_ai_notes', [ $this, 'export_ai_notes' ] );
 		add_action( 'admin_post_bqw_import_ai_notes', [ $this, 'import_ai_notes' ] );
+		add_action( 'admin_post_bqw_upload_catalog', [ $this, 'upload_catalog' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin' ] );
 	}
 
@@ -95,7 +97,10 @@ final class Settings {
 			'openai_model'          => 'gpt-4o-mini',
 			'openai_daily_cap'      => 200,
 
-			'option_images'         => [],
+			// Supabase catalog (v1.6).
+			'catalog_url'             => '',
+			'catalog_api_key'         => '',
+			'catalog_refresh_interval' => 86400,
 		];
 	}
 
@@ -326,14 +331,19 @@ final class Settings {
 			}
 		}
 
-		// Option images: map of "context|optionLabel" => attachment ID.
-		$option_images = [];
-		if ( isset( $input['option_images'] ) && is_array( $input['option_images'] ) ) {
-			foreach ( $input['option_images'] as $key => $aid ) {
-				$option_images[ sanitize_text_field( (string) $key ) ] = absint( $aid );
+		// v1.6 — option images dropped; the wizard renders inline SVG icons now.
+		unset( $out['option_images'] );
+
+		// Supabase catalog.
+		$out['catalog_url']             = esc_url_raw( (string) ( $input['catalog_url'] ?? '' ) );
+		$ri                              = (int) ( $input['catalog_refresh_interval'] ?? 86400 );
+		$out['catalog_refresh_interval'] = in_array( $ri, [ 3600, 21600, 86400, 604800 ], true ) ? $ri : 86400;
+		if ( isset( $input['catalog_api_key'] ) ) {
+			$nv = trim( (string) $input['catalog_api_key'] );
+			if ( '' !== $nv && '********' !== $nv ) {
+				$out['catalog_api_key'] = self::encrypt( $nv );
 			}
 		}
-		$out['option_images'] = $option_images;
 
 		// Merge products_by_category, preserving entries for categories not posted
 		// (so unchecking a category does not erase its product filter config).
@@ -504,6 +514,19 @@ final class Settings {
 			}
 			if ( isset( $_GET['bqw_import_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html__( 'Could not parse the JSON file.', 'bomedia-quote-wizard' ) );
+			}
+			if ( isset( $_GET['bqw_catalog_count'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				printf(
+					'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+					esc_html( sprintf(
+						/* translators: %d: products count */
+						__( 'Catalog uploaded: %d products cached.', 'bomedia-quote-wizard' ),
+						(int) $_GET['bqw_catalog_count']
+					) )
+				);
+			}
+			if ( isset( $_GET['bqw_catalog_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html__( 'Could not parse the catalog JSON.', 'bomedia-quote-wizard' ) );
 			}
 			?>
 			<h2 class="nav-tab-wrapper">
@@ -790,12 +813,71 @@ final class Settings {
 				</tr>
 			</table>
 
-			<h2 class="title"><?php esc_html_e( 'Option images', 'bomedia-quote-wizard' ); ?></h2>
+			<h2 class="title"><?php esc_html_e( 'AI Catalog source', 'bomedia-quote-wizard' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
+					<td colspan="2">
+						<p class="description" style="background:#eff6ff;padding:8px 10px;border-left:3px solid #2563eb;border-radius:3px;">
+							<?php esc_html_e( 'The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted.', 'bomedia-quote-wizard' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Catalog URL', 'bomedia-quote-wizard' ); ?></label></th>
 					<td>
-						<p class="description"><?php esc_html_e( 'Optional images shown above each option card. The plugin renders a generic icon if none is set.', 'bomedia-quote-wizard' ); ?></p>
-						<?php $this->render_option_image_pickers( $s ); ?>
+						<input type="url" class="large-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[catalog_url]"
+							value="<?php echo esc_attr( $s['catalog_url'] ?? '' ); ?>"
+							placeholder="<?php echo esc_attr( Catalog_Client::DEFAULT_URL ); ?>" />
+						<p class="description"><?php esc_html_e( 'Leave empty to use the default Bomedia Composer endpoint.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Catalog API key', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[catalog_api_key]"
+							value="<?php echo ! empty( $s['catalog_api_key'] ) ? '********' : ''; ?>" autocomplete="new-password" />
+						<p class="description"><?php esc_html_e( 'Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Refresh interval', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<select name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[catalog_refresh_interval]">
+							<?php
+							$cur = (int) ( $s['catalog_refresh_interval'] ?? 86400 );
+							$opts = [
+								3600   => __( 'Every hour', 'bomedia-quote-wizard' ),
+								21600  => __( 'Every 6 hours', 'bomedia-quote-wizard' ),
+								86400  => __( 'Daily', 'bomedia-quote-wizard' ),
+								604800 => __( 'Weekly', 'bomedia-quote-wizard' ),
+							];
+							foreach ( $opts as $val => $label ) :
+								?>
+								<option value="<?php echo esc_attr( (string) $val ); ?>" <?php selected( $cur, $val ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Last fetch', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<?php
+						$last = Catalog_Client::last_fetch();
+						$cnt  = Catalog_Client::product_count();
+						if ( $last > 0 ) {
+							printf(
+								/* translators: 1: human-readable time-diff, 2: product count */
+								esc_html__( '%1$s ago · %2$d products cached', 'bomedia-quote-wizard' ),
+								esc_html( human_time_diff( $last ) ),
+								(int) $cnt
+							);
+						} else {
+							esc_html_e( 'Never', 'bomedia-quote-wizard' );
+						}
+						?>
+						&nbsp;&nbsp;
+						<button type="button" class="button" id="bqw-catalog-refresh"><?php esc_html_e( 'Refresh now', 'bomedia-quote-wizard' ); ?></button>
+						<span id="bqw-catalog-refresh-result" style="margin-left:10px;"></span>
 					</td>
 				</tr>
 			</table>
@@ -874,6 +956,15 @@ final class Settings {
 			<?php submit_button(); ?>
 		</form>
 
+		<h2 class="title" style="margin-top:32px;"><?php esc_html_e( 'Manual catalog upload', 'bomedia-quote-wizard' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable.', 'bomedia-quote-wizard' ); ?></p>
+		<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'bqw_upload_catalog', 'bqw_upload_catalog_nonce' ); ?>
+			<input type="hidden" name="action" value="bqw_upload_catalog" />
+			<input type="file" name="bqw_catalog_file" accept="application/json,.json" />
+			<button class="button" type="submit"><?php esc_html_e( 'Upload manual JSON', 'bomedia-quote-wizard' ); ?></button>
+		</form>
+
 		<h2 class="title" style="margin-top:32px;"><?php esc_html_e( 'Bulk AI notes', 'bomedia-quote-wizard' ); ?></h2>
 		<p class="description"><?php esc_html_e( 'Bulk-edit the per-product internal AI notes by slug. Format: { "product-slug": "notes…" }.', 'bomedia-quote-wizard' ); ?></p>
 		<p>
@@ -903,35 +994,6 @@ final class Settings {
 		})();
 		</script>
 		<?php
-	}
-
-	private function render_option_image_pickers( array $s ): void {
-		$option_images = (array) ( $s['option_images'] ?? [] );
-		$contexts = [
-			'application' => [ __( 'Application', 'bomedia-quote-wizard' ), $s['application_options'] ?? '' ],
-			'materials'   => [ __( 'Materials', 'bomedia-quote-wizard' ), $s['materials_options'] ?? '' ],
-			'volume'      => [ __( 'Monthly volume', 'bomedia-quote-wizard' ), $s['volume_options'] ?? '' ],
-			'format'      => [ __( 'Format (matchmaker)', 'bomedia-quote-wizard' ), $s['matchmaker_format_options'] ?? '' ],
-			'budget'      => [ __( 'Budget (matchmaker)', 'bomedia-quote-wizard' ), $s['matchmaker_budget_options'] ?? '' ],
-		];
-		foreach ( $contexts as $ctx => $row ) {
-			[ $title, $raw ] = $row;
-			$lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) $raw ) ?: [] ), 'strlen' ) );
-			if ( ! $lines ) {
-				continue;
-			}
-			echo '<details style="margin:0 0 12px;border:1px solid #e5e7eb;border-radius:4px;background:#f9fafb;">';
-			echo '<summary style="padding:8px 12px;cursor:pointer;font-weight:600;">' . esc_html( $title ) . '</summary>';
-			echo '<div style="padding:8px 12px;">';
-			foreach ( $lines as $opt ) {
-				$key = $ctx . '|' . $opt;
-				$aid = (int) ( $option_images[ $key ] ?? 0 );
-				echo '<p style="display:flex;align-items:center;gap:10px;margin:4px 0;"><span style="min-width:160px;">' . esc_html( $opt ) . '</span>';
-				$this->render_media_picker( 'option_images][' . esc_attr( $key ), $aid );
-				echo '</p>';
-			}
-			echo '</div></details>';
-		}
 	}
 
 	private function render_media_picker( string $name_suffix, int $current_id ): void {
@@ -1258,6 +1320,53 @@ final class Settings {
 			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
 		}
 		wp_send_json_success( [ 'message' => 'OK' ] );
+	}
+
+	public function ajax_refresh_catalog(): void {
+		check_ajax_referer( 'bqw_test_connection', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [ 'message' => __( 'Forbidden', 'bomedia-quote-wizard' ) ], 403 );
+		}
+		$result = Catalog_Client::fetch_remote();
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+		}
+		wp_send_json_success( [
+			'count' => count( $result['products'] ),
+			'brands' => count( $result['brands'] ),
+		] );
+	}
+
+	public function upload_catalog(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Forbidden', 'bomedia-quote-wizard' ) );
+		}
+		check_admin_referer( 'bqw_upload_catalog', 'bqw_upload_catalog_nonce' );
+
+		if ( empty( $_FILES['bqw_catalog_file']['tmp_name'] ) ) {
+			wp_safe_redirect( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => 'wizard', 'bqw_catalog_error' => 'empty' ], admin_url( 'options-general.php' ) ) );
+			exit;
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$raw = file_get_contents( $_FILES['bqw_catalog_file']['tmp_name'] );
+		$decoded = json_decode( (string) $raw, true );
+		// Accept either { products, brands } or the upstream wrapper [{ data: { products, brands } }].
+		$products = null;
+		$brands   = null;
+		if ( is_array( $decoded ) && isset( $decoded['products'] ) ) {
+			$products = is_array( $decoded['products'] ) ? $decoded['products'] : [];
+			$brands   = is_array( $decoded['brands'] ?? null ) ? $decoded['brands'] : [];
+		} elseif ( is_array( $decoded ) && isset( $decoded[0]['data']['products'] ) ) {
+			$products = (array) $decoded[0]['data']['products'];
+			$brands   = (array) ( $decoded[0]['data']['brands'] ?? [] );
+		}
+		if ( null === $products ) {
+			wp_safe_redirect( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => 'wizard', 'bqw_catalog_error' => 'json' ], admin_url( 'options-general.php' ) ) );
+			exit;
+		}
+		Catalog_Client::override_with( array_values( $products ), array_values( $brands ) );
+		wp_safe_redirect( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => 'wizard', 'bqw_catalog_count' => count( $products ) ], admin_url( 'options-general.php' ) ) );
+		exit;
 	}
 
 	public function ajax_test_openai(): void {

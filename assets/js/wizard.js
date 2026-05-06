@@ -122,6 +122,11 @@
 		state.selection.push({
 			id: p.id, name: p.name, image: p.image || '', sku: p.sku || '',
 			attributes: p.attributes || [],
+			source: p.source || 'woo',
+			brand: p.brand || '',
+			price: p.price || '',
+			area: p.area || '',
+			link: p.link || '',
 			categoryId: cat ? cat.id : 0,
 			categorySlug: cat ? cat.slug : '',
 			categoryName: cat ? cat.name : '',
@@ -147,7 +152,7 @@
 
 	function updateSelectionUI() {
 		document.getElementById('bqw-selected-products-json').value = JSON.stringify(state.selection.map(function (p) {
-			return { id: p.id, name: p.name, sku: p.sku, categoryId: p.categoryId, categorySlug: p.categorySlug, categoryName: p.categoryName };
+			return { id: p.id, name: p.name, sku: p.sku, source: p.source || 'woo', brand: p.brand || '', price: p.price || '', area: p.area || '', link: p.link || '', image: p.image || '', categoryId: p.categoryId, categorySlug: p.categorySlug, categoryName: p.categoryName };
 		}));
 		document.getElementById('bqw-unsure').value = state.unsure ? '1' : '0';
 
@@ -527,22 +532,62 @@
 			return;
 		}
 		recs.forEach(function (r) {
-			var card = document.createElement('button');
-			card.type = 'button';
+			var card = document.createElement('div');
 			card.className = 'bqw-rec-card';
 			card.dataset.productId = String(r.id);
+
+			var image = r.img || r.image || '';
+			var imgHtml = image
+				? '<img class="bqw-rec-img" src="' + image + '" alt="" loading="lazy">'
+				: '<span class="bqw-rec-img bqw-opt-img-fallback">★</span>';
+
+			var badgeHtml = r.badge ? '<span class="bqw-rec-badge">' + escapeHtml(r.badge) + '</span>' : '';
+			var brandHtml = r.brand ? '<span class="bqw-rec-brand">' + escapeHtml(r.brand) + '</span>' : '';
+			var feats = [];
+			if (r.area)  feats.push('<li>' + escapeHtml(r.area) + '</li>');
+			if (r.feat1) feats.push('<li>' + escapeHtml(r.feat1) + '</li>');
+			if (r.feat2) feats.push('<li>' + escapeHtml(r.feat2) + '</li>');
+			var featsHtml = feats.length ? '<ul class="bqw-rec-feats">' + feats.join('') + '</ul>' : '';
+			var reasonsHtml = (r.reasons && r.reasons.length)
+				? '<ul class="bqw-rec-reasons">' + r.reasons.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>'
+				: '';
+			var linkHtml = r.link
+				? '<a class="bqw-rec-link" href="' + r.link + '" target="_blank" rel="noopener">' + (i18n.viewProduct || 'View product →') + '</a>'
+				: '';
+			var priceHtml = r.price ? '<span class="bqw-rec-price">' + escapeHtml(r.price) + '</span>' : '';
+
 			card.innerHTML =
-				(r.image ? '<img class="bqw-rec-img" src="' + r.image + '" alt="">' : '<span class="bqw-rec-img bqw-opt-img-fallback">★</span>') +
+				'<div class="bqw-rec-imgwrap">' + imgHtml + (badgeHtml ? '<span class="bqw-rec-badge-wrap">' + badgeHtml + '</span>' : '') + '</div>' +
 				'<div class="bqw-rec-body">' +
-					'<div class="bqw-rec-head"><strong>' + escapeHtml(r.name) + '</strong>' +
-						'<span class="bqw-rec-score">' + (i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span></div>' +
-					(r.reasons && r.reasons.length ? '<ul class="bqw-rec-reasons">' + r.reasons.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>' : '') +
+					'<div class="bqw-rec-head">' +
+						'<div class="bqw-rec-titlewrap"><strong>' + escapeHtml(r.name) + '</strong>' + brandHtml + '</div>' +
+						'<span class="bqw-rec-score">' + (i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>' +
+					'</div>' +
+					featsHtml +
+					reasonsHtml +
+					'<div class="bqw-rec-footer">' + priceHtml + linkHtml + '</div>' +
 				'</div>' +
-				'<span class="bqw-card-check" aria-hidden="true">✓</span>';
-			card.addEventListener('click', function () {
+				'<button type="button" class="bqw-rec-pick" aria-pressed="false">' +
+					'<span class="bqw-card-check" aria-hidden="true">✓</span>' +
+					'<span class="bqw-rec-pick-label">' + escapeHtml(i18n.pickThis || 'Pick') + '</span>' +
+				'</button>';
+
+			var pickBtn = card.querySelector('.bqw-rec-pick');
+			pickBtn.addEventListener('click', function () {
 				var pick = !card.classList.contains('is-selected');
-				if (pick) { card.classList.add('is-selected'); addToSelection(r, { id: r.categoryId, slug: r.categorySlug, name: r.categoryName }); }
-				else { card.classList.remove('is-selected'); removeFromSelection(r.id); }
+				if (pick) {
+					card.classList.add('is-selected');
+					pickBtn.setAttribute('aria-pressed', 'true');
+					addToSelection({
+						id: r.id, name: r.name, image: image, sku: r.sku || '',
+						brand: r.brand || '', price: r.price || '', area: r.area || '', link: r.link || '',
+						source: 'catalog',
+					}, { id: 0, slug: r.brand || '', name: r.brand || '' });
+				} else {
+					card.classList.remove('is-selected');
+					pickBtn.setAttribute('aria-pressed', 'false');
+					removeFromSelection(r.id);
+				}
 				document.getElementById('bqw-rec-next').disabled = !state.selection.length;
 			});
 			listEl.appendChild(card);
@@ -585,7 +630,7 @@
 
 		// Refresh hidden fields.
 		document.getElementById('bqw-selected-products-json').value = JSON.stringify(state.selection.map(function (p) {
-			return { id: p.id, name: p.name, sku: p.sku, categoryId: p.categoryId, categorySlug: p.categorySlug, categoryName: p.categoryName };
+			return { id: p.id, name: p.name, sku: p.sku, source: p.source || 'woo', brand: p.brand || '', price: p.price || '', area: p.area || '', link: p.link || '', image: p.image || '', categoryId: p.categoryId, categorySlug: p.categorySlug, categoryName: p.categoryName };
 		}));
 		document.getElementById('bqw-unsure').value = state.unsure ? '1' : '0';
 		document.getElementById('bqw-mm-answers-json').value = state.flow === 'matchmaker' ? JSON.stringify(state.mmAnswers) : '';

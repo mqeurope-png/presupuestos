@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.5.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.6.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -10,11 +10,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: bomedia-quote-wizard\n"
 
+msgid "%1$s ago · %2$d products cached"
+msgstr "Hace %1$s · %2$d productos cacheados"
+
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
 
 msgid "A valid email is required."
 msgstr "Se requiere un correo electrónico válido."
+
+msgid "AI Catalog source"
+msgstr "Origen del catálogo IA"
 
 msgid "AI Recommendations (OpenAI)"
 msgstr "Recomendaciones con IA (OpenAI)"
@@ -97,9 +103,6 @@ msgstr "Verificación anti-bot"
 msgid "Budget"
 msgstr "Presupuesto"
 
-msgid "Budget (matchmaker)"
-msgstr "Presupuesto (matchmaker)"
-
 msgid "Budget options"
 msgstr "Opciones de presupuesto"
 
@@ -111,6 +114,15 @@ msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: {
 
 msgid "Captcha provider"
 msgstr "Proveedor de captcha"
+
+msgid "Catalog API key"
+msgstr "API key del catálogo"
+
+msgid "Catalog URL"
+msgstr "URL del catálogo"
+
+msgid "Catalog uploaded: %d products cached."
+msgstr "Catálogo subido: %d productos cacheados."
 
 msgid "Change"
 msgstr "Cambiar"
@@ -160,6 +172,9 @@ msgstr "Continuar"
 msgid "Could not parse the JSON file."
 msgstr "No se pudo procesar el archivo JSON."
 
+msgid "Could not parse the catalog JSON."
+msgstr "No se pudo procesar el JSON del catálogo."
+
 msgid "Country"
 msgstr "País"
 
@@ -168,6 +183,9 @@ msgstr "El cliente no está seguro, pide ayuda."
 
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
+
+msgid "Daily"
+msgstr "Diario"
 
 msgid "Date"
 msgstr "Fecha"
@@ -214,6 +232,12 @@ msgstr "Volumen mensual estimado"
 msgid "Estimated monthly volume?"
 msgstr "¿Volumen mensual estimado?"
 
+msgid "Every 6 hours"
+msgstr "Cada 6 horas"
+
+msgid "Every hour"
+msgstr "Cada hora"
+
 msgid "Expand"
 msgstr "Desplegar"
 
@@ -231,9 +255,6 @@ msgstr "Prohibido"
 
 msgid "Format"
 msgstr "Formato"
-
-msgid "Format (matchmaker)"
-msgstr "Formato (matchmaker)"
 
 msgid "Format options"
 msgstr "Opciones de formato"
@@ -277,6 +298,9 @@ msgstr "Importar JSON"
 msgid "Last call:"
 msgstr "Última llamada:"
 
+msgid "Last fetch"
+msgstr "Último fetch"
+
 msgid "Last name"
 msgstr "Apellidos"
 
@@ -286,6 +310,9 @@ msgstr "Lead"
 msgid "Lead data missing or corrupt."
 msgstr "Faltan datos del lead o están corruptos."
 
+msgid "Leave empty to use the default Bomedia Composer endpoint."
+msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
+
 msgid "Loading models…"
 msgstr "Cargando modelos…"
 
@@ -294,6 +321,9 @@ msgstr "Máquinas de interés"
 
 msgid "Machines of interest:"
 msgstr "Máquinas de interés:"
+
+msgid "Manual catalog upload"
+msgstr "Subida manual de catálogo"
 
 msgid "Marketing opt-in"
 msgstr "Opt-in de marketing"
@@ -364,6 +394,9 @@ msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"n
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
 msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
 
+msgid "Never"
+msgstr "Nunca"
+
 msgid "Next"
 msgstr "Siguiente"
 
@@ -421,17 +454,14 @@ msgstr "OpenAI devolvió una respuesta inválida."
 msgid "OpenAI returned malformed data."
 msgstr "OpenAI devolvió datos mal formados."
 
-msgid "Option images"
-msgstr "Imágenes de opciones"
-
-msgid "Optional images shown above each option card. The plugin renders a generic icon if none is set."
-msgstr "Imágenes opcionales sobre cada card. El plugin muestra un icono genérico si no hay imagen."
-
 msgid "Phone"
 msgstr "Teléfono"
 
 msgid "Phone is required."
 msgstr "El teléfono es obligatorio."
+
+msgid "Pick"
+msgstr "Seleccionar"
 
 msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr "Elige categorías en la columna de la izquierda y arrastra para reordenar en la derecha. Despliega una fila para afinar qué productos aparecen y en qué orden."
@@ -492,6 +522,12 @@ msgstr "Clave REST API"
 
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
+
+msgid "Refresh interval"
+msgstr "Intervalo de refresco"
+
+msgid "Refresh now"
+msgstr "Refrescar ahora"
 
 msgid "Remove"
 msgstr "Quitar"
@@ -580,6 +616,9 @@ msgstr "Empezar"
 msgid "Status"
 msgstr "Estado"
 
+msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
+msgstr "Almacenada cifrada con AUTH_KEY. Déjalo vacío para usar la publishable key por defecto."
+
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr "Almacenado cifrado con AUTH_KEY. Deja el valor enmascarado para conservar el actual."
 
@@ -603,6 +642,9 @@ msgstr "Probando…"
 
 msgid "Thanks! We received your request."
 msgstr "¡Gracias! Hemos recibido tu solicitud."
+
+msgid "The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted."
+msgstr "El matchmaker lee productos desde un endpoint Supabase remoto. Solo se extraen los campos products y brands; cualquier otro dato (usuarios, claves, log de actividad, plantillas) se descarta inmediatamente al hacer fetch y nunca se persiste."
 
 msgid "The verification answer is incorrect. Please try again."
 msgstr "La respuesta de verificación es incorrecta. Inténtalo de nuevo."
@@ -631,17 +673,29 @@ msgstr "Claves de Turnstile"
 msgid "Turnstile verification failed."
 msgstr "La verificación de Turnstile falló."
 
+msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
+msgstr "Sube un archivo JSON con { products: [...], brands: [...] } para sobrescribir el cache cuando el endpoint remoto no esté disponible."
+
+msgid "Upload manual JSON"
+msgstr "Subir JSON manual"
+
 msgid "Usage today"
 msgstr "Uso hoy"
 
 msgid "Use AI for recommendations"
 msgstr "Usar IA para recomendaciones"
 
+msgid "View product →"
+msgstr "Ver producto →"
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
+
+msgid "Weekly"
+msgstr "Semanal"
 
 msgid "What do you want to produce?"
 msgstr "¿Qué quieres producir?"

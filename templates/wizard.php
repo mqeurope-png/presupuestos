@@ -22,21 +22,22 @@ $hero_on        = ! empty( $bqw_config['enable_hero'] );
 $matchmaker_on  = ! empty( $bqw_config['enable_matchmaker'] );
 
 /**
- * Render an option card (image + label) with given input control.
+ * Render an option card with an inline SVG icon picked from the label.
+ *
+ * @param string $label Display label.
+ * @param string $name  Form field name.
+ * @param string $type  'checkbox' or 'radio'.
  */
-$render_option_card = static function ( array $opt, string $name, string $type, string $idx ): void {
-	$cls = 'bqw-opt-card';
+$render_option_card = static function ( string $label, string $name, string $type ): void {
+	$svg = \Bomedia\QuoteWizard\Icons::for_label( $label );
 	?>
-	<label class="<?php echo esc_attr( $cls ); ?>">
-		<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $opt['label'] ); ?>" />
-		<?php if ( ! empty( $opt['image'] ) ) : ?>
-			<span class="bqw-opt-img" style="background-image:url('<?php echo esc_url( $opt['image'] ); ?>');"></span>
-		<?php else : ?>
-			<span class="bqw-opt-img bqw-opt-img-fallback" aria-hidden="true">
-				<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12h6M12 9v6"/></svg>
-			</span>
-		<?php endif; ?>
-		<span class="bqw-opt-label"><?php echo esc_html( $opt['label'] ); ?></span>
+	<label class="bqw-opt-card">
+		<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $label ); ?>" />
+		<span class="bqw-opt-img bqw-opt-img-fallback" aria-hidden="true"><?php
+			// Icon SVG is built from a curated whitelist (see Icons::SVGS) so it's safe to print.
+			echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?></span>
+		<span class="bqw-opt-label"><?php echo esc_html( $label ); ?></span>
 		<span class="bqw-opt-check" aria-hidden="true">✓</span>
 	</label>
 	<?php
@@ -143,7 +144,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 					<legend><?php esc_html_e( 'Application (one or more)', 'bomedia-quote-wizard' ); ?></legend>
 					<div class="bqw-opt-grid">
 						<?php foreach ( $bqw_config['application_options'] as $i => $opt ) {
-							$render_option_card( $opt, 'application[]', 'checkbox', 'app-' . $i );
+							$render_option_card( $opt, 'application[]', 'checkbox' );
 						} ?>
 					</div>
 					<p class="bqw-field-error" id="bqw-application-error" hidden><?php esc_html_e( 'Please pick at least one application.', 'bomedia-quote-wizard' ); ?></p>
@@ -155,7 +156,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 					<legend><?php esc_html_e( 'Materials (multi-select)', 'bomedia-quote-wizard' ); ?></legend>
 					<div class="bqw-opt-grid">
 						<?php foreach ( $bqw_config['materials_options'] as $i => $opt ) {
-							$render_option_card( $opt, 'materials[]', 'checkbox', 'mat-' . $i );
+							$render_option_card( $opt, 'materials[]', 'checkbox' );
 						} ?>
 					</div>
 				</fieldset>
@@ -166,7 +167,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 					<legend><?php esc_html_e( 'Estimated monthly volume', 'bomedia-quote-wizard' ); ?></legend>
 					<div class="bqw-opt-grid bqw-opt-grid-narrow">
 						<?php foreach ( $bqw_config['volume_options'] as $i => $opt ) {
-							$render_option_card( $opt, 'volume', 'radio', 'vol-' . $i );
+							$render_option_card( $opt, 'volume', 'radio' );
 						} ?>
 					</div>
 				</fieldset>
@@ -307,7 +308,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 				<?php if ( ! empty( $bqw_config['application_options'] ) ) : ?>
 					<div class="bqw-opt-grid">
 						<?php foreach ( $bqw_config['application_options'] as $i => $opt ) {
-							$render_option_card( $opt, 'mm_application[]', 'checkbox', 'mm-app-' . $i );
+							$render_option_card( $opt, 'mm_application[]', 'checkbox' );
 						} ?>
 					</div>
 				<?php endif; ?>
@@ -321,7 +322,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 				<h3 id="bqw-mm2-title" class="bqw-step-title"><?php esc_html_e( 'On which materials?', 'bomedia-quote-wizard' ); ?></h3>
 				<div class="bqw-opt-grid">
 					<?php foreach ( $bqw_config['materials_options'] as $i => $opt ) {
-						$render_option_card( $opt, 'mm_materials[]', 'checkbox', 'mm-mat-' . $i );
+						$render_option_card( $opt, 'mm_materials[]', 'checkbox' );
 					} ?>
 				</div>
 				<div class="bqw-actions">
@@ -334,7 +335,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 				<h3 id="bqw-mm3-title" class="bqw-step-title"><?php esc_html_e( 'Estimated monthly volume?', 'bomedia-quote-wizard' ); ?></h3>
 				<div class="bqw-opt-grid bqw-opt-grid-narrow">
 					<?php foreach ( $bqw_config['volume_options'] as $i => $opt ) {
-						$render_option_card( $opt, 'mm_volume', 'radio', 'mm-vol-' . $i );
+						$render_option_card( $opt, 'mm_volume', 'radio' );
 					} ?>
 				</div>
 				<div class="bqw-actions">
@@ -347,7 +348,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 				<h3 id="bqw-mm4-title" class="bqw-step-title"><?php esc_html_e( 'Maximum piece size?', 'bomedia-quote-wizard' ); ?></h3>
 				<div class="bqw-opt-grid">
 					<?php foreach ( $bqw_config['matchmaker_format_options'] as $i => $opt ) {
-						$render_option_card( $opt, 'mm_format', 'radio', 'mm-fmt-' . $i );
+						$render_option_card( $opt, 'mm_format', 'radio' );
 					} ?>
 				</div>
 				<div class="bqw-actions">
@@ -360,7 +361,7 @@ $render_option_card = static function ( array $opt, string $name, string $type, 
 				<h3 id="bqw-mm5-title" class="bqw-step-title"><?php esc_html_e( 'Approximate budget? (optional)', 'bomedia-quote-wizard' ); ?></h3>
 				<div class="bqw-opt-grid">
 					<?php foreach ( $bqw_config['matchmaker_budget_options'] as $i => $opt ) {
-						$render_option_card( $opt, 'mm_budget', 'radio', 'mm-bud-' . $i );
+						$render_option_card( $opt, 'mm_budget', 'radio' );
 					} ?>
 				</div>
 				<div class="bqw-actions">

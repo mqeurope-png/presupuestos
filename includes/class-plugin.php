@@ -49,6 +49,9 @@ final class Plugin {
 		Product_Meta::instance()->register();
 		Shortcode::instance()->register();
 		Ajax::instance()->register();
+
+		// Background catalog refresh.
+		add_action( Catalog_Client::REFRESH_HOOK, [ Catalog_Client::class, 'fetch_remote' ] );
 	}
 
 	public function render_woo_missing_notice(): void {
