@@ -45,34 +45,56 @@ final class Ajax {
 			wp_send_json_error( [ 'message' => __( 'Missing category.', 'bomedia-quote-wizard' ) ], 400 );
 		}
 
-		$query = new \WP_Query(
-			[
-				'post_type'      => 'product',
-				'post_status'    => 'publish',
-				'posts_per_page' => 50,
-				'no_found_rows'  => true,
-				'tax_query'      => [
-					[
-						'taxonomy'         => 'product_cat',
-						'field'            => 'term_id',
-						'terms'            => $cat_id,
-						'include_children' => false,
-					],
+		$args = [
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 100,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+			'tax_query'      => [
+				[
+					'taxonomy'         => 'product_cat',
+					'field'            => 'term_id',
+					'terms'            => $cat_id,
+					'include_children' => false,
 				],
-			]
-		);
+			],
+		];
 
+		// Honour per-category manual filter if present.
+		$pbc = (array) Settings::get( 'products_by_category', [] );
+		if ( isset( $pbc[ $cat_id ]['mode'] ) && 'manual' === $pbc[ $cat_id ]['mode'] ) {
+			$ids = array_map( 'absint', (array) ( $pbc[ $cat_id ]['ids'] ?? [] ) );
+			$ids = array_values( array_filter( $ids ) );
+			if ( empty( $ids ) ) {
+				wp_send_json_success( [ 'products' => [] ] );
+			}
+			$args['post__in'] = $ids;
+			$args['orderby']  = 'post__in';
+		}
+
+		$query    = new \WP_Query( $args );
 		$products = [];
 		foreach ( $query->posts as $p ) {
 			$products[] = [
 				'id'         => (int) $p->ID,
 				'name'       => $p->post_title,
+				'sku'        => self::get_product_sku( (int) $p->ID ),
 				'image'      => get_the_post_thumbnail_url( $p->ID, 'medium' ) ?: '',
 				'attributes' => self::extract_feature_attributes( (int) $p->ID ),
 			];
 		}
 
 		wp_send_json_success( [ 'products' => $products ] );
+	}
+
+	private static function get_product_sku( int $product_id ): string {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return '';
+		}
+		$p = wc_get_product( $product_id );
+		return $p ? (string) $p->get_sku() : '';
 	}
 
 	/**
@@ -202,15 +224,24 @@ final class Ajax {
 		$message  = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
 		$privacy  = ! empty( $_POST['privacy'] );
 
-		$category_id   = absint( $_POST['category_id'] ?? 0 );
-		$category_slug = sanitize_title( wp_unslash( $_POST['category_slug'] ?? '' ) );
-		$category_name = sanitize_text_field( wp_unslash( $_POST['category_name'] ?? '' ) );
-		$product_id    = absint( $_POST['product_id'] ?? 0 );
-		$product_name  = sanitize_text_field( wp_unslash( $_POST['product_name'] ?? '' ) );
+		$unsure  = ! empty( $_POST['unsure'] );
+		$json    = wp_unslash( $_POST['selected_products_json'] ?? '[]' );
+		$decoded = is_string( $json ) ? json_decode( $json, true ) : [];
+		$selected_products = self::sanitize_selected_products( is_array( $decoded ) ? $decoded : [] );
 
-		$application = sanitize_text_field( wp_unslash( $_POST['application'] ?? '' ) );
-		$materials   = array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['materials'] ?? [] ) );
-		$volume      = sanitize_text_field( wp_unslash( $_POST['volume'] ?? '' ) );
+		$applications = array_values(
+			array_filter(
+				array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['application'] ?? [] ) ),
+				'strlen'
+			)
+		);
+		$materials = array_values(
+			array_filter(
+				array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['materials'] ?? [] ) ),
+				'strlen'
+			)
+		);
+		$volume = sanitize_text_field( wp_unslash( $_POST['volume'] ?? '' ) );
 
 		if ( ! $first || ! $last ) {
 			return new \WP_Error( 'bqw_missing', __( 'Name is required.', 'bomedia-quote-wizard' ) );
@@ -227,36 +258,97 @@ final class Ajax {
 		if ( ! $privacy ) {
 			return new \WP_Error( 'bqw_privacy', __( 'You must accept the privacy policy.', 'bomedia-quote-wizard' ) );
 		}
+		// At least one machine OR explicit "unsure".
+		if ( ! $unsure && empty( $selected_products ) ) {
+			return new \WP_Error( 'bqw_no_products', __( 'Please pick at least one machine.', 'bomedia-quote-wizard' ) );
+		}
+		// At least one application if step is enabled.
+		$enable_application = (int) Settings::get( 'enable_application', 0 );
+		if ( $enable_application && empty( $applications ) ) {
+			return new \WP_Error( 'bqw_no_application', __( 'Please pick at least one application.', 'bomedia-quote-wizard' ) );
+		}
+
+		// Aggregate fields used for AgileCRM and notifications.
+		$product_names = array_map( static function ( $p ) { return $p['name']; }, $selected_products );
+		$product_ids   = array_map( static function ( $p ) { return (int) $p['id']; }, $selected_products );
+
+		// Union of product_cat slugs across all selected products (for tags).
+		$category_slugs = [];
+		$category_names = [];
+		foreach ( $selected_products as $p ) {
+			$terms = (array) wp_get_post_terms( (int) $p['id'], 'product_cat' );
+			foreach ( $terms as $t ) {
+				if ( is_object( $t ) ) {
+					$category_slugs[ $t->slug ] = true;
+					$category_names[ $t->name ] = true;
+				}
+			}
+		}
+		$category_slugs = array_keys( $category_slugs );
+		$category_names = array_keys( $category_names );
 
 		return [
-			'first_name'    => $first,
-			'last_name'     => $last,
-			'company'       => $company,
-			'email'         => $email,
-			'phone'         => $phone,
-			'country'       => $country,
-			'message'       => $message,
-			'category_id'   => $category_id,
-			'category_slug' => $category_slug,
-			'category_name' => $category_name,
-			'product_id'    => $product_id,
-			'product_name'  => $product_name,
-			'application'   => $application,
-			'materials'     => $materials,
-			'volume'        => $volume,
-			'source_url'    => esc_url_raw( wp_unslash( $_POST['source_url'] ?? home_url( add_query_arg( null, null ) ) ) ),
-			'source_site'   => wp_parse_url( home_url(), PHP_URL_HOST ),
-			'ip'            => self::client_ip(),
-			'user_agent'    => substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? '' ) ), 0, 255 ),
-			'submitted_at'  => current_time( 'mysql' ),
+			'first_name'        => $first,
+			'last_name'         => $last,
+			'company'           => $company,
+			'email'             => $email,
+			'phone'             => $phone,
+			'country'           => $country,
+			'message'           => $message,
+			'unsure'            => $unsure,
+			'selected_products' => $selected_products,
+			'product_ids'       => $product_ids,
+			'product_name'      => $unsure
+				? __( "I'm not sure", 'bomedia-quote-wizard' )
+				: implode( ', ', $product_names ),
+			'category_slugs'    => $category_slugs,
+			'category_names'    => $category_names,
+			'category_name'     => implode( ', ', $category_names ),
+			'application'       => implode( ', ', $applications ),
+			'applications'      => $applications,
+			'materials'         => $materials,
+			'volume'            => $volume,
+			'source_url'        => esc_url_raw( wp_unslash( $_POST['source_url'] ?? home_url( add_query_arg( null, null ) ) ) ),
+			'source_site'       => wp_parse_url( home_url(), PHP_URL_HOST ),
+			'ip'                => self::client_ip(),
+			'user_agent'        => substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? '' ) ), 0, 255 ),
+			'submitted_at'      => current_time( 'mysql' ),
 		];
 	}
 
+	private static function sanitize_selected_products( array $raw ): array {
+		$out = [];
+		foreach ( $raw as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				continue;
+			}
+			$id = absint( $entry['id'] ?? 0 );
+			if ( ! $id ) {
+				continue;
+			}
+			$post = get_post( $id );
+			if ( ! $post || 'product' !== $post->post_type ) {
+				continue;
+			}
+			$out[] = [
+				'id'           => $id,
+				'name'         => $post->post_title,
+				'sku'          => self::get_product_sku( $id ),
+				'categoryId'   => absint( $entry['categoryId'] ?? 0 ),
+				'categorySlug' => sanitize_title( (string) ( $entry['categorySlug'] ?? '' ) ),
+				'categoryName' => sanitize_text_field( (string) ( $entry['categoryName'] ?? '' ) ),
+			];
+		}
+		return $out;
+	}
+
 	private static function build_contact_payload( array $data ): array {
-		$tags_csv  = (string) Settings::get( 'agile_default_tags', 'web-lead' );
-		$tags      = array_filter( array_map( 'trim', explode( ',', $tags_csv ) ) );
-		if ( ! empty( $data['category_slug'] ) ) {
-			$tags[] = $data['category_slug'];
+		$tags_csv = (string) Settings::get( 'agile_default_tags', 'web-lead' );
+		$tags     = array_filter( array_map( 'trim', explode( ',', $tags_csv ) ) );
+		foreach ( (array) ( $data['category_slugs'] ?? [] ) as $slug ) {
+			if ( $slug ) {
+				$tags[] = $slug;
+			}
 		}
 		$tags = array_values( array_unique( $tags ) );
 
@@ -287,9 +379,23 @@ final class Ajax {
 		$lines[] = 'Lead recibido desde ' . ( $data['source_site'] ?? '' );
 		$lines[] = 'URL: ' . ( $data['source_url'] ?? '' );
 		$lines[] = '';
-		$lines[] = 'Categoría: ' . ( $data['category_name'] ?? '' );
-		$lines[] = 'Modelo: ' . ( $data['product_name'] ?? '' );
-		$lines[] = 'Aplicación: ' . ( $data['application'] ?? '' );
+		$lines[] = 'Máquinas de interés:';
+		if ( ! empty( $data['unsure'] ) ) {
+			$lines[] = '  - (Cliente no está seguro, pide ayuda para elegir)';
+		} elseif ( ! empty( $data['selected_products'] ) ) {
+			foreach ( $data['selected_products'] as $p ) {
+				$line = '  - ' . $p['name'];
+				if ( ! empty( $p['sku'] ) ) {
+					$line .= ' [SKU: ' . $p['sku'] . ']';
+				}
+				if ( ! empty( $p['categoryName'] ) ) {
+					$line .= ' (' . $p['categoryName'] . ')';
+				}
+				$lines[] = $line;
+			}
+		}
+		$lines[] = '';
+		$lines[] = 'Aplicaciones: ' . ( $data['application'] ?? '' );
 		$lines[] = 'Materiales: ' . implode( ', ', (array) ( $data['materials'] ?? [] ) );
 		$lines[] = 'Volumen mensual: ' . ( $data['volume'] ?? '' );
 		$lines[] = 'País: ' . ( $data['country'] ?? '' );

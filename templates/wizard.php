@@ -30,11 +30,9 @@ $started_ts     = time();
 		<input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'bqw_submit' ) ); ?>" />
 		<input type="hidden" name="bqw_started" value="<?php echo esc_attr( (string) $started_ts ); ?>" />
 		<input type="hidden" name="source_url" value="<?php echo esc_attr( home_url( add_query_arg( null, null ) ) ); ?>" />
-		<input type="hidden" name="category_id" id="bqw-category-id" />
-		<input type="hidden" name="category_slug" id="bqw-category-slug" />
-		<input type="hidden" name="category_name" id="bqw-category-name" />
-		<input type="hidden" name="product_id" id="bqw-product-id" />
-		<input type="hidden" name="product_name" id="bqw-product-name" />
+		<!-- Selected products are JSON-encoded into this hidden field on submit. -->
+		<input type="hidden" name="selected_products_json" id="bqw-selected-products-json" value="[]" />
+		<input type="hidden" name="unsure" id="bqw-unsure" value="0" />
 
 		<div class="bqw-honeypot" aria-hidden="true">
 			<label>Leave this empty: <input type="text" name="bqw_hp" tabindex="-1" autocomplete="off" /></label>
@@ -42,7 +40,14 @@ $started_ts     = time();
 
 		<!-- STEP 1 -->
 		<section class="bqw-step is-active" data-step="1" aria-labelledby="bqw-step1-title">
-			<h3 id="bqw-step1-title" class="bqw-step-title"><?php esc_html_e( 'Product of interest', 'bomedia-quote-wizard' ); ?></h3>
+			<h3 id="bqw-step1-title" class="bqw-step-title"><?php esc_html_e( 'Products of interest', 'bomedia-quote-wizard' ); ?></h3>
+
+			<!-- Persistent selection strip (visible on screens 1.1 and 1.2) -->
+			<div class="bqw-selection-strip" id="bqw-selection-strip" hidden>
+				<span class="bqw-selection-count" id="bqw-selection-count"></span>
+				<div class="bqw-selection-avatars" id="bqw-selection-avatars"></div>
+				<button type="button" class="bqw-selection-edit" id="bqw-selection-edit"><?php esc_html_e( 'Edit selection', 'bomedia-quote-wizard' ); ?></button>
+			</div>
 
 			<!-- Screen 1.1 — categories -->
 			<div class="bqw-screen bqw-screen-categories" id="bqw-step1-categories"></div>
@@ -54,6 +59,9 @@ $started_ts     = time();
 					<h4 class="bqw-products-title" id="bqw-products-title"></h4>
 				</div>
 				<div class="bqw-products-body" id="bqw-products-body"></div>
+				<div class="bqw-products-footer">
+					<button type="button" class="bqw-btn bqw-btn-secondary" id="bqw-add-from-other"><?php esc_html_e( 'Add machines from another category', 'bomedia-quote-wizard' ); ?></button>
+				</div>
 			</div>
 
 			<div class="bqw-actions">
@@ -62,21 +70,34 @@ $started_ts     = time();
 			</div>
 		</section>
 
+		<!-- Modal: edit current selection -->
+		<div class="bqw-modal" id="bqw-selection-modal" hidden role="dialog" aria-modal="true" aria-labelledby="bqw-selection-modal-title">
+			<div class="bqw-modal-backdrop" data-close="1"></div>
+			<div class="bqw-modal-card">
+				<header>
+					<h4 id="bqw-selection-modal-title"><?php esc_html_e( 'Your selected machines', 'bomedia-quote-wizard' ); ?></h4>
+					<button type="button" class="bqw-modal-close" data-close="1" aria-label="<?php esc_attr_e( 'Close', 'bomedia-quote-wizard' ); ?>">×</button>
+				</header>
+				<ul class="bqw-modal-list" id="bqw-selection-modal-list"></ul>
+			</div>
+		</div>
+
 		<!-- STEP 2 -->
 		<section class="bqw-step" data-step="2" aria-labelledby="bqw-step2-title" hidden>
 			<h3 id="bqw-step2-title" class="bqw-step-title"><?php esc_html_e( 'Your application', 'bomedia-quote-wizard' ); ?></h3>
 
 			<?php if ( ! empty( $bqw_config['enable_application'] ) ) : ?>
-				<fieldset class="bqw-fieldset">
-					<legend><?php esc_html_e( 'Application', 'bomedia-quote-wizard' ); ?></legend>
+				<fieldset class="bqw-fieldset" id="bqw-application-fieldset">
+					<legend><?php esc_html_e( 'Application (one or more)', 'bomedia-quote-wizard' ); ?></legend>
 					<div class="bqw-radio-cards" id="bqw-application">
 						<?php foreach ( $bqw_config['application_options'] as $opt ) : ?>
 							<label class="bqw-radio-card">
-								<input type="radio" name="application" value="<?php echo esc_attr( $opt ); ?>" />
+								<input type="checkbox" name="application[]" value="<?php echo esc_attr( $opt ); ?>" />
 								<span><?php echo esc_html( $opt ); ?></span>
 							</label>
 						<?php endforeach; ?>
 					</div>
+					<p class="bqw-field-error" id="bqw-application-error" hidden><?php esc_html_e( 'Please pick at least one application.', 'bomedia-quote-wizard' ); ?></p>
 				</fieldset>
 			<?php endif; ?>
 

@@ -52,15 +52,16 @@ final class Settings {
 
 	public static function default_wizard(): array {
 		return [
-			'wizard_categories'   => [],
-			'enable_application'  => 1,
-			'application_options' => "Textil\nPackaging\nIndustrial\nPromocional\nOtros",
-			'enable_materials'    => 1,
-			'materials_options'   => "Textil\nPVC\nMadera\nCristal\nMetal\nPapel\nCuero\nOtros",
-			'enable_volume'       => 1,
-			'volume_options'      => "<100\n100-500\n500-2000\n>2000",
-			'wizard_language'     => '',
-			'privacy_url'         => '',
+			'wizard_categories'    => [],
+			'products_by_category' => [],
+			'enable_application'   => 1,
+			'application_options'  => "Textil\nPackaging\nIndustrial\nPromocional\nOtros",
+			'enable_materials'     => 1,
+			'materials_options'    => "Textil\nPVC\nMadera\nCristal\nMetal\nPapel\nCuero\nOtros",
+			'enable_volume'        => 1,
+			'volume_options'       => "<100\n100-500\n500-2000\n>2000",
+			'wizard_language'      => '',
+			'privacy_url'          => '',
 		];
 	}
 
@@ -214,6 +215,24 @@ final class Settings {
 		$out['wizard_language']     = sanitize_text_field( $input['wizard_language'] ?? '' );
 		$out['privacy_url']         = esc_url_raw( $input['privacy_url'] ?? '' );
 
+		// Merge products_by_category, preserving entries for categories not posted
+		// (so unchecking a category does not erase its product filter config).
+		$existing_pbc  = (array) ( $current['products_by_category'] ?? [] );
+		$submitted_pbc = (array) ( $input['products_by_category'] ?? [] );
+		foreach ( $submitted_pbc as $term_id => $cfg ) {
+			$term_id = absint( $term_id );
+			if ( ! $term_id ) {
+				continue;
+			}
+			$mode = isset( $cfg['mode'] ) && 'all' === $cfg['mode'] ? 'all' : 'manual';
+			$ids  = array_values( array_unique( array_map( 'absint', (array) ( $cfg['ids'] ?? [] ) ) ) );
+			$existing_pbc[ $term_id ] = [
+				'mode' => $mode,
+				'ids'  => $ids,
+			];
+		}
+		$out['products_by_category'] = $existing_pbc;
+
 		return $out;
 	}
 
@@ -242,6 +261,24 @@ final class Settings {
 		if ( 'settings_page_' . self::PAGE_SLUG !== $hook ) {
 			return;
 		}
+		$inline_css = '
+			.bqw-cat-tree{max-height:380px;overflow:auto;border:1px solid #ccd0d4;background:#fff;padding:8px 12px;border-radius:4px;}
+			.bqw-cat-row{padding:3px 0;}
+			.bqw-cat-label{font-weight:600;}
+			.bqw-cat-count{color:#777;font-weight:400;}
+			.bqw-cat-acc{margin:4px 0 6px 24px;border:1px solid #e5e7eb;border-radius:4px;background:#f9fafb;}
+			.bqw-cat-acc summary{padding:6px 10px;cursor:pointer;color:#444;font-size:13px;}
+			.bqw-cat-acc[open] summary{border-bottom:1px solid #e5e7eb;}
+			.bqw-cat-acc-body{padding:8px 10px;}
+			.bqw-mode-toggle{display:block;font-weight:600;margin-bottom:6px;}
+			.bqw-cat-prod-list{margin:0;padding:0;list-style:none;max-height:200px;overflow:auto;}
+			.bqw-cat-prod-list li{padding:2px 0;font-size:13px;}
+			.bqw-cat-prod-list input:disabled + *{color:#888;}
+		';
+		wp_register_style( 'bqw-admin-inline', false, [], BQW_VERSION );
+		wp_enqueue_style( 'bqw-admin-inline' );
+		wp_add_inline_style( 'bqw-admin-inline', $inline_css );
+
 		wp_enqueue_script( 'bqw-admin', BQW_PLUGIN_URL . 'assets/js/admin.js', [], BQW_VERSION, true );
 		wp_localize_script(
 			'bqw-admin',
@@ -370,14 +407,7 @@ final class Settings {
 	private function render_form_wizard(): void {
 		$s         = self::get_wizard();
 		$selected  = array_map( 'intval', (array) ( $s['wizard_categories'] ?? [] ) );
-		$languages = [
-			''   => __( 'Auto (site language)', 'bomedia-quote-wizard' ),
-			'es' => 'Español',
-			'en' => 'English',
-			'fr' => 'Français',
-			'de' => 'Deutsch',
-			'pt' => 'Português',
-		];
+		$languages = self::supported_locales();
 		?>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'bqw_wizard_group' ); ?>
@@ -500,32 +530,114 @@ final class Settings {
 			)
 		);
 
-		echo '<div class="bqw-cat-tree" style="max-height:280px;overflow:auto;border:1px solid #ccd0d4;background:#fff;padding:8px 12px;border-radius:4px;">';
-		$this->walk_category_tree( $terms, 0, 0, $selected );
+		$pbc = (array) self::get( 'products_by_category', [] );
+
+		echo '<div class="bqw-cat-tree">';
+		$this->walk_category_tree( $terms, 0, 0, $selected, $pbc );
 		echo '</div>';
 	}
 
-	private function walk_category_tree( array $terms, int $parent, int $depth, array $selected ): void {
+	private function walk_category_tree( array $terms, int $parent, int $depth, array $selected, array $pbc ): void {
 		foreach ( $terms as $term ) {
 			if ( (int) $term->parent !== $parent ) {
 				continue;
 			}
-			$indent = str_repeat( '&nbsp;&nbsp;&nbsp;&nbsp;', $depth );
-			$id     = 'bqw_cat_' . (int) $term->term_id;
-			$checked = in_array( (int) $term->term_id, $selected, true );
+			$term_id    = (int) $term->term_id;
+			$indent_px  = $depth * 18;
+			$id         = 'bqw_cat_' . $term_id;
+			$is_checked = in_array( $term_id, $selected, true );
+
+			echo '<div class="bqw-cat-row" data-term-id="' . esc_attr( (string) $term_id ) . '" style="margin-left:' . esc_attr( (string) $indent_px ) . 'px;">';
 			printf(
-				'<div class="bqw-cat-row" style="padding:2px 0;">%s<label for="%s"><input type="checkbox" id="%s" name="%s[wizard_categories][]" value="%d" %s /> %s <span style="color:#777;">(%d)</span></label></div>',
-				$indent, // already escaped (nbsp).
+				'<label for="%s" class="bqw-cat-label"><input type="checkbox" id="%s" class="bqw-cat-cb" name="%s[wizard_categories][]" value="%d" %s /> %s <span class="bqw-cat-count">(%d)</span></label>',
 				esc_attr( $id ),
 				esc_attr( $id ),
 				esc_attr( self::OPT_WIZARD ),
-				(int) $term->term_id,
-				$checked ? 'checked="checked"' : '',
+				$term_id,
+				$is_checked ? 'checked="checked"' : '',
 				esc_html( $term->name ),
 				(int) $term->count
 			);
-			$this->walk_category_tree( $terms, (int) $term->term_id, $depth + 1, $selected );
+
+			$this->render_category_products_accordion( $term_id, $pbc[ $term_id ] ?? [], $is_checked );
+
+			echo '</div>';
+
+			$this->walk_category_tree( $terms, $term_id, $depth + 1, $selected, $pbc );
 		}
+	}
+
+	private function render_category_products_accordion( int $term_id, array $cfg, bool $cat_is_checked ): void {
+		$products = get_posts(
+			[
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'no_found_rows'  => true,
+				'tax_query'      => [
+					[
+						'taxonomy'         => 'product_cat',
+						'field'            => 'term_id',
+						'terms'            => $term_id,
+						'include_children' => false,
+					],
+				],
+			]
+		);
+		$total = count( $products );
+		if ( 0 === $total ) {
+			return;
+		}
+
+		$mode       = isset( $cfg['mode'] ) && 'manual' === $cfg['mode'] ? 'manual' : 'all';
+		$manual_ids = array_map( 'absint', (array) ( $cfg['ids'] ?? [] ) );
+		$active_ids = 'all' === $mode
+			? array_map( static function ( $p ) { return (int) $p->ID; }, $products )
+			: array_values( array_intersect( $manual_ids, array_map( static function ( $p ) { return (int) $p->ID; }, $products ) ) );
+		$shown      = count( $active_ids );
+
+		$opt    = self::OPT_WIZARD;
+		$style  = $cat_is_checked ? '' : 'display:none;';
+		$detail = sprintf(
+			/* translators: 1: number of selected products, 2: total products in category */
+			__( 'Products to expose (%1$d of %2$d)', 'bomedia-quote-wizard' ),
+			$shown,
+			$total
+		);
+		?>
+		<details class="bqw-cat-acc" style="<?php echo esc_attr( $style ); ?>">
+			<summary><?php echo esc_html( $detail ); ?></summary>
+			<div class="bqw-cat-acc-body">
+				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]" value="manual" />
+				<label class="bqw-mode-toggle">
+					<input type="checkbox" class="bqw-mode-cb"
+						name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]"
+						value="all" <?php checked( 'all' === $mode ); ?> />
+					<?php esc_html_e( 'Show all published products', 'bomedia-quote-wizard' ); ?>
+				</label>
+				<ul class="bqw-cat-prod-list">
+					<?php foreach ( $products as $product ) :
+						$pid     = (int) $product->ID;
+						$checked = 'all' === $mode || in_array( $pid, $manual_ids, true );
+						?>
+						<li>
+							<label>
+								<input type="checkbox"
+									class="bqw-prod-cb"
+									name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][ids][]"
+									value="<?php echo esc_attr( (string) $pid ); ?>"
+									<?php checked( $checked ); ?>
+									<?php disabled( 'all' === $mode ); ?> />
+								<?php echo esc_html( $product->post_title ); ?>
+							</label>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		</details>
+		<?php
 	}
 
 	/* ---------------------------------------------------------------------
@@ -579,6 +691,21 @@ final class Settings {
 		$enc = substr( $raw, 16 );
 		$dec = openssl_decrypt( $enc, 'aes-256-cbc', self::auth_key(), OPENSSL_RAW_DATA, $iv );
 		return false === $dec ? '' : $dec;
+	}
+
+	/**
+	 * Locales supported by the wizard. Keys are WP locale codes, values are
+	 * the human-readable label shown in the admin dropdown.
+	 */
+	public static function supported_locales(): array {
+		return [
+			''      => __( 'Auto (site language)', 'bomedia-quote-wizard' ),
+			'es_ES' => 'Español',
+			'en_US' => 'English',
+			'fr_FR' => 'Français',
+			'de_DE' => 'Deutsch',
+			'pt_PT' => 'Português',
+		];
 	}
 
 	private static function auth_key(): string {

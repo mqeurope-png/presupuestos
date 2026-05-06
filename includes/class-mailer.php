@@ -41,8 +41,21 @@ final class Mailer {
 		$lines[] = sprintf( '%s: %s', __( 'Phone', 'bomedia-quote-wizard' ), $lead['phone'] ?? '' );
 		$lines[] = sprintf( '%s: %s', __( 'Country', 'bomedia-quote-wizard' ), $lead['country'] ?? '' );
 		$lines[] = '';
-		$lines[] = sprintf( '%s: %s', __( 'Category', 'bomedia-quote-wizard' ), $lead['category_name'] ?? '' );
-		$lines[] = sprintf( '%s: %s', __( 'Product', 'bomedia-quote-wizard' ), $lead['product_name'] ?? '' );
+		$lines[] = __( 'Machines of interest:', 'bomedia-quote-wizard' );
+		if ( ! empty( $lead['unsure'] ) ) {
+			$lines[] = '  - ' . __( "Customer is not sure, asks for help.", 'bomedia-quote-wizard' );
+		} elseif ( ! empty( $lead['selected_products'] ) ) {
+			foreach ( $lead['selected_products'] as $p ) {
+				$line = '  - ' . $p['name'];
+				if ( ! empty( $p['sku'] ) ) {
+					$line .= ' [SKU: ' . $p['sku'] . ']';
+				}
+				if ( ! empty( $p['categoryName'] ) ) {
+					$line .= ' (' . $p['categoryName'] . ')';
+				}
+				$lines[] = $line;
+			}
+		}
 		$lines[] = sprintf( '%s: %s', __( 'Application', 'bomedia-quote-wizard' ), $lead['application'] ?? '' );
 		$lines[] = sprintf( '%s: %s', __( 'Materials', 'bomedia-quote-wizard' ), is_array( $lead['materials'] ?? null ) ? implode( ', ', $lead['materials'] ) : ( $lead['materials'] ?? '' ) );
 		$lines[] = sprintf( '%s: %s', __( 'Monthly volume', 'bomedia-quote-wizard' ), $lead['volume'] ?? '' );

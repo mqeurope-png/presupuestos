@@ -346,6 +346,189 @@
 	padding: 1rem 0;
 }
 
+/* Selection strip (step 1) */
+.bqw-selection-strip {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+	background: var(--bqw-bg-soft);
+	border: 1px solid var(--bqw-border);
+	border-radius: var(--bqw-radius);
+	padding: 0.5rem 0.75rem;
+	margin-bottom: 1rem;
+}
+.bqw-selection-count {
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+.bqw-selection-avatars {
+	display: flex;
+	flex-direction: row;
+	gap: -8px;
+}
+.bqw-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: #ddd center/cover no-repeat;
+	border: 2px solid var(--bqw-bg);
+	margin-left: -8px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.7rem;
+	font-weight: 700;
+	color: var(--bqw-muted);
+}
+.bqw-avatar:first-child { margin-left: 0; }
+.bqw-avatar-text { background: var(--bqw-bg-soft); }
+.bqw-avatar-more {
+	background: var(--bqw-primary);
+	color: #fff;
+}
+.bqw-selection-edit {
+	margin-left: auto;
+	background: transparent;
+	border: 0;
+	color: var(--bqw-primary);
+	cursor: pointer;
+	font: inherit;
+	font-weight: 600;
+	font-size: 0.85rem;
+	padding: 0.25rem 0.4rem;
+}
+.bqw-selection-edit:hover { text-decoration: underline; }
+
+/* Multi-select product cards: show checkmark badge when selected. */
+.bqw-product-card { position: relative; }
+.bqw-card-check {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--bqw-primary);
+	color: #fff;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 0.85rem;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.bqw-product-card.is-selected .bqw-card-check { display: inline-flex; }
+
+/* "Add machines from another category" footer */
+.bqw-products-footer {
+	margin-top: 1rem;
+	display: flex;
+	justify-content: center;
+}
+
+/* Selection modal */
+.bqw-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+.bqw-modal[hidden] { display: none; }
+.bqw-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.55);
+}
+.bqw-modal-card {
+	position: relative;
+	background: var(--bqw-bg);
+	border-radius: var(--bqw-radius);
+	max-width: 480px;
+	width: 100%;
+	max-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.bqw-modal-card header {
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid var(--bqw-border);
+	display: flex;
+	align-items: center;
+}
+.bqw-modal-card header h4 { margin: 0; font-size: 1rem; }
+.bqw-modal-close {
+	margin-left: auto;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: var(--bqw-muted);
+}
+.bqw-modal-list {
+	margin: 0;
+	padding: 0.5rem 0;
+	list-style: none;
+	overflow-y: auto;
+}
+.bqw-modal-empty {
+	padding: 1rem;
+	text-align: center;
+	color: var(--bqw-muted);
+}
+.bqw-modal-item {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.6rem 1rem;
+	border-bottom: 1px solid var(--bqw-border);
+}
+.bqw-modal-item:last-child { border-bottom: 0; }
+.bqw-modal-item img {
+	width: 40px;
+	height: 40px;
+	object-fit: cover;
+	border-radius: 4px;
+	background: var(--bqw-bg-soft);
+}
+.bqw-modal-item-info {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+.bqw-modal-item-info strong {
+	font-weight: 600;
+	font-size: 0.95rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.bqw-modal-item-cat {
+	color: var(--bqw-muted);
+	font-size: 0.8rem;
+}
+.bqw-modal-item-remove {
+	background: transparent;
+	border: 1px solid var(--bqw-border);
+	color: var(--bqw-error);
+	border-radius: 50%;
+	width: 28px;
+	height: 28px;
+	cursor: pointer;
+	font-size: 1rem;
+	line-height: 1;
+}
+.bqw-modal-item-remove:hover {
+	border-color: var(--bqw-error);
+	background: rgba(220, 38, 38, 0.08);
+}
+
 .bqw-thanks-inner {
 	text-align: center;
 	padding: 1rem 0;

@@ -1,6 +1,37 @@
-/* Bomedia Quote Wizard — admin AJAX helpers. */
+/* Bomedia Quote Wizard — admin helpers. */
 (function () {
 	'use strict';
+
+	// Hide/show per-category product accordion when the category checkbox toggles.
+	document.querySelectorAll('.bqw-cat-row').forEach(function (row) {
+		var cb = row.querySelector('.bqw-cat-cb');
+		var acc = row.querySelector('.bqw-cat-acc');
+		if (!cb || !acc) return;
+		cb.addEventListener('change', function () {
+			acc.style.display = cb.checked ? '' : 'none';
+			if (!cb.checked) acc.removeAttribute('open');
+		});
+	});
+
+	// "Show all published" toggle: lock/unlock the per-product checkboxes.
+	document.querySelectorAll('.bqw-cat-acc-body').forEach(function (body) {
+		var modeCb = body.querySelector('.bqw-mode-cb');
+		var prodCbs = body.querySelectorAll('.bqw-prod-cb');
+		if (!modeCb) return;
+		var apply = function () {
+			prodCbs.forEach(function (c) {
+				if (modeCb.checked) {
+					c.checked = true;
+					c.disabled = true;
+				} else {
+					c.disabled = false;
+				}
+			});
+		};
+		modeCb.addEventListener('change', apply);
+	});
+
+	// Test connection button.
 	var btn = document.getElementById('bqw-test-connection');
 	if (!btn) return;
 	var result = document.getElementById('bqw-test-result');

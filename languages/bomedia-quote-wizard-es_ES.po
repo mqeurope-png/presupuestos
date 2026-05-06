@@ -1,0 +1,378 @@
+# Bomedia Quote Wizard translation
+msgid ""
+msgstr ""
+"Project-Id-Version: Bomedia Quote Wizard 1.2.0\n"
+"PO-Revision-Date: 2026-05-06 00:00+0000\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: bomedia-quote-wizard\n"
+
+msgid "%s, our team will contact you shortly with a personalized quote."
+msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
+
+msgid "A valid email is required."
+msgstr "Se requiere un correo electrónico válido."
+
+msgid "Account email"
+msgstr "Email de la cuenta"
+
+msgid "Add machines from another category"
+msgstr "Añadir máquinas de otra categoría"
+
+msgid "AgileCRM"
+msgstr "AgileCRM"
+
+msgid "AgileCRM ID"
+msgstr "ID AgileCRM"
+
+msgid "AgileCRM contact"
+msgstr "Contacto AgileCRM"
+
+msgid "AgileCRM credentials are incomplete."
+msgstr "Las credenciales de AgileCRM están incompletas."
+
+msgid "AgileCRM is not configured."
+msgstr "AgileCRM no está configurado."
+
+msgid "All statuses"
+msgstr "Todos los estados"
+
+msgid "Application"
+msgstr "Aplicación"
+
+msgid "Application (one or more)"
+msgstr "Aplicación (una o varias)"
+
+msgid "Application step"
+msgstr "Paso de aplicación"
+
+msgid "Auto (site language)"
+msgstr "Auto (idioma del sitio)"
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "Back to home"
+msgstr "Volver al inicio"
+
+msgid "Bomedia Quote Wizard"
+msgstr "Bomedia Quote Wizard"
+
+msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
+msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. El plugin se ha desactivado."
+
+msgid "Choose a category"
+msgstr "Elige una categoría"
+
+msgid "Choose a model"
+msgstr "Elige un modelo"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Comma separated, e.g. web-lead, boprint"
+msgstr "Separadas por comas, ej. web-lead, boprint"
+
+msgid "Comma separated."
+msgstr "Separados por comas."
+
+msgid "Company"
+msgstr "Empresa"
+
+msgid "Company is required."
+msgstr "La empresa es obligatoria."
+
+msgid "Confirm"
+msgstr "Confirmar"
+
+msgid "Confirmation"
+msgstr "Confirmación"
+
+msgid "Connection OK"
+msgstr "Conexión OK"
+
+msgid "Connection failed: "
+msgstr "Conexión fallida: "
+
+msgid "Contact us"
+msgstr "Contáctanos"
+
+msgid "Country"
+msgstr "País"
+
+msgid "Customer is not sure, asks for help."
+msgstr "El cliente no está seguro, pide ayuda."
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Default tags"
+msgstr "Tags por defecto"
+
+msgid "Details"
+msgstr "Datos"
+
+msgid "Domain"
+msgstr "Dominio"
+
+msgid "Edit selection"
+msgstr "Editar selección"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Email subject"
+msgstr "Asunto del email"
+
+msgid "Enable"
+msgstr "Activar"
+
+msgid "Estimated monthly volume"
+msgstr "Volumen mensual estimado"
+
+msgid "File logging"
+msgstr "Registro a archivo"
+
+msgid "First name"
+msgstr "Nombre"
+
+msgid "Forbidden"
+msgstr "Prohibido"
+
+msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
+msgstr "He leído y acepto la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>"
+
+msgid "I have read and accept the privacy policy"
+msgstr "He leído y acepto la política de privacidad"
+
+msgid "I'm not sure"
+msgstr "No estoy seguro"
+
+msgid "I'm not sure, help me choose"
+msgstr "No estoy seguro, ayúdame a elegir"
+
+msgid "Last name"
+msgstr "Apellidos"
+
+msgid "Lead"
+msgstr "Lead"
+
+msgid "Lead data missing or corrupt."
+msgstr "Faltan datos del lead o están corruptos."
+
+msgid "Loading models…"
+msgstr "Cargando modelos…"
+
+msgid "Machines of interest"
+msgstr "Máquinas de interés"
+
+msgid "Machines of interest:"
+msgstr "Máquinas de interés:"
+
+msgid "Materials"
+msgstr "Materiales"
+
+msgid "Materials (multi-select)"
+msgstr "Materiales (selección múltiple)"
+
+msgid "Materials step"
+msgstr "Paso de materiales"
+
+msgid "Message (optional)"
+msgstr "Mensaje (opcional)"
+
+msgid "Message:"
+msgstr "Mensaje:"
+
+msgid "Missing category."
+msgstr "Falta la categoría."
+
+msgid "Model of"
+msgstr "Modelo de"
+
+msgid "Monthly volume"
+msgstr "Volumen mensual"
+
+msgid "Monthly volume step"
+msgstr "Paso de volumen mensual"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Name is required."
+msgstr "El nombre es obligatorio."
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "No machines available in this category. Please contact us directly."
+msgstr "No hay máquinas disponibles en esta categoría. Contáctanos directamente."
+
+msgid "No machines selected."
+msgstr "Ninguna máquina seleccionada."
+
+msgid "No product categories found."
+msgstr "No se encontraron categorías de producto."
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "One option per line."
+msgstr "Una opción por línea."
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Phone is required."
+msgstr "El teléfono es obligatorio."
+
+msgid "Pick the WooCommerce product categories to expose in the wizard. Subcategories are indented."
+msgstr "Selecciona las categorías de producto de WooCommerce que se mostrarán en el wizard. Las subcategorías aparecen indentadas."
+
+msgid "Placeholders: {nombre}, {empresa}, {producto}"
+msgstr "Placeholders: {nombre}, {empresa}, {producto}"
+
+msgid "Please enter a valid email."
+msgstr "Introduce un email válido."
+
+msgid "Please pick at least one application."
+msgstr "Selecciona al menos una aplicación."
+
+msgid "Please pick at least one machine."
+msgstr "Selecciona al menos una máquina."
+
+msgid "Please take a moment before submitting."
+msgstr "Tómate un momento antes de enviar."
+
+msgid "Privacy policy URL"
+msgstr "URL política de privacidad"
+
+msgid "Product"
+msgstr "Producto"
+
+msgid "Product categories"
+msgstr "Categorías de producto"
+
+msgid "Product of interest"
+msgstr "Producto de interés"
+
+msgid "Products of interest"
+msgstr "Productos de interés"
+
+msgid "Products to expose (%1$d of %2$d)"
+msgstr "Productos a mostrar (%1$d de %2$d)"
+
+msgid "Quote Lead"
+msgstr "Lead de presupuesto"
+
+msgid "Quote Leads"
+msgstr "Leads de presupuesto"
+
+msgid "Quote request wizard"
+msgstr "Asistente de solicitud de presupuesto"
+
+msgid "REST API Key"
+msgstr "Clave REST API"
+
+msgid "Recipient emails"
+msgstr "Emails destinatarios"
+
+msgid "Remove"
+msgstr "Quitar"
+
+msgid "Requested model:"
+msgstr "Modelo solicitado:"
+
+msgid "Retry send"
+msgstr "Reintentar envío"
+
+msgid "Save your changes before testing."
+msgstr "Guarda los cambios antes de probar."
+
+msgid "Security check failed."
+msgstr "Falló la comprobación de seguridad."
+
+msgid "Security check failed. Reload the page."
+msgstr "Falló la comprobación de seguridad. Recarga la página."
+
+msgid "Send request"
+msgstr "Enviar solicitud"
+
+msgid "Sending…"
+msgstr "Enviando…"
+
+msgid "Show all published products"
+msgstr "Mostrar todos los productos publicados"
+
+msgid "Solicitud presupuesto web"
+msgstr "Solicitud presupuesto web"
+
+msgid "Something went wrong. Please try again."
+msgstr "Algo ha fallado. Inténtalo de nuevo."
+
+msgid "Source URL"
+msgstr "URL de origen"
+
+msgid "Source site"
+msgstr "Sitio de origen"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
+msgstr "Almacenado cifrado con AUTH_KEY. Deja el valor enmascarado para conservar el actual."
+
+msgid "Summary"
+msgstr "Resumen"
+
+msgid "Test connection"
+msgstr "Probar conexión"
+
+msgid "Testing…"
+msgstr "Probando…"
+
+msgid "Thanks! We received your request."
+msgstr "¡Gracias! Hemos recibido tu solicitud."
+
+msgid "This field is required."
+msgstr "Este campo es obligatorio."
+
+msgid "Wizard"
+msgstr "Wizard"
+
+msgid "Wizard language"
+msgstr "Idioma del wizard"
+
+msgid "WooCommerce is not active. Activate it to pick categories."
+msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
+
+msgid "Write log file in uploads/bqw-logs/"
+msgstr "Escribir archivo de log en uploads/bqw-logs/"
+
+msgid "You must accept the privacy policy."
+msgstr "Debes aceptar la política de privacidad."
+
+msgid "You picked %d machines"
+msgstr "Has seleccionado %d máquinas"
+
+msgid "You picked 1 machine"
+msgstr "Has seleccionado 1 máquina"
+
+msgid "Your application"
+msgstr "Tu aplicación"
+
+msgid "Your details"
+msgstr "Tus datos"
+
+msgid "Your selected machines"
+msgstr "Máquinas seleccionadas"
+
+msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
+msgstr "ej. \"bomedia\" para bomedia.agilecrm.com"
+
+msgid "← Back to categories"
+msgstr "← Volver a categorías"
+

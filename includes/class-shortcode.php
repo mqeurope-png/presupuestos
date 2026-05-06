@@ -44,6 +44,8 @@ final class Shortcode {
 			'bomedia_quote_wizard'
 		);
 
+		$switched_locale = $this->maybe_switch_locale();
+
 		$forced_category_id = 0;
 		if ( ! empty( $atts['category'] ) ) {
 			$term = get_term_by( 'slug', sanitize_title( $atts['category'] ), 'product_cat' );
@@ -125,7 +127,31 @@ final class Shortcode {
 		ob_start();
 		$bqw_config = $wizard_cfg;
 		include $tpl;
-		return (string) ob_get_clean();
+		$out = (string) ob_get_clean();
+
+		if ( $switched_locale ) {
+			restore_previous_locale();
+		}
+
+		return $out;
+	}
+
+	private function maybe_switch_locale(): bool {
+		$forced = (string) Settings::get( 'wizard_language', '' );
+		if ( '' === $forced ) {
+			return false;
+		}
+		if ( ! function_exists( 'switch_to_locale' ) ) {
+			return false;
+		}
+		if ( $forced === get_locale() ) {
+			return false;
+		}
+		switch_to_locale( $forced );
+		// Reload our textdomain for the new locale.
+		unload_textdomain( 'bomedia-quote-wizard' );
+		load_plugin_textdomain( 'bomedia-quote-wizard', false, dirname( plugin_basename( BQW_PLUGIN_FILE ) ) . '/languages' );
+		return true;
 	}
 
 	private function fallback_contact_email(): string {
@@ -180,6 +206,12 @@ final class Shortcode {
 			'loading'       => __( 'Loading models…', 'bomedia-quote-wizard' ),
 			'noProducts'    => __( 'No machines available in this category. Please contact us directly.', 'bomedia-quote-wizard' ),
 			'contactUs'     => __( 'Contact us', 'bomedia-quote-wizard' ),
+			/* translators: %d: number of selected machines */
+			'selectedMany'  => __( 'You picked %d machines', 'bomedia-quote-wizard' ),
+			'selectedOne'   => __( 'You picked 1 machine', 'bomedia-quote-wizard' ),
+			'machinesOfInterest' => __( 'Machines of interest', 'bomedia-quote-wizard' ),
+			'noSelection'   => __( 'No machines selected.', 'bomedia-quote-wizard' ),
+			'remove'        => __( 'Remove', 'bomedia-quote-wizard' ),
 		];
 	}
 
