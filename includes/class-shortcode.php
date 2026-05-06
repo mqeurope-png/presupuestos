@@ -56,9 +56,10 @@ final class Shortcode {
 
 		$forced_product_id = absint( $atts['product_id'] );
 
+		// Order from settings is preserved (drag&drop in admin → DOM order → submit order).
 		$selected_cat_ids = array_map( 'intval', (array) Settings::get( 'wizard_categories', [] ) );
 		if ( $forced_category_id && ! in_array( $forced_category_id, $selected_cat_ids, true ) ) {
-			$selected_cat_ids[] = $forced_category_id;
+			array_unshift( $selected_cat_ids, $forced_category_id );
 		}
 
 		$categories = [];
@@ -101,6 +102,9 @@ final class Shortcode {
 			'volume_options'      => $this->lines_to_array( $settings['volume_options'] ?? '' ),
 			'privacy_url'         => $settings['privacy_url'] ?? '',
 			'fallback_email'      => $this->fallback_contact_email(),
+			'enable_captcha'      => ! empty( $settings['enable_captcha'] ),
+			'enable_email_optin'  => ! empty( $settings['enable_email_optin'] ),
+			'email_optin_label'   => $settings['email_optin_label'] ?? '',
 		];
 
 		$this->assets_needed = true;

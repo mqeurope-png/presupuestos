@@ -31,6 +31,38 @@
 		modeCb.addEventListener('change', apply);
 	});
 
+	// Generic HTML5 drag-and-drop reorder for [data-bqw-sortable] containers.
+	document.querySelectorAll('[data-bqw-sortable]').forEach(function (list) {
+		var dragged = null;
+		list.querySelectorAll('[draggable="true"]').forEach(function (item) {
+			item.addEventListener('dragstart', function (e) {
+				dragged = item;
+				item.classList.add('bqw-dragging');
+				if (e.dataTransfer) {
+					e.dataTransfer.effectAllowed = 'move';
+					try { e.dataTransfer.setData('text/plain', ''); } catch (err) {}
+				}
+			});
+			item.addEventListener('dragend', function () {
+				item.classList.remove('bqw-dragging');
+				dragged = null;
+			});
+			item.addEventListener('dragover', function (e) {
+				if (!dragged || dragged === item) return;
+				e.preventDefault();
+				if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+				var rect = item.getBoundingClientRect();
+				var midpoint = rect.top + rect.height / 2;
+				if (e.clientY < midpoint) {
+					list.insertBefore(dragged, item);
+				} else {
+					list.insertBefore(dragged, item.nextSibling);
+				}
+			});
+			item.addEventListener('drop', function (e) { e.preventDefault(); });
+		});
+	});
+
 	// Test connection button.
 	var btn = document.getElementById('bqw-test-connection');
 	if (!btn) return;

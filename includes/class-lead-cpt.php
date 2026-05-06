@@ -88,6 +88,7 @@ final class Lead_CPT {
 		update_post_meta( $post_id, '_bqw_product_name', $data['product_name'] ?? '' );
 		update_post_meta( $post_id, '_bqw_product_ids', implode( ',', (array) ( $data['product_ids'] ?? [] ) ) );
 		update_post_meta( $post_id, '_bqw_category_names', $data['category_name'] ?? '' );
+		update_post_meta( $post_id, '_bqw_email_optin', ! empty( $data['email_optin'] ) ? 'yes' : 'no' );
 		update_post_meta( $post_id, '_bqw_ip', $data['ip'] ?? '' );
 		update_post_meta( $post_id, '_bqw_user_agent', $data['user_agent'] ?? '' );
 		if ( $contact_id ) {

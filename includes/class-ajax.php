@@ -49,8 +49,8 @@ final class Ajax {
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => 100,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
+			// menu_order respects drag-reorder in WC's product list; title is tiebreaker.
+			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
 			'no_found_rows'  => true,
 			'tax_query'      => [
 				[
@@ -159,6 +159,16 @@ final class Ajax {
 			wp_send_json_error( [ 'message' => __( 'Please take a moment before submitting.', 'bomedia-quote-wizard' ) ], 400 );
 		}
 
+		// Math captcha.
+		if ( Captcha::is_enabled() ) {
+			$ans   = $_POST['bqw_captcha_answer'] ?? '';
+			$tok   = isset( $_POST['bqw_captcha_token'] ) ? (string) wp_unslash( $_POST['bqw_captcha_token'] ) : '';
+			$ts    = isset( $_POST['bqw_captcha_ts'] ) ? absint( $_POST['bqw_captcha_ts'] ) : 0;
+			if ( ! Captcha::verify( $ans, $tok, $ts ) ) {
+				wp_send_json_error( [ 'message' => __( 'The verification answer is incorrect. Please try again.', 'bomedia-quote-wizard' ) ], 400 );
+			}
+		}
+
 		$data = $this->collect_and_validate();
 		if ( is_wp_error( $data ) ) {
 			wp_send_json_error( [ 'message' => $data->get_error_message() ], 400 );
@@ -221,8 +231,9 @@ final class Ajax {
 		$email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 		$phone    = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 		$country  = sanitize_text_field( wp_unslash( $_POST['country'] ?? '' ) );
-		$message  = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
-		$privacy  = ! empty( $_POST['privacy'] );
+		$message      = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
+		$privacy      = ! empty( $_POST['privacy'] );
+		$email_optin  = ! empty( $_POST['email_optin'] );
 
 		$unsure  = ! empty( $_POST['unsure'] );
 		$json    = wp_unslash( $_POST['selected_products_json'] ?? '[]' );
@@ -308,6 +319,7 @@ final class Ajax {
 			'applications'      => $applications,
 			'materials'         => $materials,
 			'volume'            => $volume,
+			'email_optin'       => $email_optin,
 			'source_url'        => esc_url_raw( wp_unslash( $_POST['source_url'] ?? home_url( add_query_arg( null, null ) ) ) ),
 			'source_site'       => wp_parse_url( home_url(), PHP_URL_HOST ),
 			'ip'                => self::client_ip(),
@@ -350,6 +362,9 @@ final class Ajax {
 				$tags[] = $slug;
 			}
 		}
+		if ( ! empty( $data['email_optin'] ) ) {
+			$tags[] = 'marketing-optin';
+		}
 		$tags = array_values( array_unique( $tags ) );
 
 		$properties = [
@@ -365,6 +380,7 @@ final class Ajax {
 			[ 'type' => 'CUSTOM', 'name' => 'Model_Interest',  'value' => $data['product_name'] ],
 			[ 'type' => 'CUSTOM', 'name' => 'Source_URL',      'value' => $data['source_url'] ],
 			[ 'type' => 'CUSTOM', 'name' => 'Source_Site',     'value' => $data['source_site'] ],
+			[ 'type' => 'CUSTOM', 'name' => 'Marketing_Optin', 'value' => ! empty( $data['email_optin'] ) ? 'yes' : 'no' ],
 		];
 
 		return [

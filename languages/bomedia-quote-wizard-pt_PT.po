@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.2.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.3.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -64,6 +64,12 @@ msgstr ""
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr ""
 
+msgid "Bot verification"
+msgstr ""
+
+msgid "Checkbox label"
+msgstr ""
+
 msgid "Choose a category"
 msgstr "Escolha uma categoria"
 
@@ -118,6 +124,12 @@ msgstr "Dados"
 msgid "Domain"
 msgstr ""
 
+msgid "Drag rows to reorder. Checked categories show first; the order here is the order shown in the wizard."
+msgstr ""
+
+msgid "Drag the dotted handles to reorder products in the wizard (manual mode only)."
+msgstr ""
+
 msgid "Edit selection"
 msgstr "Editar seleção"
 
@@ -141,6 +153,9 @@ msgstr "Nome"
 
 msgid "Forbidden"
 msgstr ""
+
+msgid "Helps us avoid spam."
+msgstr "Ajuda-nos a evitar spam."
 
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr "Li e aceito a <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidade</a>"
@@ -170,6 +185,9 @@ msgid "Machines of interest"
 msgstr "Máquinas de interesse"
 
 msgid "Machines of interest:"
+msgstr ""
+
+msgid "Marketing opt-in"
 msgstr ""
 
 msgid "Materials"
@@ -215,6 +233,9 @@ msgid "No machines selected."
 msgstr "Nenhuma máquina selecionada."
 
 msgid "No product categories found."
+msgstr ""
+
+msgid "No third-party keys needed. Combined with the existing honeypot and minimum-fill-time guards, blocks the vast majority of bots."
 msgstr ""
 
 msgid "Notifications"
@@ -265,6 +286,9 @@ msgstr "Produtos de interesse"
 msgid "Products to expose (%1$d of %2$d)"
 msgstr ""
 
+msgid "Quick check:"
+msgstr "Verificação rápida:"
+
 msgid "Quote Lead"
 msgstr ""
 
@@ -292,6 +316,9 @@ msgstr ""
 msgid "Save your changes before testing."
 msgstr ""
 
+msgid "Security & marketing"
+msgstr ""
+
 msgid "Security check failed."
 msgstr ""
 
@@ -303,6 +330,12 @@ msgstr "Enviar pedido"
 
 msgid "Sending…"
 msgstr "A enviar…"
+
+msgid "Show a built-in math challenge (\"3 + 5 = ?\") on the confirmation step."
+msgstr ""
+
+msgid "Show a marketing opt-in checkbox in the contact step."
+msgstr ""
 
 msgid "Show all published products"
 msgstr ""
@@ -337,8 +370,14 @@ msgstr ""
 msgid "Thanks! We received your request."
 msgstr "Obrigado! Recebemos o seu pedido."
 
+msgid "The verification answer is incorrect. Please try again."
+msgstr "A resposta de verificação está incorreta. Tente novamente."
+
 msgid "This field is required."
 msgstr "Este campo é obrigatório."
+
+msgid "When checked, the lead is tagged \"marketing-optin\" in AgileCRM and the custom field Marketing_Optin is set to \"yes\"."
+msgstr ""
 
 msgid "Wizard"
 msgstr ""

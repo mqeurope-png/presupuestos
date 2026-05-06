@@ -13,6 +13,10 @@ defined( 'ABSPATH' ) || exit;
 /** @var array $bqw_config */
 $forced_product = $bqw_config['forced_product'] ?? null;
 $started_ts     = time();
+$captcha_on     = ! empty( $bqw_config['enable_captcha'] );
+$captcha        = $captcha_on ? \Bomedia\QuoteWizard\Captcha::generate_challenge() : null;
+$optin_on       = ! empty( $bqw_config['enable_email_optin'] );
+$optin_label    = (string) ( $bqw_config['email_optin_label'] ?? '' );
 ?>
 <div class="bqw-wizard" id="bqw-wizard" data-started="<?php echo esc_attr( (string) $started_ts ); ?>" role="region" aria-label="<?php esc_attr_e( 'Quote request wizard', 'bomedia-quote-wizard' ); ?>">
 
@@ -200,6 +204,15 @@ $started_ts     = time();
 				</label>
 			</div>
 
+			<?php if ( $optin_on ) : ?>
+				<div class="bqw-field bqw-field-check bqw-field-optin">
+					<label>
+						<input type="checkbox" id="bqw-email-optin" name="email_optin" value="1" />
+						<?php echo esc_html( $optin_label ); ?>
+					</label>
+				</div>
+			<?php endif; ?>
+
 			<div class="bqw-actions">
 				<button type="button" class="bqw-btn bqw-btn-secondary" data-prev="2"><?php esc_html_e( 'Back', 'bomedia-quote-wizard' ); ?></button>
 				<button type="button" class="bqw-btn bqw-btn-primary" data-next="4"><?php esc_html_e( 'Next', 'bomedia-quote-wizard' ); ?></button>
@@ -210,6 +223,20 @@ $started_ts     = time();
 		<section class="bqw-step" data-step="4" aria-labelledby="bqw-step4-title" hidden>
 			<h3 id="bqw-step4-title" class="bqw-step-title"><?php esc_html_e( 'Confirmation', 'bomedia-quote-wizard' ); ?></h3>
 			<div class="bqw-summary" id="bqw-summary"></div>
+
+			<?php if ( $captcha_on && $captcha ) : ?>
+				<div class="bqw-captcha bqw-field" id="bqw-captcha">
+					<label for="bqw-captcha-answer">
+						<?php esc_html_e( 'Quick check:', 'bomedia-quote-wizard' ); ?>
+						<strong><?php echo esc_html( $captcha['question'] ); ?> = ?</strong>
+					</label>
+					<input type="number" id="bqw-captcha-answer" name="bqw_captcha_answer" inputmode="numeric" required />
+					<input type="hidden" name="bqw_captcha_token" value="<?php echo esc_attr( $captcha['token'] ); ?>" />
+					<input type="hidden" name="bqw_captcha_ts" value="<?php echo esc_attr( (string) $captcha['ts'] ); ?>" />
+					<p class="bqw-captcha-note"><?php esc_html_e( 'Helps us avoid spam.', 'bomedia-quote-wizard' ); ?></p>
+				</div>
+			<?php endif; ?>
+
 			<div class="bqw-actions">
 				<button type="button" class="bqw-btn bqw-btn-secondary" data-prev="3"><?php esc_html_e( 'Back', 'bomedia-quote-wizard' ); ?></button>
 				<button type="submit" class="bqw-btn bqw-btn-primary" id="bqw-submit">
