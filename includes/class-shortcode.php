@@ -287,6 +287,7 @@ final class Shortcode {
 			'noMatches'     => __( "Your case is specific. Let's talk directly.", 'bomedia-quote-wizard' ),
 			'format'        => __( 'Format', 'bomedia-quote-wizard' ),
 			'budget'        => __( 'Budget', 'bomedia-quote-wizard' ),
+			'aiFailed'      => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
 		];
 	}
 

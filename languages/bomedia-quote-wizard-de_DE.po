@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.4.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.5.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -14,6 +14,12 @@ msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr ""
 
 msgid "A valid email is required."
+msgstr ""
+
+msgid "AI Recommendations (OpenAI)"
+msgstr ""
+
+msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr ""
 
 msgid "Account email"
@@ -58,13 +64,7 @@ msgstr "Anwendung (eine oder mehrere)"
 msgid "Application step"
 msgstr ""
 
-msgid "Application:"
-msgstr ""
-
 msgid "Approximate budget? (optional)"
-msgstr ""
-
-msgid "Attribute mapping (Woo product attribute slugs)"
 msgstr ""
 
 msgid "Auto (site language)"
@@ -100,10 +100,13 @@ msgstr ""
 msgid "Budget (matchmaker)"
 msgstr ""
 
-msgid "Budget bucket:"
+msgid "Budget options"
 msgstr ""
 
-msgid "Budget options"
+msgid "Bulk AI notes"
+msgstr ""
+
+msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
 msgstr ""
 
 msgid "Captcha provider"
@@ -154,10 +157,16 @@ msgstr "Kontaktieren Sie uns"
 msgid "Continue"
 msgstr ""
 
+msgid "Could not parse the JSON file."
+msgstr ""
+
 msgid "Country"
 msgstr "Land"
 
 msgid "Customer is not sure, asks for help."
+msgstr ""
+
+msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr ""
 
 msgid "Date"
@@ -196,6 +205,9 @@ msgstr ""
 msgid "Enable matchmaker"
 msgstr ""
 
+msgid "Estimated cost this month:"
+msgstr ""
+
 msgid "Estimated monthly volume"
 msgstr "Geschätztes monatliches Volumen"
 
@@ -203,6 +215,9 @@ msgid "Estimated monthly volume?"
 msgstr ""
 
 msgid "Expand"
+msgstr ""
+
+msgid "Export JSON"
 msgstr ""
 
 msgid "File logging"
@@ -223,13 +238,13 @@ msgstr ""
 msgid "Format options"
 msgstr ""
 
-msgid "Format:"
-msgstr ""
-
 msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr ""
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
+msgstr ""
+
+msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
 msgstr ""
 
 msgid "Help me choose"
@@ -256,6 +271,12 @@ msgstr "Ich bin nicht sicher"
 msgid "I'm not sure, help me choose"
 msgstr "Ich bin nicht sicher, hilf mir zu wählen"
 
+msgid "Import JSON"
+msgstr ""
+
+msgid "Last call:"
+msgstr ""
+
 msgid "Last name"
 msgstr "Nachname"
 
@@ -280,6 +301,9 @@ msgstr ""
 msgid "Matches at"
 msgstr ""
 
+msgid "Matchmaker AI internal notes"
+msgstr ""
+
 msgid "Matchmaker mode"
 msgstr ""
 
@@ -292,13 +316,10 @@ msgstr "Materialien (Mehrfachauswahl)"
 msgid "Materials step"
 msgstr ""
 
-msgid "Materials:"
-msgstr ""
-
 msgid "Math (no setup)"
 msgstr ""
 
-msgid "Max format:"
+msgid "Max calls per day"
 msgstr ""
 
 msgid "Maximum piece size?"
@@ -314,6 +335,9 @@ msgid "Microcopy between steps"
 msgstr ""
 
 msgid "Missing category."
+msgstr ""
+
+msgid "Model"
 msgstr ""
 
 msgid "Model of"
@@ -355,6 +379,9 @@ msgstr ""
 msgid "No published products in this category."
 msgstr ""
 
+msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
+msgstr ""
+
 msgid "Notifications"
 msgstr ""
 
@@ -371,6 +398,27 @@ msgid "One option per line."
 msgstr ""
 
 msgid "One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience"
+msgstr ""
+
+msgid "OpenAI API key"
+msgstr ""
+
+msgid "OpenAI API key is missing."
+msgstr ""
+
+msgid "OpenAI OK"
+msgstr ""
+
+msgid "OpenAI rate limit reached (429). Try again later."
+msgstr ""
+
+msgid "OpenAI rejected the API key (401)."
+msgstr ""
+
+msgid "OpenAI returned an invalid response."
+msgstr ""
+
+msgid "OpenAI returned malformed data."
 msgstr ""
 
 msgid "Option images"
@@ -457,10 +505,10 @@ msgstr "Angefragtes Modell:"
 msgid "Retry send"
 msgstr ""
 
-msgid "Save your changes before testing."
+msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr ""
 
-msgid "Scoring weights (percent)"
+msgid "Save your changes before testing."
 msgstr ""
 
 msgid "Search categories"
@@ -490,6 +538,9 @@ msgstr ""
 msgid "Send request"
 msgstr "Anfrage senden"
 
+msgid "Send the customer's answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA."
+msgstr ""
+
 msgid "Sending…"
 msgstr "Wird gesendet…"
 
@@ -509,9 +560,6 @@ msgid "Show microcopy"
 msgstr ""
 
 msgid "Site key"
-msgstr ""
-
-msgid "Slug of the WooCommerce attribute (e.g. pa_aplicacion). The matchmaker compares each product's attribute terms against the user picks."
 msgstr ""
 
 msgid "Solicitud presupuesto web"
@@ -535,11 +583,17 @@ msgstr ""
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr ""
 
+msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+msgstr ""
+
 msgid "Subtitle"
 msgstr ""
 
 msgid "Summary"
 msgstr "Zusammenfassung"
+
+msgid "Test API connection"
+msgstr ""
 
 msgid "Test connection"
 msgstr ""
@@ -577,7 +631,16 @@ msgstr ""
 msgid "Turnstile verification failed."
 msgstr ""
 
-msgid "Volume:"
+msgid "Usage today"
+msgstr ""
+
+msgid "Use AI for recommendations"
+msgstr ""
+
+msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr ""
+
+msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr ""
 
 msgid "What do you want to produce?"
@@ -622,13 +685,13 @@ msgstr "Deine ausgewählten Maschinen"
 msgid "Your submission looks suspicious. Try again."
 msgstr ""
 
-msgid "covers %s"
+msgid "calls today"
 msgstr ""
 
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
 msgstr ""
 
-msgid "fits %s monthly volume"
+msgid "e.g. ideal for textile, EU stock, best for SMB, avoid >2000 prints/month"
 msgstr ""
 
 msgid "hCaptcha"
@@ -655,13 +718,10 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-msgid "supports %s"
-msgstr ""
-
 msgid "v3 score threshold (0.0–1.0):"
 msgstr ""
 
-msgid "works with %s"
+msgid "~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive."
 msgstr ""
 
 msgid "← Back to categories"

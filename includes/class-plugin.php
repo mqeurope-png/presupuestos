@@ -46,6 +46,7 @@ final class Plugin {
 
 		Lead_CPT::instance()->register();
 		Settings::instance()->register();
+		Product_Meta::instance()->register();
 		Shortcode::instance()->register();
 		Ajax::instance()->register();
 	}

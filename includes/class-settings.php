@@ -34,6 +34,9 @@ final class Settings {
 		add_action( 'admin_menu', [ $this, 'add_menu' ] );
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'wp_ajax_bqw_test_connection', [ $this, 'ajax_test_connection' ] );
+		add_action( 'wp_ajax_bqw_test_openai', [ $this, 'ajax_test_openai' ] );
+		add_action( 'admin_post_bqw_export_ai_notes', [ $this, 'export_ai_notes' ] );
+		add_action( 'admin_post_bqw_import_ai_notes', [ $this, 'import_ai_notes' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin' ] );
 	}
 
@@ -85,15 +88,13 @@ final class Settings {
 			'enable_matchmaker'     => 1,
 			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
 			'matchmaker_budget_options'  => "Hasta 5.000 €\n5.000–15.000 €\n15.000–40.000 €\nMás de 40.000 €",
-			'matchmaker_attr_application' => '',
-			'matchmaker_attr_materials'   => '',
-			'matchmaker_attr_volume'      => '',
-			'matchmaker_attr_format'      => '',
-			'matchmaker_attr_budget'      => '',
-			'matchmaker_w_application'    => 40,
-			'matchmaker_w_materials'      => 30,
-			'matchmaker_w_volume'         => 20,
-			'matchmaker_w_format'         => 10,
+
+			// AI Recommendations (replaces manual scoring in v1.5).
+			'enable_ai_matchmaker'  => 1,
+			'openai_api_key'        => '',
+			'openai_model'          => 'gpt-4o-mini',
+			'openai_daily_cap'      => 200,
+
 			'option_images'         => [],
 		];
 	}
@@ -311,15 +312,19 @@ final class Settings {
 		$out['enable_matchmaker']           = ! empty( $input['enable_matchmaker'] ) ? 1 : 0;
 		$out['matchmaker_format_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_format_options'] ?? '' ) );
 		$out['matchmaker_budget_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_budget_options'] ?? '' ) );
-		$out['matchmaker_attr_application'] = sanitize_text_field( $input['matchmaker_attr_application'] ?? '' );
-		$out['matchmaker_attr_materials']   = sanitize_text_field( $input['matchmaker_attr_materials'] ?? '' );
-		$out['matchmaker_attr_volume']      = sanitize_text_field( $input['matchmaker_attr_volume'] ?? '' );
-		$out['matchmaker_attr_format']      = sanitize_text_field( $input['matchmaker_attr_format'] ?? '' );
-		$out['matchmaker_attr_budget']      = sanitize_text_field( $input['matchmaker_attr_budget'] ?? '' );
-		$out['matchmaker_w_application']    = max( 0, min( 100, (int) ( $input['matchmaker_w_application'] ?? 40 ) ) );
-		$out['matchmaker_w_materials']      = max( 0, min( 100, (int) ( $input['matchmaker_w_materials'] ?? 30 ) ) );
-		$out['matchmaker_w_volume']         = max( 0, min( 100, (int) ( $input['matchmaker_w_volume'] ?? 20 ) ) );
-		$out['matchmaker_w_format']         = max( 0, min( 100, (int) ( $input['matchmaker_w_format'] ?? 10 ) ) );
+
+		// AI matchmaker.
+		$out['enable_ai_matchmaker'] = ! empty( $input['enable_ai_matchmaker'] ) ? 1 : 0;
+		$out['openai_model']         = array_key_exists( $input['openai_model'] ?? '', OpenAI_Client::models_list() )
+			? $input['openai_model']
+			: 'gpt-4o-mini';
+		$out['openai_daily_cap']     = max( 0, (int) ( $input['openai_daily_cap'] ?? 200 ) );
+		if ( isset( $input['openai_api_key'] ) ) {
+			$nv = trim( (string) $input['openai_api_key'] );
+			if ( '' !== $nv && '********' !== $nv ) {
+				$out['openai_api_key'] = self::encrypt( $nv );
+			}
+		}
 
 		// Option images: map of "context|optionLabel" => attachment ID.
 		$option_images = [];
@@ -483,6 +488,24 @@ final class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Bomedia Quote Wizard', 'bomedia-quote-wizard' ); ?></h1>
+			<?php
+			if ( isset( $_GET['bqw_imported'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$u = (int) $_GET['bqw_imported'];
+				$m = isset( $_GET['bqw_unmatched'] ) ? (int) $_GET['bqw_unmatched'] : 0;
+				printf(
+					'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+					esc_html( sprintf(
+						/* translators: 1: updated count, 2: unmatched count */
+						__( 'AI notes import: %1$d products updated, %2$d slugs not found.', 'bomedia-quote-wizard' ),
+						$u,
+						$m
+					) )
+				);
+			}
+			if ( isset( $_GET['bqw_import_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html__( 'Could not parse the JSON file.', 'bomedia-quote-wizard' ) );
+			}
+			?>
 			<h2 class="nav-tab-wrapper">
 				<?php foreach ( $tabs as $slug => $label ) : ?>
 					<a href="<?php echo esc_url( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => $slug ], admin_url( 'options-general.php' ) ) ); ?>"
@@ -683,24 +706,101 @@ final class Settings {
 					<th scope="row"><label><?php esc_html_e( 'Budget options', 'bomedia-quote-wizard' ); ?></label></th>
 					<td><textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_budget_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_budget_options'] ); ?></textarea></td>
 				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'AI Recommendations (OpenAI)', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Attribute mapping (Woo product attribute slugs)', 'bomedia-quote-wizard' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Use AI for recommendations', 'bomedia-quote-wizard' ); ?></th>
 					<td>
-						<p><label><?php esc_html_e( 'Application:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_application]" value="<?php echo esc_attr( $s['matchmaker_attr_application'] ); ?>" placeholder="pa_aplicacion" /></label></p>
-						<p><label><?php esc_html_e( 'Materials:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_materials]" value="<?php echo esc_attr( $s['matchmaker_attr_materials'] ); ?>" placeholder="pa_materiales" /></label></p>
-						<p><label><?php esc_html_e( 'Volume:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_volume]" value="<?php echo esc_attr( $s['matchmaker_attr_volume'] ); ?>" placeholder="pa_volumen" /></label></p>
-						<p><label><?php esc_html_e( 'Max format:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_format]" value="<?php echo esc_attr( $s['matchmaker_attr_format'] ); ?>" placeholder="pa_formato" /></label></p>
-						<p><label><?php esc_html_e( 'Budget bucket:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_budget]" value="<?php echo esc_attr( $s['matchmaker_attr_budget'] ); ?>" placeholder="pa_precio" /></label></p>
-						<p class="description"><?php esc_html_e( 'Slug of the WooCommerce attribute (e.g. pa_aplicacion). The matchmaker compares each product\'s attribute terms against the user picks.', 'bomedia-quote-wizard' ); ?></p>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_ai_matchmaker]" value="1" <?php checked( ! empty( $s['enable_ai_matchmaker'] ) ); ?> /> <?php esc_html_e( 'Send the customer\'s answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA.', 'bomedia-quote-wizard' ); ?></label>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Scoring weights (percent)', 'bomedia-quote-wizard' ); ?></th>
+					<th scope="row"><label><?php esc_html_e( 'OpenAI API key', 'bomedia-quote-wizard' ); ?></label></th>
 					<td>
-						<p><label><?php esc_html_e( 'Application:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_application]" value="<?php echo esc_attr( (string) $s['matchmaker_w_application'] ); ?>" /></label></p>
-						<p><label><?php esc_html_e( 'Materials:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_materials]" value="<?php echo esc_attr( (string) $s['matchmaker_w_materials'] ); ?>" /></label></p>
-						<p><label><?php esc_html_e( 'Volume:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_volume]" value="<?php echo esc_attr( (string) $s['matchmaker_w_volume'] ); ?>" /></label></p>
-						<p><label><?php esc_html_e( 'Format:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_format]" value="<?php echo esc_attr( (string) $s['matchmaker_w_format'] ); ?>" /></label></p>
+						<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[openai_api_key]"
+							value="<?php echo ! empty( $s['openai_api_key'] ) ? '********' : ''; ?>" autocomplete="new-password" />
+						<p class="description"><?php
+							/* translators: %s: URL */
+							printf( wp_kses( __( 'Stored encrypted with AUTH_KEY. Need a key? Create one at <a href="%s" target="_blank" rel="noopener">platform.openai.com/api-keys</a>.', 'bomedia-quote-wizard' ), [ 'a' => [ 'href' => [], 'target' => [], 'rel' => [] ] ] ), 'https://platform.openai.com/api-keys' );
+						?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Model', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<select name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[openai_model]">
+							<?php foreach ( OpenAI_Client::models_list() as $m => $label ) : ?>
+								<option value="<?php echo esc_attr( $m ); ?>" <?php selected( $s['openai_model'] ?? 'gpt-4o-mini', $m ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<p class="description"><?php esc_html_e( '~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Max calls per day', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="number" min="0" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[openai_daily_cap]" value="<?php echo esc_attr( (string) ( $s['openai_daily_cap'] ?? 200 ) ); ?>" />
+						<p class="description"><?php esc_html_e( 'Hard cap to avoid surprise bills. Hit at midnight UTC.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Test API connection', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<button type="button" class="button" id="bqw-openai-test"><?php esc_html_e( 'Test API connection', 'bomedia-quote-wizard' ); ?></button>
+						<span id="bqw-openai-test-result" style="margin-left:10px;"></span>
+						<p class="description"><?php esc_html_e( 'Save changes first. Sends a 5-token ping to OpenAI.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Usage today', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<?php
+						$calls = OpenAI_Client::calls_today();
+						$cap   = OpenAI_Client::quota_limit();
+						$cost  = OpenAI_Client::month_cost();
+						$last  = OpenAI_Client::last_call_meta();
+						?>
+						<p style="margin:0;">
+							<strong><?php echo esc_html( (string) $calls ); ?></strong> / <?php echo esc_html( (string) $cap ); ?>
+							<?php esc_html_e( 'calls today', 'bomedia-quote-wizard' ); ?>
+							·
+							<?php esc_html_e( 'Estimated cost this month:', 'bomedia-quote-wizard' ); ?>
+							<strong>$<?php echo esc_html( number_format( $cost, 4 ) ); ?></strong>
+						</p>
+						<?php if ( ! empty( $last['ts'] ) ) : ?>
+							<p style="margin:6px 0 0;color:#555;font-size:12px;">
+								<?php esc_html_e( 'Last call:', 'bomedia-quote-wizard' ); ?> <?php echo esc_html( $last['ts'] ); ?> UTC
+								<?php if ( ! empty( $last['error'] ) ) : ?>
+									— <span style="color:#dc2626;"><?php echo esc_html( $last['error'] ); ?></span>
+								<?php elseif ( isset( $last['cost_usd'] ) ) : ?>
+									— $<?php echo esc_html( number_format( (float) $last['cost_usd'], 6 ) ); ?>
+								<?php endif; ?>
+							</p>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Bulk AI notes', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bqw_export_ai_notes' ), 'bqw_export_ai_notes' ) ); ?>">
+							<?php esc_html_e( 'Export JSON', 'bomedia-quote-wizard' ); ?>
+						</a>
+						<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;margin-left:8px;">
+							<?php wp_nonce_field( 'bqw_import_ai_notes', 'bqw_ai_notes_nonce' ); ?>
+							<input type="hidden" name="action" value="bqw_import_ai_notes" />
+							<input type="file" name="bqw_ai_notes_file" accept="application/json,.json" />
+							<button class="button" type="submit"><?php esc_html_e( 'Import JSON', 'bomedia-quote-wizard' ); ?></button>
+						</form>
+						<p class="description"><?php esc_html_e( 'Bulk-edit the per-product internal AI notes by slug. Format: { "product-slug": "notes…" }.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<p class="description" style="background:#fef9c3;padding:8px 10px;border-left:3px solid #ca8a04;border-radius:3px;">
+							<?php esc_html_e( 'Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent.', 'bomedia-quote-wizard' ); ?>
+						</p>
 					</td>
 				</tr>
 			</table>
@@ -1158,6 +1258,113 @@ final class Settings {
 			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
 		}
 		wp_send_json_success( [ 'message' => 'OK' ] );
+	}
+
+	public function ajax_test_openai(): void {
+		check_ajax_referer( 'bqw_test_connection', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [ 'message' => __( 'Forbidden', 'bomedia-quote-wizard' ) ], 403 );
+		}
+		$client = new OpenAI_Client();
+		$result = $client->test_connection();
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+		}
+		wp_send_json_success( [
+			'message' => __( 'OpenAI OK', 'bomedia-quote-wizard' ),
+			'model'   => $result['model'] ?? '',
+			'usage'   => $result['usage'] ?? [],
+		] );
+	}
+
+	public function export_ai_notes(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Forbidden', 'bomedia-quote-wizard' ) );
+		}
+		check_admin_referer( 'bqw_export_ai_notes' );
+
+		$products = get_posts( [
+			'post_type'      => 'product',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+			'fields'         => 'ids',
+		] );
+
+		$out = [];
+		foreach ( $products as $pid ) {
+			$notes = (string) get_post_meta( $pid, Product_Meta::META_KEY, true );
+			if ( '' === $notes ) {
+				continue;
+			}
+			$post = get_post( $pid );
+			$slug = $post ? $post->post_name : '';
+			if ( '' !== $slug ) {
+				$out[ $slug ] = $notes;
+			}
+		}
+
+		$filename = 'bqw-ai-notes-' . gmdate( 'Y-m-d' ) . '.json';
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		echo wp_json_encode( $out, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		exit;
+	}
+
+	public function import_ai_notes(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Forbidden', 'bomedia-quote-wizard' ) );
+		}
+		check_admin_referer( 'bqw_import_ai_notes', 'bqw_ai_notes_nonce' );
+
+		if ( empty( $_FILES['bqw_ai_notes_file']['tmp_name'] ) ) {
+			wp_safe_redirect( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => 'wizard', 'bqw_imported' => 0 ], admin_url( 'options-general.php' ) ) );
+			exit;
+		}
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$raw  = file_get_contents( $_FILES['bqw_ai_notes_file']['tmp_name'] );
+		$data = json_decode( (string) $raw, true );
+		if ( ! is_array( $data ) ) {
+			wp_safe_redirect( add_query_arg( [ 'page' => self::PAGE_SLUG, 'tab' => 'wizard', 'bqw_import_error' => 'json' ], admin_url( 'options-general.php' ) ) );
+			exit;
+		}
+
+		$updated = 0;
+		$missing = 0;
+		foreach ( $data as $slug => $notes ) {
+			$slug = sanitize_title( (string) $slug );
+			if ( '' === $slug ) {
+				continue;
+			}
+			$pages = get_posts( [
+				'name'        => $slug,
+				'post_type'   => 'product',
+				'post_status' => 'any',
+				'numberposts' => 1,
+			] );
+			if ( empty( $pages ) ) {
+				$missing++;
+				continue;
+			}
+			$pid   = (int) $pages[0]->ID;
+			$value = sanitize_textarea_field( (string) $notes );
+			if ( '' === $value ) {
+				delete_post_meta( $pid, Product_Meta::META_KEY );
+			} else {
+				update_post_meta( $pid, Product_Meta::META_KEY, $value );
+			}
+			$updated++;
+		}
+
+		wp_safe_redirect( add_query_arg( [
+			'page'           => self::PAGE_SLUG,
+			'tab'            => 'wizard',
+			'bqw_imported'   => $updated,
+			'bqw_unmatched'  => $missing,
+		], admin_url( 'options-general.php' ) ) );
+		exit;
 	}
 
 	/* ---------------------------------------------------------------------

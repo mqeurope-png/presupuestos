@@ -34,8 +34,8 @@ final class Ajax {
 	}
 
 	/**
-	 * Scores published products against the user's matchmaker answers and
-	 * returns the top 3 with score >= 50%.
+	 * Asks OpenAI to score products against the user's matchmaker answers.
+	 * Returns up to 3 recommendations with reasons (or a fallback message).
 	 */
 	public function handle_matchmaker(): void {
 		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
@@ -46,34 +46,124 @@ final class Ajax {
 		if ( ! is_array( $ans ) ) {
 			$ans = [];
 		}
-		$applications = array_map( 'sanitize_text_field', (array) ( $ans['application'] ?? [] ) );
-		$materials    = array_map( 'sanitize_text_field', (array) ( $ans['materials'] ?? [] ) );
+		$applications = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $ans['application'] ?? [] ) ), 'strlen' ) );
+		$materials    = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $ans['materials'] ?? [] ) ), 'strlen' ) );
 		$volume       = sanitize_text_field( (string) ( $ans['volume'] ?? '' ) );
 		$format       = sanitize_text_field( (string) ( $ans['format'] ?? '' ) );
 		$budget       = sanitize_text_field( (string) ( $ans['budget'] ?? '' ) );
 
-		$w = Settings::get_wizard();
+		$enable_ai = (int) Settings::get( 'enable_ai_matchmaker', 1 ) === 1;
+		if ( ! $enable_ai ) {
+			wp_send_json_success( [
+				'recommendations' => [],
+				'ai_failed'       => true,
+				'fallback'        => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
+			] );
+		}
 
-		$attr_application = (string) ( $w['matchmaker_attr_application'] ?? '' );
-		$attr_materials   = (string) ( $w['matchmaker_attr_materials'] ?? '' );
-		$attr_volume      = (string) ( $w['matchmaker_attr_volume'] ?? '' );
-		$attr_format      = (string) ( $w['matchmaker_attr_format'] ?? '' );
-		$attr_budget      = (string) ( $w['matchmaker_attr_budget'] ?? '' );
+		// Quota gate.
+		if ( OpenAI_Client::over_quota() ) {
+			Logger::error( 'OpenAI daily cap reached', [ 'cap' => OpenAI_Client::quota_limit() ] );
+			wp_send_json_success( [
+				'recommendations' => [],
+				'ai_failed'       => true,
+				'fallback'        => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
+			] );
+		}
 
-		$weights = [
-			'application' => (int) ( $w['matchmaker_w_application'] ?? 40 ),
-			'materials'   => (int) ( $w['matchmaker_w_materials'] ?? 30 ),
-			'volume'      => (int) ( $w['matchmaker_w_volume'] ?? 20 ),
-			'format'      => (int) ( $w['matchmaker_w_format'] ?? 10 ),
-		];
+		$products = self::build_matchmaker_products();
+		if ( empty( $products ) ) {
+			wp_send_json_success( [
+				'recommendations' => [],
+				'ai_failed'       => true,
+				'fallback'        => __( "We don't have machines configured for the wizard yet. Please contact us.", 'bomedia-quote-wizard' ),
+			] );
+		}
 
-		// Restrict to the categories the wizard exposes.
+		$lang_code = substr( get_locale(), 0, 2 );
+		$client    = new OpenAI_Client();
+		$result    = $client->recommend(
+			[
+				'application' => $applications,
+				'materials'   => $materials,
+				'volume'      => $volume,
+				'format'      => $format,
+				'budget'      => $budget,
+				'lang'        => $lang_code,
+			],
+			$products
+		);
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_success( [
+				'recommendations' => [],
+				'ai_failed'       => true,
+				'fallback'        => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
+				'error'           => $result->get_error_message(),
+			] );
+		}
+
+		$recs    = isset( $result['recommendations'] ) && is_array( $result['recommendations'] ) ? $result['recommendations'] : [];
+		$fallback = isset( $result['fallback_message'] ) ? (string) $result['fallback_message'] : '';
+
+		// Hydrate recommendations with image, sku, primary category.
+		$cards = [];
+		foreach ( $recs as $r ) {
+			$pid = isset( $r['product_id'] ) ? (int) $r['product_id'] : 0;
+			if ( ! $pid ) {
+				continue;
+			}
+			$post = get_post( $pid );
+			if ( ! $post || 'product' !== $post->post_type ) {
+				continue;
+			}
+			$primary_cat_name = '';
+			$primary_cat_slug = '';
+			$primary_cat_id   = 0;
+			$ts = wp_get_post_terms( $pid, 'product_cat' );
+			if ( $ts && ! is_wp_error( $ts ) ) {
+				$primary_cat_name = $ts[0]->name;
+				$primary_cat_slug = $ts[0]->slug;
+				$primary_cat_id   = (int) $ts[0]->term_id;
+			}
+			$reasons = isset( $r['reasons'] ) && is_array( $r['reasons'] ) ? array_slice( array_map( 'sanitize_text_field', $r['reasons'] ), 0, 2 ) : [];
+			$score   = (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) );
+
+			$cards[] = [
+				'id'           => $pid,
+				'name'         => $post->post_title,
+				'sku'          => self::get_product_sku( $pid ),
+				'image'        => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
+				'score'        => $score,
+				'reasons'      => $reasons,
+				'categoryId'   => $primary_cat_id,
+				'categorySlug' => $primary_cat_slug,
+				'categoryName' => $primary_cat_name,
+			];
+		}
+
+		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+		$cards = array_slice( $cards, 0, 3 );
+
+		wp_send_json_success( [
+			'recommendations' => $cards,
+			'ai_failed'       => empty( $cards ) && '' === $fallback,
+			'fallback'        => $fallback,
+		] );
+	}
+
+	/**
+	 * Builds the products payload the AI will consider. Limited to 50 items;
+	 * prioritises featured products and best sellers when truncating.
+	 */
+	private static function build_matchmaker_products(): array {
 		$cat_ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
 		$args = [
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
 			'posts_per_page' => 200,
 			'no_found_rows'  => true,
+			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
 		];
 		if ( $cat_ids ) {
 			$args['tax_query'] = [
@@ -85,137 +175,46 @@ final class Ajax {
 				],
 			];
 		}
-		$query = new \WP_Query( $args );
-
-		$ranked = [];
+		$query    = new \WP_Query( $args );
+		$products = [];
 		foreach ( $query->posts as $p ) {
-			$pid     = (int) $p->ID;
-			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
-			if ( ! $product ) {
-				continue;
-			}
-
-			// Budget filter (hard).
-			if ( $budget && $attr_budget ) {
-				$buckets = self::attr_terms( $product, $attr_budget );
-				if ( $buckets && ! self::ci_in( $budget, $buckets ) ) {
-					continue;
-				}
-			}
-
-			$matched = 0;
-			$total   = 0;
-			$reasons = [];
-
-			$total += $weights['application'];
-			if ( $attr_application && $applications ) {
-				$terms_app = self::attr_terms( $product, $attr_application );
-				$hits = self::ci_intersect_count( $applications, $terms_app );
-				if ( $hits > 0 ) {
-					$matched += $weights['application'];
-					$reasons[] = sprintf( __( 'covers %s', 'bomedia-quote-wizard' ), implode( ', ', array_slice( $applications, 0, 2 ) ) );
-				}
-			}
-
-			$total += $weights['materials'];
-			if ( $attr_materials && $materials ) {
-				$terms_m = self::attr_terms( $product, $attr_materials );
-				$hits = self::ci_intersect_count( $materials, $terms_m );
-				if ( $hits > 0 ) {
-					$matched += (int) round( $weights['materials'] * ( $hits / max( 1, count( $materials ) ) ) );
-					$reasons[] = sprintf( __( 'works with %s', 'bomedia-quote-wizard' ), implode( ', ', array_slice( $materials, 0, 2 ) ) );
-				}
-			}
-
-			$total += $weights['volume'];
-			if ( $attr_volume && $volume ) {
-				$terms_v = self::attr_terms( $product, $attr_volume );
-				if ( $terms_v && self::ci_in( $volume, $terms_v ) ) {
-					$matched += $weights['volume'];
-					$reasons[] = sprintf( __( 'fits %s monthly volume', 'bomedia-quote-wizard' ), $volume );
-				}
-			}
-
-			$total += $weights['format'];
-			if ( $attr_format && $format ) {
-				$terms_f = self::attr_terms( $product, $attr_format );
-				if ( $terms_f && self::ci_in( $format, $terms_f ) ) {
-					$matched += $weights['format'];
-					$reasons[] = sprintf( __( 'supports %s', 'bomedia-quote-wizard' ), $format );
-				}
-			}
-
-			$score = $total > 0 ? (int) round( ( $matched / $total ) * 100 ) : 0;
-			if ( $score < 50 ) {
-				continue;
-			}
-
-			// Primary category lookup for tagging later.
-			$primary_cat = '';
-			$primary_cat_slug = '';
-			$primary_cat_id = 0;
+			$pid = (int) $p->ID;
+			$cats = [];
 			$ts = wp_get_post_terms( $pid, 'product_cat' );
 			if ( $ts && ! is_wp_error( $ts ) ) {
-				$primary_cat       = $ts[0]->name;
-				$primary_cat_slug  = $ts[0]->slug;
-				$primary_cat_id    = (int) $ts[0]->term_id;
+				foreach ( $ts as $t ) {
+					$cats[] = $t->name;
+				}
 			}
+			$short = (string) $p->post_excerpt;
+			if ( '' === $short ) {
+				$short = (string) $p->post_content;
+			}
+			$short = wp_strip_all_tags( $short );
+			$short = mb_substr( $short, 0, 300 );
 
-			$ranked[] = [
-				'id'           => $pid,
-				'name'         => $p->post_title,
-				'sku'          => (string) $product->get_sku(),
-				'image'        => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
-				'score'        => $score,
-				'reasons'      => array_slice( array_unique( $reasons ), 0, 2 ),
-				'categoryId'   => $primary_cat_id,
-				'categorySlug' => $primary_cat_slug,
-				'categoryName' => $primary_cat,
+			$wc_product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			$is_featured = $wc_product ? (bool) $wc_product->is_featured() : false;
+
+			$products[] = [
+				'id'                  => $pid,
+				'name'                => $p->post_title,
+				'slug'                => $p->post_name,
+				'categories'          => $cats,
+				'short_description'   => $short,
+				'internal_notes'      => (string) get_post_meta( $pid, Product_Meta::META_KEY, true ),
+				'featured'            => $is_featured,
+				'featured_image_url'  => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
 			];
 		}
 
-		usort( $ranked, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
-		$ranked = array_slice( $ranked, 0, 3 );
-
-		wp_send_json_success( [ 'recommendations' => $ranked ] );
-	}
-
-	private static function attr_terms( $product, string $attr_slug ): array {
-		if ( ! $product || '' === $attr_slug ) {
-			return [];
+		if ( count( $products ) > 50 ) {
+			Logger::info( 'Matchmaker: truncating product list to 50', [ 'total' => count( $products ) ] );
+			usort( $products, static function ( $a, $b ) { return ( $b['featured'] ? 1 : 0 ) <=> ( $a['featured'] ? 1 : 0 ); } );
+			$products = array_slice( $products, 0, 50 );
 		}
-		$value = $product->get_attribute( $attr_slug );
-		if ( '' === $value ) {
-			return [];
-		}
-		// Multiple values are returned comma-separated.
-		$parts = array_map( 'trim', explode( ',', $value ) );
-		return array_filter( $parts, 'strlen' );
-	}
 
-	private static function ci_in( string $needle, array $haystack ): bool {
-		$n = self::norm( $needle );
-		foreach ( $haystack as $h ) {
-			if ( self::norm( $h ) === $n ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static function ci_intersect_count( array $a, array $b ): int {
-		$bn = array_map( [ self::class, 'norm' ], $b );
-		$count = 0;
-		foreach ( $a as $x ) {
-			if ( in_array( self::norm( $x ), $bn, true ) ) {
-				$count++;
-			}
-		}
-		return $count;
-	}
-
-	private static function norm( string $s ): string {
-		return mb_strtolower( trim( $s ) );
+		return $products;
 	}
 
 	/**

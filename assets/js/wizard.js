@@ -494,19 +494,34 @@
 		fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
 			.then(function (r) { return r.json(); })
 			.then(function (json) {
-				var recs = (json && json.success && json.data && json.data.recommendations) || [];
+				var data = (json && json.success && json.data) || {};
+				var recs = data.recommendations || [];
 				state.mmRecommendations = recs;
-				renderRecommendations(recs, listEl);
+				if (data.ai_failed && !recs.length) {
+					renderAIFailed(listEl, data.fallback);
+				} else {
+					renderRecommendations(recs, listEl, data.fallback);
+				}
 			})
-			.catch(function () { renderRecommendations([], listEl); });
+			.catch(function () { renderAIFailed(listEl); });
 	}
 
-	function renderRecommendations(recs, listEl) {
+	function renderAIFailed(listEl, fallbackMsg) {
+		listEl.innerHTML = '';
+		var p = document.createElement('p');
+		p.className = 'bqw-empty';
+		p.textContent = fallbackMsg || (i18n.aiFailed || "We've received your answers. We'll get back to you with a personalized recommendation.");
+		listEl.appendChild(p);
+		// Allow the user to proceed even without recommendations.
+		document.getElementById('bqw-rec-next').disabled = false;
+	}
+
+	function renderRecommendations(recs, listEl, fallbackMsg) {
 		listEl.innerHTML = '';
 		if (!recs.length) {
 			var p = document.createElement('p');
 			p.className = 'bqw-empty';
-			p.textContent = i18n.noMatches || "Your case is specific. Let's talk directly.";
+			p.textContent = fallbackMsg || i18n.noMatches || "Your case is specific. Let's talk directly.";
 			listEl.appendChild(p);
 			document.getElementById('bqw-rec-next').disabled = false;
 			return;

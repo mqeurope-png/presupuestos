@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.4.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.5.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -15,6 +15,12 @@ msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presup
 
 msgid "A valid email is required."
 msgstr "Se requiere un correo electrónico válido."
+
+msgid "AI Recommendations (OpenAI)"
+msgstr "Recomendaciones con IA (OpenAI)"
+
+msgid "AI notes import: %1$d products updated, %2$d slugs not found."
+msgstr "Importación de notas IA: %1$d productos actualizados, %2$d slugs no encontrados."
 
 msgid "Account email"
 msgstr "Email de la cuenta"
@@ -58,14 +64,8 @@ msgstr "Aplicación (una o varias)"
 msgid "Application step"
 msgstr "Paso de aplicación"
 
-msgid "Application:"
-msgstr "Aplicación:"
-
 msgid "Approximate budget? (optional)"
 msgstr "¿Presupuesto orientativo? (opcional)"
-
-msgid "Attribute mapping (Woo product attribute slugs)"
-msgstr "Mapeo de atributos (slugs de WooCommerce)"
 
 msgid "Auto (site language)"
 msgstr "Auto (idioma del sitio)"
@@ -100,11 +100,14 @@ msgstr "Presupuesto"
 msgid "Budget (matchmaker)"
 msgstr "Presupuesto (matchmaker)"
 
-msgid "Budget bucket:"
-msgstr "Rango de presupuesto:"
-
 msgid "Budget options"
 msgstr "Opciones de presupuesto"
+
+msgid "Bulk AI notes"
+msgstr "Notas IA en bloque"
+
+msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
+msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: { \"product-slug\": \"notas…\" }."
 
 msgid "Captcha provider"
 msgstr "Proveedor de captcha"
@@ -154,11 +157,17 @@ msgstr "Contáctanos"
 msgid "Continue"
 msgstr "Continuar"
 
+msgid "Could not parse the JSON file."
+msgstr "No se pudo procesar el archivo JSON."
+
 msgid "Country"
 msgstr "País"
 
 msgid "Customer is not sure, asks for help."
 msgstr "El cliente no está seguro, pide ayuda."
+
+msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
+msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
 
 msgid "Date"
 msgstr "Fecha"
@@ -196,6 +205,9 @@ msgstr "Activa la verificación captcha antes del envío."
 msgid "Enable matchmaker"
 msgstr "Habilitar matchmaker"
 
+msgid "Estimated cost this month:"
+msgstr "Coste estimado este mes:"
+
 msgid "Estimated monthly volume"
 msgstr "Volumen mensual estimado"
 
@@ -204,6 +216,9 @@ msgstr "¿Volumen mensual estimado?"
 
 msgid "Expand"
 msgstr "Desplegar"
+
+msgid "Export JSON"
+msgstr "Exportar JSON"
 
 msgid "File logging"
 msgstr "Registro a archivo"
@@ -223,14 +238,14 @@ msgstr "Formato (matchmaker)"
 msgid "Format options"
 msgstr "Opciones de formato"
 
-msgid "Format:"
-msgstr "Formato:"
-
 msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr "Google reCAPTCHA v2 (checkbox)"
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr "Google reCAPTCHA v3 (invisible, score)"
+
+msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
+msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UTC."
 
 msgid "Help me choose"
 msgstr "Ayúdame a elegir"
@@ -256,6 +271,12 @@ msgstr "No estoy seguro"
 msgid "I'm not sure, help me choose"
 msgstr "No estoy seguro, ayúdame a elegir"
 
+msgid "Import JSON"
+msgstr "Importar JSON"
+
+msgid "Last call:"
+msgstr "Última llamada:"
+
 msgid "Last name"
 msgstr "Apellidos"
 
@@ -280,6 +301,9 @@ msgstr "Opt-in de marketing"
 msgid "Matches at"
 msgstr "Encaja al"
 
+msgid "Matchmaker AI internal notes"
+msgstr "Notas internas para Matchmaker IA"
+
 msgid "Matchmaker mode"
 msgstr "Modo Matchmaker"
 
@@ -292,14 +316,11 @@ msgstr "Materiales (selección múltiple)"
 msgid "Materials step"
 msgstr "Paso de materiales"
 
-msgid "Materials:"
-msgstr "Materiales:"
-
 msgid "Math (no setup)"
 msgstr "Matemática (sin configuración)"
 
-msgid "Max format:"
-msgstr "Formato máximo:"
+msgid "Max calls per day"
+msgstr "Máximo de llamadas por día"
 
 msgid "Maximum piece size?"
 msgstr "¿Tamaño máximo de pieza?"
@@ -315,6 +336,9 @@ msgstr "Microcopy entre pasos"
 
 msgid "Missing category."
 msgstr "Falta la categoría."
+
+msgid "Model"
+msgstr "Modelo"
 
 msgid "Model of"
 msgstr "Modelo de"
@@ -355,6 +379,9 @@ msgstr "No se encontraron categorías de producto."
 msgid "No published products in this category."
 msgstr "No hay productos publicados en esta categoría."
 
+msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
+msgstr "Notas que la IA usará para recomendar esta máquina. Ejemplos: \"ideal para principiantes\", \"stock EU\", \"ideal para talleres textiles pequeños\", \"evitar para >2000/mes\". No se muestran al cliente."
+
 msgid "Notifications"
 msgstr "Notificaciones"
 
@@ -372,6 +399,27 @@ msgstr "Una opción por línea."
 
 msgid "One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience"
 msgstr "Una por línea, formato: dashicon-slug|Texto. Ejemplo: shield-alt|10 años de experiencia"
+
+msgid "OpenAI API key"
+msgstr "API key de OpenAI"
+
+msgid "OpenAI API key is missing."
+msgstr "Falta la API key de OpenAI."
+
+msgid "OpenAI OK"
+msgstr "OpenAI OK"
+
+msgid "OpenAI rate limit reached (429). Try again later."
+msgstr "Límite de OpenAI alcanzado (429). Inténtalo más tarde."
+
+msgid "OpenAI rejected the API key (401)."
+msgstr "OpenAI rechazó la API key (401)."
+
+msgid "OpenAI returned an invalid response."
+msgstr "OpenAI devolvió una respuesta inválida."
+
+msgid "OpenAI returned malformed data."
+msgstr "OpenAI devolvió datos mal formados."
 
 msgid "Option images"
 msgstr "Imágenes de opciones"
@@ -457,11 +505,11 @@ msgstr "Modelo solicitado:"
 msgid "Retry send"
 msgstr "Reintentar envío"
 
+msgid "Save changes first. Sends a 5-token ping to OpenAI."
+msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
+
 msgid "Save your changes before testing."
 msgstr "Guarda los cambios antes de probar."
-
-msgid "Scoring weights (percent)"
-msgstr "Pesos del scoring (porcentaje)"
 
 msgid "Search categories"
 msgstr "Buscar categorías"
@@ -490,6 +538,9 @@ msgstr "Seleccionadas (arrastra para reordenar)"
 msgid "Send request"
 msgstr "Enviar solicitud"
 
+msgid "Send the customer's answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA."
+msgstr "Envía las respuestas del cliente a OpenAI para puntuar productos. Si lo desactivas, se devuelve un resultado vacío con CTA de fallback."
+
 msgid "Sending…"
 msgstr "Enviando…"
 
@@ -510,9 +561,6 @@ msgstr "Mostrar microcopy"
 
 msgid "Site key"
 msgstr "Site key"
-
-msgid "Slug of the WooCommerce attribute (e.g. pa_aplicacion). The matchmaker compares each product's attribute terms against the user picks."
-msgstr "Slug del atributo de WooCommerce (ej. pa_aplicacion). El matchmaker compara los términos de atributo de cada producto con las elecciones del usuario."
 
 msgid "Solicitud presupuesto web"
 msgstr "Solicitud presupuesto web"
@@ -535,11 +583,17 @@ msgstr "Estado"
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr "Almacenado cifrado con AUTH_KEY. Deja el valor enmascarado para conservar el actual."
 
+msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+msgstr "Almacenada cifrada con AUTH_KEY. ¿No tienes API key? Créala en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+
 msgid "Subtitle"
 msgstr "Subtítulo"
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "Test API connection"
+msgstr "Probar conexión API"
 
 msgid "Test connection"
 msgstr "Probar conexión"
@@ -577,8 +631,17 @@ msgstr "Claves de Turnstile"
 msgid "Turnstile verification failed."
 msgstr "La verificación de Turnstile falló."
 
-msgid "Volume:"
-msgstr "Volumen:"
+msgid "Usage today"
+msgstr "Uso hoy"
+
+msgid "Use AI for recommendations"
+msgstr "Usar IA para recomendaciones"
+
+msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
+
+msgid "We've received your answers. We'll get back to you with a personalized recommendation."
+msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
 
 msgid "What do you want to produce?"
 msgstr "¿Qué quieres producir?"
@@ -622,14 +685,14 @@ msgstr "Máquinas seleccionadas"
 msgid "Your submission looks suspicious. Try again."
 msgstr "Tu envío parece sospechoso. Inténtalo de nuevo."
 
-msgid "covers %s"
-msgstr "cubre %s"
+msgid "calls today"
+msgstr "llamadas hoy"
 
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
 msgstr "ej. \"bomedia\" para bomedia.agilecrm.com"
 
-msgid "fits %s monthly volume"
-msgstr "encaja con un volumen mensual de %s"
+msgid "e.g. ideal for textile, EU stock, best for SMB, avoid >2000 prints/month"
+msgstr "ej. ideal para textil, stock EU, ideal para PYMES, evitar >2000 impresiones/mes"
 
 msgid "hCaptcha"
 msgstr "hCaptcha"
@@ -655,14 +718,11 @@ msgstr "La verificación de reCAPTCHA falló."
 msgid "selected"
 msgstr "seleccionadas"
 
-msgid "supports %s"
-msgstr "soporta %s"
-
 msgid "v3 score threshold (0.0–1.0):"
 msgstr "Umbral de score v3 (0.0–1.0):"
 
-msgid "works with %s"
-msgstr "funciona con %s"
+msgid "~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive."
+msgstr "~$0.001 por recomendación con gpt-4o-mini. Otros modelos son 5–60× más caros."
 
 msgid "← Back to categories"
 msgstr "← Volver a categorías"

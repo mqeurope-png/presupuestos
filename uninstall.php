@@ -12,6 +12,14 @@ delete_option( 'bqw_agilecrm_settings' );
 delete_option( 'bqw_wizard_settings' );
 delete_option( 'bqw_notifications_settings' );
 delete_option( 'bqw_settings_migrated_v2' );
+delete_option( 'bqw_settings_migrated_v3' );
+delete_option( 'bqw_openai_last_call' );
+
+// Drop monthly cost trackers (best-effort, current and recent months).
+for ( $i = 0; $i < 12; $i++ ) {
+	$mk = 'bqw_openai_month_' . gmdate( 'Y-m', strtotime( '-' . $i . ' month' ) );
+	delete_option( $mk );
+}
 
 // Remove all bqw_lead posts.
 $leads = get_posts(
