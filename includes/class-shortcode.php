@@ -125,7 +125,6 @@ final class Shortcode {
 			'hero_title'          => $settings['hero_title'] ?? '',
 			'hero_subtitle'       => $settings['hero_subtitle'] ?? '',
 			'hero_image_url'      => ! empty( $settings['hero_image_id'] ) ? wp_get_attachment_image_url( (int) $settings['hero_image_id'], 'large' ) : '',
-			'hero_trust'          => $this->parse_trust_lines( $settings['hero_trust'] ?? '' ),
 
 			// Microcopy.
 			'enable_microcopy'    => ! empty( $settings['enable_microcopy'] ),
@@ -189,25 +188,6 @@ final class Shortcode {
 		unload_textdomain( 'bomedia-quote-wizard' );
 		load_plugin_textdomain( 'bomedia-quote-wizard', false, dirname( plugin_basename( BQW_PLUGIN_FILE ) ) . '/languages' );
 		return true;
-	}
-
-	private function parse_trust_lines( string $raw ): array {
-		$lines = preg_split( '/\r\n|\r|\n/', $raw ) ?: [];
-		$out   = [];
-		foreach ( $lines as $ln ) {
-			$ln = trim( $ln );
-			if ( '' === $ln ) {
-				continue;
-			}
-			if ( false !== strpos( $ln, '|' ) ) {
-				[ $icon, $text ] = array_map( 'trim', explode( '|', $ln, 2 ) );
-			} else {
-				$icon = 'yes';
-				$text = $ln;
-			}
-			$out[] = [ 'icon' => sanitize_html_class( $icon ), 'text' => $text ];
-		}
-		return $out;
 	}
 
 	private function fallback_contact_email(): string {
@@ -275,6 +255,8 @@ final class Shortcode {
 			'aiFailed'      => __( "We've received your answers. We'll get back to you with a personalized recommendation.", 'bomedia-quote-wizard' ),
 			'viewProduct'   => __( 'View product →', 'bomedia-quote-wizard' ),
 			'pickThis'      => __( 'Pick', 'bomedia-quote-wizard' ),
+			/* translators: %s: external domain name */
+			'availableOn'   => __( 'Available on %s', 'bomedia-quote-wizard' ),
 		];
 	}
 

@@ -84,7 +84,6 @@ final class Settings {
 			'hero_title'            => 'Encuentra tu solución de impresión ideal',
 			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
 			'hero_image_id'         => 0,
-			'hero_trust'            => "shield-alt|10 años de experiencia\nawards|Distribuidor oficial\ngroups|+500 clientes\nphone|Soporte personalizado",
 			'enable_microcopy'      => 1,
 			'microcopy_messages'    => "Vamos allá\nGenial, sigamos\nCasi lo tenemos\nÚltima pregunta\nListo para mandarlo",
 			'enable_matchmaker'     => 1,
@@ -307,7 +306,8 @@ final class Settings {
 		$out['hero_title']       = sanitize_text_field( $input['hero_title'] ?? '' );
 		$out['hero_subtitle']    = sanitize_text_field( $input['hero_subtitle'] ?? '' );
 		$out['hero_image_id']    = absint( $input['hero_image_id'] ?? 0 );
-		$out['hero_trust']       = $this->sanitize_lines( (string) ( $input['hero_trust'] ?? '' ) );
+		// v1.6.1 — trust signals dropped; clean up legacy value if it was saved.
+		unset( $out['hero_trust'] );
 
 		// Microcopy.
 		$out['enable_microcopy']  = ! empty( $input['enable_microcopy'] ) ? 1 : 0;
@@ -688,13 +688,6 @@ final class Settings {
 					<th scope="row"><?php esc_html_e( 'Background image', 'bomedia-quote-wizard' ); ?></th>
 					<td>
 						<?php $this->render_media_picker( 'hero_image_id', (int) ( $s['hero_image_id'] ?? 0 ) ); ?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php esc_html_e( 'Trust signals', 'bomedia-quote-wizard' ); ?></label></th>
-					<td>
-						<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hero_trust]" rows="4" cols="60" class="large-text code"><?php echo esc_textarea( $s['hero_trust'] ); ?></textarea>
-						<p class="description"><?php esc_html_e( 'One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 			</table>

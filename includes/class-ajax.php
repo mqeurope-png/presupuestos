@@ -49,7 +49,9 @@ final class Ajax {
 		$applications = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $ans['application'] ?? [] ) ), 'strlen' ) );
 		$materials    = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $ans['materials'] ?? [] ) ), 'strlen' ) );
 		$volume       = sanitize_text_field( (string) ( $ans['volume'] ?? '' ) );
-		$format       = sanitize_text_field( (string) ( $ans['format'] ?? '' ) );
+		// Format is multi-select since v1.6.1; accept array or scalar for backwards-compat.
+		$raw_format = $ans['format'] ?? [];
+		$format     = array_values( array_filter( array_map( 'sanitize_text_field', is_array( $raw_format ) ? $raw_format : [ $raw_format ] ), 'strlen' ) );
 		$budget       = sanitize_text_field( (string) ( $ans['budget'] ?? '' ) );
 
 		$enable_ai = (int) Settings::get( 'enable_ai_matchmaker', 1 ) === 1;
@@ -89,7 +91,7 @@ final class Ajax {
 				'application' => $applications,
 				'materials'   => $materials,
 				'volume'      => $volume,
-				'format'      => $format,
+				'format'      => $format, // multi-select array; client joins with comma.
 				'budget'      => $budget,
 				'lang'        => $lang_code,
 			],

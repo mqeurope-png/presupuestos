@@ -64,13 +64,6 @@ $render_option_card = static function ( string $label, string $name, string $typ
 						<button type="button" class="bqw-btn bqw-btn-primary" data-flow="classic"><?php esc_html_e( 'Start', 'bomedia-quote-wizard' ); ?></button>
 					<?php endif; ?>
 				</div>
-				<?php if ( ! empty( $bqw_config['hero_trust'] ) ) : ?>
-					<ul class="bqw-hero-trust" aria-label="<?php esc_attr_e( 'Trust signals', 'bomedia-quote-wizard' ); ?>">
-						<?php foreach ( $bqw_config['hero_trust'] as $t ) : ?>
-							<li><span class="dashicons dashicons-<?php echo esc_attr( $t['icon'] ); ?>" aria-hidden="true"></span><span><?php echo esc_html( $t['text'] ); ?></span></li>
-						<?php endforeach; ?>
-					</ul>
-				<?php endif; ?>
 			</div>
 		</section>
 	<?php endif; ?>
@@ -348,7 +341,7 @@ $render_option_card = static function ( string $label, string $name, string $typ
 				<h3 id="bqw-mm4-title" class="bqw-step-title"><?php esc_html_e( 'Maximum piece size?', 'bomedia-quote-wizard' ); ?></h3>
 				<div class="bqw-opt-grid">
 					<?php foreach ( $bqw_config['matchmaker_format_options'] as $i => $opt ) {
-						$render_option_card( $opt, 'mm_format', 'radio' );
+						$render_option_card( $opt, 'mm_format[]', 'checkbox' );
 					} ?>
 				</div>
 				<div class="bqw-actions">

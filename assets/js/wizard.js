@@ -32,8 +32,8 @@
 		currentCategory: null,
 		selection: [],
 		unsure: false,
-		// matchmaker state
-		mmAnswers: { application: [], materials: [], volume: '', format: '', budget: '' },
+		// matchmaker state — note: format is an array (multi-select since v1.6.1).
+		mmAnswers: { application: [], materials: [], volume: '', format: [], budget: '' },
 		mmRecommendations: [],
 	};
 	var productsCache = {};
@@ -71,17 +71,31 @@
 		progressPct.textContent = pct + '%';
 	}
 
+	var microcopyTimer = null;
 	function showMicrocopy(idx) {
 		if (!microcopyOn || !microcopyEl || !microcopyMsgs.length) return;
 		var msg = microcopyMsgs[idx];
 		if (!msg) return;
+
+		// Reset state if a previous toast is still on screen.
+		if (microcopyTimer) {
+			clearTimeout(microcopyTimer);
+			microcopyTimer = null;
+		}
 		microcopyEl.textContent = msg;
 		microcopyEl.hidden = false;
-		microcopyEl.classList.add('is-shown');
-		setTimeout(function () {
+		// Force a reflow so the class change triggers the CSS transition.
+		void microcopyEl.offsetHeight;
+		requestAnimationFrame(function () {
+			microcopyEl.classList.add('is-shown');
+		});
+		microcopyTimer = setTimeout(function () {
 			microcopyEl.classList.remove('is-shown');
-			setTimeout(function () { microcopyEl.hidden = true; }, 250);
-		}, 1500);
+			microcopyTimer = setTimeout(function () {
+				microcopyEl.hidden = true;
+				microcopyTimer = null;
+			}, 280);
+		}, 2000);
 	}
 
 	/* =============================================================
@@ -104,6 +118,7 @@
 	function startFlow(flow) {
 		state.flow = flow === 'matchmaker' && matchmakerOn ? 'matchmaker' : 'classic';
 		document.getElementById('bqw-flow').value = state.flow;
+		root.classList.add('is-flow-active');
 		if (hero) hero.hidden = true;
 		if (progressWrap) progressWrap.hidden = false;
 		if (form) form.hidden = false;
@@ -441,7 +456,8 @@
 			if (state.mmAnswers.application.length) add(i18n.application || 'Application', state.mmAnswers.application.join(', '));
 			if (state.mmAnswers.materials.length)   add(i18n.materials || 'Materials',  state.mmAnswers.materials.join(', '));
 			add(i18n.volume || 'Monthly volume', state.mmAnswers.volume);
-			if (state.mmAnswers.format) add(i18n.format || 'Format', state.mmAnswers.format);
+			var fmtList = Array.isArray(state.mmAnswers.format) ? state.mmAnswers.format : (state.mmAnswers.format ? [state.mmAnswers.format] : []);
+			if (fmtList.length) add(i18n.format || 'Format', fmtList.join(', '));
 			if (state.mmAnswers.budget) add(i18n.budget || 'Budget', state.mmAnswers.budget);
 		}
 
@@ -471,7 +487,7 @@
 		if (step === 'm1') state.mmAnswers.application = pickValues('mm_application[]');
 		if (step === 'm2') state.mmAnswers.materials   = pickValues('mm_materials[]');
 		if (step === 'm3') state.mmAnswers.volume      = pickValue('mm_volume');
-		if (step === 'm4') state.mmAnswers.format      = pickValue('mm_format');
+		if (step === 'm4') state.mmAnswers.format      = pickValues('mm_format[]');
 		if (step === 'm5') state.mmAnswers.budget      = pickValue('mm_budget');
 	}
 
@@ -541,8 +557,8 @@
 				? '<img class="bqw-rec-img" src="' + image + '" alt="" loading="lazy">'
 				: '<span class="bqw-rec-img bqw-opt-img-fallback">★</span>';
 
-			var badgeHtml = r.badge ? '<span class="bqw-rec-badge">' + escapeHtml(r.badge) + '</span>' : '';
 			var brandHtml = r.brand ? '<span class="bqw-rec-brand">' + escapeHtml(r.brand) + '</span>' : '';
+			var badgeHtml = r.badge ? '<span class="bqw-rec-badge">' + escapeHtml(r.badge) + '</span>' : '';
 			var feats = [];
 			if (r.area)  feats.push('<li>' + escapeHtml(r.area) + '</li>');
 			if (r.feat1) feats.push('<li>' + escapeHtml(r.feat1) + '</li>');
@@ -552,20 +568,41 @@
 				? '<ul class="bqw-rec-reasons">' + r.reasons.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>'
 				: '';
 			var linkHtml = r.link
-				? '<a class="bqw-rec-link" href="' + r.link + '" target="_blank" rel="noopener">' + (i18n.viewProduct || 'View product →') + '</a>'
+				? '<a class="bqw-rec-link" href="' + r.link + '" target="_blank" rel="noopener">' + escapeHtml(i18n.viewProduct || 'View product →') + '</a>'
 				: '';
-			var priceHtml = r.price ? '<span class="bqw-rec-price">' + escapeHtml(r.price) + '</span>' : '';
+
+			// "Available on {domain}" notice when link host differs from current site host.
+			var offsiteHtml = '';
+			if (r.link) {
+				var siteHost = (window.location && window.location.hostname) || '';
+				var linkHost = '';
+				try { linkHost = new URL(r.link).hostname; } catch (e) { linkHost = ''; }
+				if (linkHost && siteHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, '')) {
+					var tpl = i18n.availableOn || 'Available on %s';
+					offsiteHtml = '<span class="bqw-rec-offsite" aria-label="' + escapeHtml(tpl.replace('%s', linkHost)) + '">' +
+						'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M14 4v0H4v16h16V10"/></svg>' +
+						escapeHtml(tpl.replace('%s', linkHost)) +
+					'</span>';
+				}
+			}
 
 			card.innerHTML =
-				'<div class="bqw-rec-imgwrap">' + imgHtml + (badgeHtml ? '<span class="bqw-rec-badge-wrap">' + badgeHtml + '</span>' : '') + '</div>' +
+				'<div class="bqw-rec-imgwrap">' + imgHtml + '</div>' +
 				'<div class="bqw-rec-body">' +
 					'<div class="bqw-rec-head">' +
-						'<div class="bqw-rec-titlewrap"><strong>' + escapeHtml(r.name) + '</strong>' + brandHtml + '</div>' +
-						'<span class="bqw-rec-score">' + (i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>' +
+						'<div class="bqw-rec-titlewrap">' +
+							'<strong>' + escapeHtml(r.name) + '</strong>' +
+							brandHtml +
+							offsiteHtml +
+						'</div>' +
+						'<div class="bqw-rec-meta">' +
+							badgeHtml +
+							'<span class="bqw-rec-score">' + escapeHtml(i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>' +
+						'</div>' +
 					'</div>' +
 					featsHtml +
 					reasonsHtml +
-					'<div class="bqw-rec-footer">' + priceHtml + linkHtml + '</div>' +
+					(linkHtml ? '<div class="bqw-rec-footer">' + linkHtml + '</div>' : '') +
 				'</div>' +
 				'<button type="button" class="bqw-rec-pick" aria-pressed="false">' +
 					'<span class="bqw-card-check" aria-hidden="true">✓</span>' +
@@ -726,6 +763,7 @@
 					var target = btn.dataset.mmBack;
 					if (target === 'hero' && hero) {
 						// back to flow choice.
+						root.classList.remove('is-flow-active');
 						hero.hidden = false;
 						if (progressWrap) progressWrap.hidden = true;
 						form.hidden = true;

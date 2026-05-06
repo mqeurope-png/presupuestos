@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.6.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.6.1\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -77,6 +77,9 @@ msgid "Auto (site language)"
 msgstr ""
 
 msgid "Available categories"
+msgstr ""
+
+msgid "Available on %s"
 msgstr ""
 
 msgid "Back"
@@ -430,9 +433,6 @@ msgstr ""
 msgid "One option per line."
 msgstr ""
 
-msgid "One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience"
-msgstr ""
-
 msgid "OpenAI API key"
 msgstr ""
 
@@ -659,9 +659,6 @@ msgid "Title"
 msgstr ""
 
 msgid "Toggle children"
-msgstr ""
-
-msgid "Trust signals"
 msgstr ""
 
 msgid "Turnstile could not verify your submission."
