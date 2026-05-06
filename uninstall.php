@@ -8,6 +8,10 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 delete_option( 'bqw_settings' );
+delete_option( 'bqw_agilecrm_settings' );
+delete_option( 'bqw_wizard_settings' );
+delete_option( 'bqw_notifications_settings' );
+delete_option( 'bqw_settings_migrated_v2' );
 
 // Remove all bqw_lead posts.
 $leads = get_posts(

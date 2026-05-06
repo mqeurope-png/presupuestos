@@ -27,6 +27,98 @@ final class Ajax {
 	public function register(): void {
 		add_action( 'wp_ajax_bqw_submit', [ $this, 'handle_submit' ] );
 		add_action( 'wp_ajax_nopriv_bqw_submit', [ $this, 'handle_submit' ] );
+		add_action( 'wp_ajax_bqw_get_products_by_category', [ $this, 'handle_get_products' ] );
+		add_action( 'wp_ajax_nopriv_bqw_get_products_by_category', [ $this, 'handle_get_products' ] );
+	}
+
+	/**
+	 * Returns published products for a given product_cat term_id (no children
+	 * by default), each with image and a small set of feature attributes
+	 * (Print size / Speed if present).
+	 */
+	public function handle_get_products(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		$cat_id = isset( $_POST['category_id'] ) ? absint( $_POST['category_id'] ) : 0;
+		if ( ! $cat_id ) {
+			wp_send_json_error( [ 'message' => __( 'Missing category.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+
+		$query = new \WP_Query(
+			[
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => 50,
+				'no_found_rows'  => true,
+				'tax_query'      => [
+					[
+						'taxonomy'         => 'product_cat',
+						'field'            => 'term_id',
+						'terms'            => $cat_id,
+						'include_children' => false,
+					],
+				],
+			]
+		);
+
+		$products = [];
+		foreach ( $query->posts as $p ) {
+			$products[] = [
+				'id'         => (int) $p->ID,
+				'name'       => $p->post_title,
+				'image'      => get_the_post_thumbnail_url( $p->ID, 'medium' ) ?: '',
+				'attributes' => self::extract_feature_attributes( (int) $p->ID ),
+			];
+		}
+
+		wp_send_json_success( [ 'products' => $products ] );
+	}
+
+	/**
+	 * Reads up to two "feature" attributes from a WC product. Looks for any
+	 * attribute whose label matches Print size / Format / Speed / Velocidad
+	 * / Formato máximo. Returns [{label, value}, ...] or empty array.
+	 */
+	private static function extract_feature_attributes( int $product_id ): array {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return [];
+		}
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			return [];
+		}
+
+		$wanted_haystack = [
+			'formato máximo' => 1,
+			'formato maximo' => 1,
+			'print size'     => 1,
+			'print format'   => 1,
+			'velocidad'      => 1,
+			'speed'          => 1,
+		];
+
+		$out = [];
+		foreach ( $product->get_attributes() as $attr ) {
+			$slug  = method_exists( $attr, 'get_name' ) ? $attr->get_name() : '';
+			$label = function_exists( 'wc_attribute_label' ) ? wc_attribute_label( $slug ) : $slug;
+			$norm  = strtolower( trim( (string) $label ) );
+			if ( ! isset( $wanted_haystack[ $norm ] ) ) {
+				continue;
+			}
+			$value = $product->get_attribute( $slug );
+			if ( '' === $value ) {
+				continue;
+			}
+			$out[] = [
+				'label' => $label,
+				'value' => $value,
+			];
+			if ( count( $out ) >= 2 ) {
+				break;
+			}
+		}
+		return $out;
 	}
 
 	public function handle_submit(): void {

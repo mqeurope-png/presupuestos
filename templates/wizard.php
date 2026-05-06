@@ -43,10 +43,21 @@ $started_ts     = time();
 		<!-- STEP 1 -->
 		<section class="bqw-step is-active" data-step="1" aria-labelledby="bqw-step1-title">
 			<h3 id="bqw-step1-title" class="bqw-step-title"><?php esc_html_e( 'Product of interest', 'bomedia-quote-wizard' ); ?></h3>
-			<div class="bqw-step1-categories" id="bqw-step1-categories"></div>
-			<div class="bqw-step1-products" id="bqw-step1-products" hidden></div>
+
+			<!-- Screen 1.1 — categories -->
+			<div class="bqw-screen bqw-screen-categories" id="bqw-step1-categories"></div>
+
+			<!-- Screen 1.2 — products of selected category -->
+			<div class="bqw-screen bqw-screen-products" id="bqw-step1-products" hidden>
+				<div class="bqw-products-header">
+					<button type="button" class="bqw-back-link" id="bqw-back-to-categories"><?php esc_html_e( '← Back to categories', 'bomedia-quote-wizard' ); ?></button>
+					<h4 class="bqw-products-title" id="bqw-products-title"></h4>
+				</div>
+				<div class="bqw-products-body" id="bqw-products-body"></div>
+			</div>
+
 			<div class="bqw-actions">
-				<button type="button" class="bqw-btn bqw-btn-secondary" id="bqw-back-to-categories" hidden><?php esc_html_e( 'Back to categories', 'bomedia-quote-wizard' ); ?></button>
+				<span></span>
 				<button type="button" class="bqw-btn bqw-btn-primary" id="bqw-next-1" disabled><?php esc_html_e( 'Next', 'bomedia-quote-wizard' ); ?></button>
 			</div>
 		</section>

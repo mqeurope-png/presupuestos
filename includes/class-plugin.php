@@ -42,6 +42,8 @@ final class Plugin {
 			return;
 		}
 
+		Settings::maybe_migrate();
+
 		Lead_CPT::instance()->register();
 		Settings::instance()->register();
 		Shortcode::instance()->register();
@@ -67,9 +69,7 @@ final class Plugin {
 		Lead_CPT::instance()->register();
 		flush_rewrite_rules();
 
-		if ( false === get_option( 'bqw_settings' ) ) {
-			add_option( 'bqw_settings', Settings::default_settings() );
-		}
+		Settings::maybe_migrate();
 	}
 
 	public static function deactivate(): void {

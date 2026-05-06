@@ -306,6 +306,46 @@
 
 .bqw-error { color: var(--bqw-error); margin-top: 0.5rem; }
 
+.bqw-products-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	margin-bottom: 0.75rem;
+}
+.bqw-back-link {
+	align-self: flex-start;
+	background: none;
+	border: 0;
+	color: var(--bqw-primary);
+	cursor: pointer;
+	font: inherit;
+	font-weight: 600;
+	padding: 0.25rem 0;
+}
+.bqw-back-link:hover { text-decoration: underline; }
+.bqw-products-title {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 600;
+}
+
+.bqw-card-attrs {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	margin-top: 0.25rem;
+	font-size: 0.78rem;
+	color: var(--bqw-muted);
+}
+.bqw-card-attr { line-height: 1.25; }
+
+.bqw-loading,
+.bqw-empty {
+	color: var(--bqw-muted);
+	text-align: center;
+	padding: 1rem 0;
+}
+
 .bqw-thanks-inner {
 	text-align: center;
 	padding: 1rem 0;

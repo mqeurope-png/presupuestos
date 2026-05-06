@@ -25,6 +25,9 @@
 		productName: '',
 	};
 
+	// In-memory cache: { [catId]: products[] }.
+	var productsCache = {};
+
 	// ---------- Step 1: categories / products ----------
 	function renderCategories() {
 		var wrap = document.getElementById('bqw-step1-categories');
@@ -46,6 +49,7 @@
 		grid.className = 'bqw-cards';
 		cfg.categories.forEach(function (cat) {
 			var card = buildCard(cat.image, cat.name);
+			if (state.categoryId === cat.id) card.classList.add('is-selected');
 			card.addEventListener('click', function () {
 				showProducts(cat);
 			});
@@ -62,16 +66,71 @@
 		document.getElementById('bqw-category-slug').value = cat.slug;
 		document.getElementById('bqw-category-name').value = cat.name;
 
-		var products = (cfg.products_by_cat && cfg.products_by_cat[cat.id]) || [];
 		var prodWrap = document.getElementById('bqw-step1-products');
 		var catWrap = document.getElementById('bqw-step1-categories');
-		var backBtn = document.getElementById('bqw-back-to-categories');
+		var title = document.getElementById('bqw-products-title');
+		var body = document.getElementById('bqw-products-body');
 
-		prodWrap.innerHTML = '';
+		title.textContent = (i18n.modelOf || 'Model of') + ' ' + cat.name;
+		catWrap.hidden = true;
+		prodWrap.hidden = false;
+
+		document.getElementById('bqw-next-1').disabled = !state.productId;
+
+		if (productsCache[cat.id]) {
+			renderProductsList(productsCache[cat.id], body);
+		} else {
+			body.innerHTML = '<p class="bqw-loading">' + escapeHtml(i18n.loading || 'Loading…') + '</p>';
+			fetchProducts(cat.id, body);
+		}
+	}
+
+	function fetchProducts(catId, body) {
+		var fd = new FormData();
+		fd.append('action', 'bqw_get_products_by_category');
+		fd.append('nonce', window.BQW.nonce);
+		fd.append('category_id', String(catId));
+		fetch(window.BQW.ajaxUrl, {
+			method: 'POST',
+			credentials: 'same-origin',
+			body: fd,
+		})
+			.then(function (r) { return r.json(); })
+			.then(function (json) {
+				var products = (json && json.success && json.data && json.data.products) || [];
+				productsCache[catId] = products;
+				renderProductsList(products, body);
+			})
+			.catch(function () {
+				renderProductsList([], body);
+			});
+	}
+
+	function renderProductsList(products, body) {
+		body.innerHTML = '';
+
+		if (!products.length) {
+			var msg = document.createElement('p');
+			msg.className = 'bqw-empty';
+			msg.textContent = i18n.noProducts || 'No machines available.';
+			body.appendChild(msg);
+
+			if (cfg.fallback_email) {
+				var a = document.createElement('a');
+				a.className = 'bqw-btn bqw-btn-primary';
+				a.href = 'mailto:' + cfg.fallback_email;
+				a.textContent = i18n.contactUs || 'Contact us';
+				body.appendChild(a);
+			}
+			return;
+		}
+
 		var grid = document.createElement('div');
 		grid.className = 'bqw-cards';
+
 		products.forEach(function (p) {
-			var card = buildCard(p.image, p.name);
+			var card = buildProductCard(p);
+			if (state.productId === p.id) card.classList.add('is-selected');
 			card.addEventListener('click', function () {
 				clearSelected(grid);
 				card.classList.add('is-selected');
@@ -81,8 +140,9 @@
 			grid.appendChild(card);
 		});
 
-		// Unsure card
+		// "I'm not sure" card
 		var unsure = buildCard('', i18n.unsure || "I'm not sure");
+		if (state.productId === 0 && state.categoryId) unsure.classList.add('is-selected');
 		unsure.addEventListener('click', function () {
 			clearSelected(grid);
 			unsure.classList.add('is-selected');
@@ -91,14 +151,7 @@
 		});
 		grid.appendChild(unsure);
 
-		prodWrap.appendChild(grid);
-		prodWrap.hidden = false;
-		catWrap.hidden = true;
-
-		// Show "back to categories" only if there are multiple categories.
-		if (cfg.categories.length > 1 && !cfg.forced_category_id) {
-			backBtn.hidden = false;
-		}
+		body.appendChild(grid);
 	}
 
 	function selectProduct(p) {
@@ -127,10 +180,32 @@
 		return card;
 	}
 
+	function buildProductCard(p) {
+		var card = buildCard(p.image, p.name);
+		if (p.attributes && p.attributes.length) {
+			var attrs = document.createElement('span');
+			attrs.className = 'bqw-card-attrs';
+			p.attributes.forEach(function (a) {
+				var line = document.createElement('span');
+				line.className = 'bqw-card-attr';
+				line.textContent = a.label + ': ' + a.value;
+				attrs.appendChild(line);
+			});
+			card.appendChild(attrs);
+		}
+		return card;
+	}
+
 	function clearSelected(grid) {
 		grid.querySelectorAll('.is-selected').forEach(function (el) {
 			el.classList.remove('is-selected');
 		});
+	}
+
+	function backToCategories() {
+		document.getElementById('bqw-step1-products').hidden = true;
+		document.getElementById('bqw-step1-categories').hidden = false;
+		// Keep state.productId so the user sees their previous pick re-selected when re-entering.
 	}
 
 	// ---------- Country select ----------
@@ -334,16 +409,7 @@
 
 		var backCats = document.getElementById('bqw-back-to-categories');
 		if (backCats) {
-			backCats.addEventListener('click', function () {
-				document.getElementById('bqw-step1-categories').hidden = false;
-				document.getElementById('bqw-step1-products').hidden = true;
-				backCats.hidden = true;
-				selectProduct({ id: 0, name: '' });
-				state.categoryId = 0;
-				state.categoryName = '';
-				state.categorySlug = '';
-				document.getElementById('bqw-next-1').disabled = true;
-			});
+			backCats.addEventListener('click', backToCategories);
 		}
 
 		form.addEventListener('submit', submit);

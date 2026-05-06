@@ -74,11 +74,6 @@ final class Shortcode {
 			}
 		}
 
-		$products_by_cat = [];
-		foreach ( $categories as $cat ) {
-			$products_by_cat[ $cat['id'] ] = $this->get_products_for_category( $cat['id'] );
-		}
-
 		$forced_product = null;
 		if ( $forced_product_id ) {
 			$p = get_post( $forced_product_id );
@@ -91,19 +86,19 @@ final class Shortcode {
 			}
 		}
 
-		$settings   = get_option( Settings::OPTION_KEY, Settings::default_settings() );
+		$settings   = Settings::get_wizard();
 		$wizard_cfg = [
-			'forced_category_id'   => $forced_category_id,
-			'forced_product'       => $forced_product,
-			'categories'           => $categories,
-			'products_by_cat'      => $products_by_cat,
-			'enable_application'   => ! empty( $settings['enable_application'] ),
-			'application_options'  => $this->lines_to_array( $settings['application_options'] ?? '' ),
-			'enable_materials'     => ! empty( $settings['enable_materials'] ),
-			'materials_options'    => $this->lines_to_array( $settings['materials_options'] ?? '' ),
-			'enable_volume'        => ! empty( $settings['enable_volume'] ),
-			'volume_options'       => $this->lines_to_array( $settings['volume_options'] ?? '' ),
-			'privacy_url'          => $settings['privacy_url'] ?? '',
+			'forced_category_id'  => $forced_category_id,
+			'forced_product'      => $forced_product,
+			'categories'          => $categories,
+			'enable_application'  => ! empty( $settings['enable_application'] ),
+			'application_options' => $this->lines_to_array( $settings['application_options'] ?? '' ),
+			'enable_materials'    => ! empty( $settings['enable_materials'] ),
+			'materials_options'   => $this->lines_to_array( $settings['materials_options'] ?? '' ),
+			'enable_volume'       => ! empty( $settings['enable_volume'] ),
+			'volume_options'      => $this->lines_to_array( $settings['volume_options'] ?? '' ),
+			'privacy_url'         => $settings['privacy_url'] ?? '',
+			'fallback_email'      => $this->fallback_contact_email(),
 		];
 
 		$this->assets_needed = true;
@@ -133,31 +128,10 @@ final class Shortcode {
 		return (string) ob_get_clean();
 	}
 
-	private function get_products_for_category( int $cat_id ): array {
-		$query = new \WP_Query(
-			[
-				'post_type'      => 'product',
-				'post_status'    => 'publish',
-				'posts_per_page' => 50,
-				'tax_query'      => [
-					[
-						'taxonomy' => 'product_cat',
-						'field'    => 'term_id',
-						'terms'    => $cat_id,
-					],
-				],
-				'no_found_rows'  => true,
-			]
-		);
-		$products = [];
-		foreach ( $query->posts as $p ) {
-			$products[] = [
-				'id'    => $p->ID,
-				'name'  => $p->post_title,
-				'image' => get_the_post_thumbnail_url( $p->ID, 'medium' ) ?: '',
-			];
-		}
-		return $products;
+	private function fallback_contact_email(): string {
+		$emails_raw = (string) Settings::get( 'notify_emails', '' );
+		$first      = trim( explode( ',', $emails_raw )[0] ?? '' );
+		return is_email( $first ) ? $first : (string) get_option( 'admin_email' );
 	}
 
 	private function lines_to_array( string $raw ): array {
@@ -201,6 +175,11 @@ final class Shortcode {
 			'acceptPrivacy' => __( 'I have read and accept the privacy policy', 'bomedia-quote-wizard' ),
 			'summary'       => __( 'Summary', 'bomedia-quote-wizard' ),
 			'genericError'  => __( 'Something went wrong. Please try again.', 'bomedia-quote-wizard' ),
+			'modelOf'       => __( 'Model of', 'bomedia-quote-wizard' ),
+			'backToCats'    => __( '← Back to categories', 'bomedia-quote-wizard' ),
+			'loading'       => __( 'Loading models…', 'bomedia-quote-wizard' ),
+			'noProducts'    => __( 'No machines available in this category. Please contact us directly.', 'bomedia-quote-wizard' ),
+			'contactUs'     => __( 'Contact us', 'bomedia-quote-wizard' ),
 		];
 	}
 
