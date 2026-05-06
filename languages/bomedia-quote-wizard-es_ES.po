@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.3.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.3.1\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,8 +19,17 @@ msgstr "Se requiere un correo electrónico válido."
 msgid "Account email"
 msgstr "Email de la cuenta"
 
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Add categories from the list on the left."
+msgstr "Añade categorías desde la lista de la izquierda."
+
 msgid "Add machines from another category"
 msgstr "Añadir máquinas de otra categoría"
+
+msgid "Added"
+msgstr "Añadido"
 
 msgid "AgileCRM"
 msgstr "AgileCRM"
@@ -51,6 +60,9 @@ msgstr "Paso de aplicación"
 
 msgid "Auto (site language)"
 msgstr "Auto (idioma del sitio)"
+
+msgid "Available categories"
+msgstr "Categorías disponibles"
 
 msgid "Back"
 msgstr "Atrás"
@@ -124,11 +136,11 @@ msgstr "Datos"
 msgid "Domain"
 msgstr "Dominio"
 
-msgid "Drag rows to reorder. Checked categories show first; the order here is the order shown in the wizard."
-msgstr "Arrastra las filas para reordenar. Las categorías marcadas se muestran primero; el orden aquí es el orden en el wizard."
+msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
+msgstr "Arrastra productos para reordenar. En modo \"Mostrar todos los publicados\", arrastrar cambia a modo manual para conservar el nuevo orden."
 
-msgid "Drag the dotted handles to reorder products in the wizard (manual mode only)."
-msgstr "Arrastra los manejadores de puntos para reordenar productos en el wizard (solo en modo manual)."
+msgid "Drag to reorder"
+msgstr "Arrastra para reordenar"
 
 msgid "Edit selection"
 msgstr "Editar selección"
@@ -144,6 +156,9 @@ msgstr "Activar"
 
 msgid "Estimated monthly volume"
 msgstr "Volumen mensual estimado"
+
+msgid "Expand"
+msgstr "Desplegar"
 
 msgid "File logging"
 msgstr "Registro a archivo"
@@ -235,6 +250,9 @@ msgstr "Ninguna máquina seleccionada."
 msgid "No product categories found."
 msgstr "No se encontraron categorías de producto."
 
+msgid "No published products in this category."
+msgstr "No hay productos publicados en esta categoría."
+
 msgid "No third-party keys needed. Combined with the existing honeypot and minimum-fill-time guards, blocks the vast majority of bots."
 msgstr "No requiere claves de terceros. Junto con el honeypot y el tiempo mínimo, bloquea la mayoría de bots."
 
@@ -250,8 +268,8 @@ msgstr "Teléfono"
 msgid "Phone is required."
 msgstr "El teléfono es obligatorio."
 
-msgid "Pick the WooCommerce product categories to expose in the wizard. Subcategories are indented."
-msgstr "Selecciona las categorías de producto de WooCommerce que se mostrarán en el wizard. Las subcategorías aparecen indentadas."
+msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
+msgstr "Elige categorías en la columna de la izquierda y arrastra para reordenar en la derecha. Despliega una fila para afinar qué productos aparecen y en qué orden."
 
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
 msgstr "Placeholders: {nombre}, {empresa}, {producto}"
@@ -283,9 +301,6 @@ msgstr "Producto de interés"
 msgid "Products of interest"
 msgstr "Productos de interés"
 
-msgid "Products to expose (%1$d of %2$d)"
-msgstr "Productos a mostrar (%1$d de %2$d)"
-
 msgid "Quick check:"
 msgstr "Comprobación rápida:"
 
@@ -316,6 +331,12 @@ msgstr "Reintentar envío"
 msgid "Save your changes before testing."
 msgstr "Guarda los cambios antes de probar."
 
+msgid "Search categories"
+msgstr "Buscar categorías"
+
+msgid "Search…"
+msgstr "Buscar…"
+
 msgid "Security & marketing"
 msgstr "Seguridad y marketing"
 
@@ -324,6 +345,9 @@ msgstr "Falló la comprobación de seguridad."
 
 msgid "Security check failed. Reload the page."
 msgstr "Falló la comprobación de seguridad. Recarga la página."
+
+msgid "Selected (drag to reorder)"
+msgstr "Seleccionadas (arrastra para reordenar)"
 
 msgid "Send request"
 msgstr "Enviar solicitud"
@@ -339,6 +363,9 @@ msgstr "Muestra una casilla de opt-in de marketing en el paso de contacto."
 
 msgid "Show all published products"
 msgstr "Mostrar todos los productos publicados"
+
+msgid "Show empty"
+msgstr "Mostrar vacías"
 
 msgid "Solicitud presupuesto web"
 msgstr "Solicitud presupuesto web"
@@ -376,6 +403,9 @@ msgstr "La respuesta de verificación es incorrecta. Inténtalo de nuevo."
 msgid "This field is required."
 msgstr "Este campo es obligatorio."
 
+msgid "Toggle children"
+msgstr "Mostrar/ocultar hijos"
+
 msgid "When checked, the lead is tagged \"marketing-optin\" in AgileCRM and the custom field Marketing_Optin is set to \"yes\"."
 msgstr "Si se marca, el lead lleva el tag \"marketing-optin\" en AgileCRM y el campo personalizado Marketing_Optin se pone a \"yes\"."
 
@@ -411,6 +441,9 @@ msgstr "Máquinas seleccionadas"
 
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
 msgstr "ej. \"bomedia\" para bomedia.agilecrm.com"
+
+msgid "selected"
+msgstr "seleccionadas"
 
 msgid "← Back to categories"
 msgstr "← Volver a categorías"

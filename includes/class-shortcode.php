@@ -57,7 +57,7 @@ final class Shortcode {
 		$forced_product_id = absint( $atts['product_id'] );
 
 		// Order from settings is preserved (drag&drop in admin → DOM order → submit order).
-		$selected_cat_ids = array_map( 'intval', (array) Settings::get( 'wizard_categories', [] ) );
+		$selected_cat_ids = array_map( 'intval', (array) Settings::get( 'selected_categories', [] ) );
 		if ( $forced_category_id && ! in_array( $forced_category_id, $selected_cat_ids, true ) ) {
 			array_unshift( $selected_cat_ids, $forced_category_id );
 		}

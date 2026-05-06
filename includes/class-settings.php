@@ -52,7 +52,7 @@ final class Settings {
 
 	public static function default_wizard(): array {
 		return [
-			'wizard_categories'     => [],
+			'selected_categories'   => [],
 			'products_by_category'  => [],
 			'enable_application'    => 1,
 			'application_options'   => "Textil\nPackaging\nIndustrial\nPromocional\nOtros",
@@ -149,6 +149,25 @@ final class Settings {
 		}
 
 		update_option( self::MIGRATED_FLAG, 1 );
+
+		self::maybe_migrate_v3();
+	}
+
+	/**
+	 * v3: rename wizard_categories → selected_categories.
+	 */
+	private static function maybe_migrate_v3(): void {
+		$flag = 'bqw_settings_migrated_v3';
+		if ( get_option( $flag ) ) {
+			return;
+		}
+		$wiz = (array) get_option( self::OPT_WIZARD, [] );
+		if ( isset( $wiz['wizard_categories'] ) && empty( $wiz['selected_categories'] ) ) {
+			$wiz['selected_categories'] = $wiz['wizard_categories'];
+		}
+		unset( $wiz['wizard_categories'] );
+		update_option( self::OPT_WIZARD, $wiz );
+		update_option( $flag, 1 );
 	}
 
 	/* ---------------------------------------------------------------------
@@ -208,7 +227,7 @@ final class Settings {
 		$current = self::get_wizard();
 		$out     = $current;
 
-		$out['wizard_categories']   = array_values( array_map( 'absint', (array) ( $input['wizard_categories'] ?? [] ) ) );
+		$out['selected_categories'] = array_values( array_map( 'absint', (array) ( $input['selected_categories'] ?? [] ) ) );
 		$out['enable_application']  = ! empty( $input['enable_application'] ) ? 1 : 0;
 		$out['application_options'] = $this->sanitize_lines( $input['application_options'] ?? '' );
 		$out['enable_materials']    = ! empty( $input['enable_materials'] ) ? 1 : 0;
@@ -268,23 +287,55 @@ final class Settings {
 			return;
 		}
 		$inline_css = '
-			.bqw-cat-list{max-height:480px;overflow:auto;border:1px solid #ccd0d4;background:#fff;padding:8px 12px;border-radius:4px;}
-			.bqw-cat-list .bqw-helper{margin:0 0 8px;color:#666;font-style:italic;font-size:12px;}
-			.bqw-cat-row{padding:6px 8px;border:1px solid transparent;border-radius:4px;background:#fff;display:flex;flex-direction:column;}
-			.bqw-cat-row:hover{background:#fafafa;border-color:#e5e7eb;}
-			.bqw-cat-row.bqw-dragging{opacity:0.4;background:#eef5ff;border-color:#0066cc;}
-			.bqw-drag-handle{display:inline-block;cursor:grab;color:#aaa;user-select:none;letter-spacing:-2px;font-weight:700;padding:0 8px 0 0;}
+			.bqw-dual{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;}
+			@media(max-width:900px){.bqw-dual{grid-template-columns:1fr;}}
+			.bqw-dual-col{border:1px solid #ccd0d4;background:#fff;border-radius:6px;display:flex;flex-direction:column;min-height:420px;max-height:600px;}
+			.bqw-dual-header{padding:10px 12px;border-bottom:1px solid #e5e7eb;background:#f9fafb;border-radius:6px 6px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+			.bqw-dual-header h3{margin:0;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;flex:1 1 100%;}
+			.bqw-dual-search{flex:1 1 60%;padding:5px 8px;border:1px solid #d1d5db;border-radius:4px;font-size:13px;}
+			.bqw-dual-empty-toggle{font-size:11px;color:#666;display:inline-flex;align-items:center;gap:4px;}
+			.bqw-dual-empty-toggle input{margin:0;}
+			.bqw-dual-count{font-size:11px;color:#666;margin-left:auto;}
+
+			.bqw-dual-tree{flex:1;overflow:auto;padding:6px 0;}
+			.bqw-tree-root,.bqw-tree-children{list-style:none;margin:0;padding:0;}
+			.bqw-tree-children{margin-left:18px;}
+			.bqw-tree-node{padding:0;}
+			.bqw-tree-node.is-hidden{display:none;}
+			.bqw-tree-node[data-count="0"]{display:none;}
+			.bqw-show-empty:checked ~ .bqw-dual-tree .bqw-tree-node[data-count="0"],
+			.bqw-dual-tree.bqw-show-empty .bqw-tree-node[data-count="0"]{display:block;}
+			.bqw-tree-row{display:flex;align-items:center;gap:6px;padding:3px 12px;font-size:13px;}
+			.bqw-tree-row:hover{background:#f1f5f9;}
+			.bqw-tree-toggle{background:none;border:0;cursor:pointer;color:#94a3b8;font-size:11px;width:18px;line-height:1;padding:0;}
+			.bqw-tree-toggle.is-leaf{visibility:hidden;}
+			.bqw-tree-toggle:hover{color:#0066cc;}
+			.bqw-tree-name{flex:1;color:#1f2937;}
+			.bqw-tree-count{color:#94a3b8;font-size:11px;}
+			.bqw-tree-add{background:#fff;border:1px solid #d1d5db;color:#0066cc;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:12px;font-weight:600;}
+			.bqw-tree-add:hover:not(:disabled){background:#0066cc;color:#fff;border-color:#0066cc;}
+			.bqw-tree-add:disabled{color:#16a34a;border-color:#e5e7eb;cursor:default;background:#f0fdf4;}
+			.bqw-tree-node.is-added > .bqw-tree-row .bqw-tree-name{color:#94a3b8;}
+
+			.bqw-selected-list{flex:1;overflow:auto;list-style:none;margin:0;padding:8px;display:flex;flex-direction:column;gap:6px;}
+			.bqw-empty-hint{margin:0;padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px;font-style:italic;}
+			.bqw-empty-hint.is-hidden{display:none;}
+			.bqw-selected-row{border:1px solid #e5e7eb;border-radius:6px;background:#fff;}
+			.bqw-selected-row.bqw-dragging{opacity:0.4;border-color:#0066cc;background:#eef5ff;}
+			.bqw-selected-row-head{display:flex;align-items:center;gap:6px;padding:8px 10px;}
+			.bqw-drag-handle{cursor:grab;color:#cbd5e1;user-select:none;font-size:14px;line-height:1;padding:0 2px;}
+			.bqw-drag-handle:hover{color:#0066cc;}
 			.bqw-drag-handle:active{cursor:grabbing;}
-			.bqw-cat-label{font-weight:600;display:inline;}
-			.bqw-cat-count{color:#777;font-weight:400;}
-			.bqw-cat-acc{margin:8px 0 0 28px;border:1px solid #e5e7eb;border-radius:4px;background:#f9fafb;}
-			.bqw-cat-acc summary{padding:6px 10px;cursor:pointer;color:#444;font-size:13px;}
-			.bqw-cat-acc[open] summary{border-bottom:1px solid #e5e7eb;}
-			.bqw-cat-acc-body{padding:8px 10px;}
-			.bqw-mode-toggle{display:block;font-weight:600;margin-bottom:6px;}
-			.bqw-cat-prod-list{margin:0;padding:0;list-style:none;max-height:240px;overflow:auto;}
+			.bqw-row-toggle{background:none;border:0;cursor:pointer;color:#64748b;font-size:11px;width:18px;padding:0;}
+			.bqw-row-toggle.is-open{transform:rotate(90deg);}
+			.bqw-row-name{flex:1;font-weight:600;font-size:13px;color:#1f2937;}
+			.bqw-row-remove{background:transparent;border:1px solid transparent;color:#94a3b8;font-size:18px;width:24px;height:24px;border-radius:50%;cursor:pointer;line-height:1;padding:0;}
+			.bqw-row-remove:hover{background:#fef2f2;color:#dc2626;border-color:#fecaca;}
+			.bqw-row-body{border-top:1px solid #e5e7eb;background:#f9fafb;padding:10px 14px;border-radius:0 0 6px 6px;}
+			.bqw-mode-toggle{display:block;font-weight:600;margin-bottom:6px;font-size:13px;}
+			.bqw-cat-prod-list{margin:0;padding:0;list-style:none;max-height:220px;overflow:auto;}
 			.bqw-cat-prod-list li{padding:3px 0;font-size:13px;display:flex;align-items:center;gap:6px;}
-			.bqw-cat-prod-list li.bqw-dragging{opacity:0.4;}
+			.bqw-cat-prod-list li.bqw-dragging{opacity:0.4;background:#eef5ff;}
 			.bqw-cat-prod-list input:disabled + *{color:#888;}
 			.bqw-helper-mini{margin:8px 0 0;font-size:11px;color:#888;font-style:italic;}
 		';
@@ -300,9 +351,12 @@ final class Settings {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'bqw_test_connection' ),
 				'i18n'    => [
-					'testing' => __( 'Testing…', 'bomedia-quote-wizard' ),
-					'ok'      => __( 'Connection OK', 'bomedia-quote-wizard' ),
-					'fail'    => __( 'Connection failed: ', 'bomedia-quote-wizard' ),
+					'testing'    => __( 'Testing…', 'bomedia-quote-wizard' ),
+					'ok'         => __( 'Connection OK', 'bomedia-quote-wizard' ),
+					'fail'       => __( 'Connection failed: ', 'bomedia-quote-wizard' ),
+					'Add'        => __( 'Add', 'bomedia-quote-wizard' ),
+					'Added'      => __( 'Added', 'bomedia-quote-wizard' ),
+					'selected'   => __( 'selected', 'bomedia-quote-wizard' ),
 				],
 			]
 		);
@@ -419,7 +473,7 @@ final class Settings {
 
 	private function render_form_wizard(): void {
 		$s         = self::get_wizard();
-		$selected  = array_map( 'intval', (array) ( $s['wizard_categories'] ?? [] ) );
+		$selected  = array_map( 'intval', (array) ( $s['selected_categories'] ?? [] ) );
 		$languages = self::supported_locales();
 		?>
 		<form method="post" action="options.php">
@@ -428,8 +482,8 @@ final class Settings {
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Product categories', 'bomedia-quote-wizard' ); ?></th>
 					<td>
-						<?php $this->render_category_checkboxes( $selected ); ?>
-						<p class="description"><?php esc_html_e( 'Pick the WooCommerce product categories to expose in the wizard. Subcategories are indented.', 'bomedia-quote-wizard' ); ?></p>
+						<?php $this->render_dual_picker( $selected, (array) ( $s['products_by_category'] ?? [] ) ); ?>
+						<p class="description"><?php esc_html_e( 'Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order.', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 				<tr>
@@ -539,10 +593,10 @@ final class Settings {
 	}
 
 	/* ---------------------------------------------------------------------
-	 * Hierarchical product_cat checkbox renderer
+	 * Dual-list category picker (Available ↔ Selected)
 	 * ------------------------------------------------------------------- */
 
-	private function render_category_checkboxes( array $selected ): void {
+	private function render_dual_picker( array $selected, array $pbc ): void {
 		if ( ! taxonomy_exists( 'product_cat' ) ) {
 			echo '<em>' . esc_html__( 'WooCommerce is not active. Activate it to pick categories.', 'bomedia-quote-wizard' ) . '</em>';
 			return;
@@ -560,7 +614,7 @@ final class Settings {
 			return;
 		}
 
-		// Filter out the default "uncategorized" term.
+		// Drop "uncategorized".
 		$terms = array_values(
 			array_filter(
 				$terms,
@@ -570,62 +624,208 @@ final class Settings {
 			)
 		);
 
-		$pbc = (array) self::get( 'products_by_category', [] );
-
-		// Sort: checked categories first in user-defined order, then unchecked alphabetically.
+		// Index by id and by parent.
 		$by_id = [];
 		foreach ( $terms as $t ) {
 			$by_id[ (int) $t->term_id ] = $t;
 		}
-		$ordered = [];
-		foreach ( $selected as $sid ) {
-			$sid = (int) $sid;
-			if ( isset( $by_id[ $sid ] ) ) {
-				$ordered[] = $by_id[ $sid ];
-				unset( $by_id[ $sid ] );
-			}
-		}
-		// Append remaining alphabetically (already alphabetical from get_terms).
-		foreach ( $by_id as $t ) {
-			$ordered[] = $t;
-		}
-
-		// Build a parent-name lookup so children can show a breadcrumb label.
-		$lookup = [];
+		$by_parent = [];
 		foreach ( $terms as $t ) {
-			$lookup[ (int) $t->term_id ] = $t;
+			$by_parent[ (int) $t->parent ][] = (int) $t->term_id;
 		}
 
-		echo '<div class="bqw-cat-list" id="bqw-cat-list" data-bqw-sortable="categories">';
-		echo '<p class="description bqw-helper">' . esc_html__( 'Drag rows to reorder. Checked categories show first; the order here is the order shown in the wizard.', 'bomedia-quote-wizard' ) . '</p>';
-		foreach ( $ordered as $term ) {
-			$this->render_category_row( $term, $lookup, $selected, $pbc );
-		}
-		echo '</div>';
+		$selected_set = array_flip( array_map( 'intval', $selected ) );
+		?>
+		<div class="bqw-dual" id="bqw-dual">
+			<div class="bqw-dual-col bqw-dual-available">
+				<header class="bqw-dual-header">
+					<h3><?php esc_html_e( 'Available categories', 'bomedia-quote-wizard' ); ?></h3>
+					<input type="search"
+						class="bqw-dual-search"
+						placeholder="<?php esc_attr_e( 'Search…', 'bomedia-quote-wizard' ); ?>"
+						aria-label="<?php esc_attr_e( 'Search categories', 'bomedia-quote-wizard' ); ?>" />
+					<label class="bqw-dual-empty-toggle">
+						<input type="checkbox" class="bqw-show-empty" />
+						<?php esc_html_e( 'Show empty', 'bomedia-quote-wizard' ); ?>
+					</label>
+				</header>
+				<div class="bqw-dual-tree">
+					<ul class="bqw-tree-root">
+						<?php $this->render_tree_nodes( $by_parent, $by_id, 0, $selected_set ); ?>
+					</ul>
+				</div>
+			</div>
+
+			<div class="bqw-dual-col bqw-dual-selected">
+				<header class="bqw-dual-header">
+					<h3><?php esc_html_e( 'Selected (drag to reorder)', 'bomedia-quote-wizard' ); ?></h3>
+					<span class="bqw-dual-count" id="bqw-dual-count"></span>
+				</header>
+				<ul class="bqw-selected-list" id="bqw-selected-list" data-bqw-sortable="categories">
+					<?php foreach ( $selected as $tid ) :
+						$tid = (int) $tid;
+						if ( ! isset( $by_id[ $tid ] ) ) {
+							continue;
+						}
+						$this->render_selected_row( $by_id[ $tid ], $by_id, $pbc[ $tid ] ?? [] );
+					endforeach; ?>
+				</ul>
+				<p class="bqw-empty-hint" id="bqw-empty-hint"><?php esc_html_e( 'Add categories from the list on the left.', 'bomedia-quote-wizard' ); ?></p>
+			</div>
+		</div>
+
+		<div id="bqw-cat-templates" hidden>
+			<?php
+			foreach ( $by_id as $tid => $term ) :
+				if ( isset( $selected_set[ $tid ] ) ) {
+					continue; // already rendered live.
+				}
+				?>
+				<template id="bqw-cat-tpl-<?php echo esc_attr( (string) $tid ); ?>"><?php
+				$this->render_selected_row( $term, $by_id, $pbc[ $tid ] ?? [] );
+				?></template>
+			<?php endforeach; ?>
+		</div>
+		<?php
 	}
 
-	private function render_category_row( $term, array $lookup, array $selected, array $pbc ): void {
+	private function render_tree_nodes( array $by_parent, array $by_id, int $parent, array $selected_set ): void {
+		if ( empty( $by_parent[ $parent ] ) ) {
+			return;
+		}
+		foreach ( $by_parent[ $parent ] as $tid ) {
+			$term      = $by_id[ $tid ];
+			$has_kids  = ! empty( $by_parent[ $tid ] );
+			$is_added  = isset( $selected_set[ $tid ] );
+			$count     = (int) $term->count;
+			$node_cls  = 'bqw-tree-node';
+			if ( $is_added ) {
+				$node_cls .= ' is-added';
+			}
+			?>
+			<li class="<?php echo esc_attr( $node_cls ); ?>"
+				data-term-id="<?php echo esc_attr( (string) $tid ); ?>"
+				data-name="<?php echo esc_attr( strtolower( $term->name ) ); ?>"
+				data-count="<?php echo esc_attr( (string) $count ); ?>">
+				<div class="bqw-tree-row">
+					<button type="button" class="bqw-tree-toggle <?php echo $has_kids ? '' : 'is-leaf'; ?>" aria-label="<?php esc_attr_e( 'Toggle children', 'bomedia-quote-wizard' ); ?>">
+						<?php echo $has_kids ? '▸' : '·'; ?>
+					</button>
+					<span class="bqw-tree-name"><?php echo esc_html( $term->name ); ?></span>
+					<span class="bqw-tree-count">(<?php echo esc_html( (string) $count ); ?>)</span>
+					<button type="button"
+						class="bqw-tree-add"
+						data-term-id="<?php echo esc_attr( (string) $tid ); ?>"
+						<?php disabled( $is_added ); ?>>
+						<?php echo $is_added ? '✓ ' . esc_html__( 'Added', 'bomedia-quote-wizard' ) : '+ ' . esc_html__( 'Add', 'bomedia-quote-wizard' ); ?>
+					</button>
+				</div>
+				<?php if ( $has_kids ) : ?>
+					<ul class="bqw-tree-children" hidden>
+						<?php $this->render_tree_nodes( $by_parent, $by_id, $tid, $selected_set ); ?>
+					</ul>
+				<?php endif; ?>
+			</li>
+			<?php
+		}
+	}
+
+	private function render_selected_row( $term, array $by_id, array $cfg ): void {
 		$term_id    = (int) $term->term_id;
-		$id         = 'bqw_cat_' . $term_id;
-		$is_checked = in_array( $term_id, $selected, true );
-		$breadcrumb = $this->breadcrumb_label( $term, $lookup );
+		$breadcrumb = $this->breadcrumb_label( $term, $by_id );
+		?>
+		<li class="bqw-selected-row" data-term-id="<?php echo esc_attr( (string) $term_id ); ?>" draggable="true">
+			<input type="hidden" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[selected_categories][]" value="<?php echo esc_attr( (string) $term_id ); ?>" />
+			<div class="bqw-selected-row-head">
+				<span class="bqw-drag-handle" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'bomedia-quote-wizard' ); ?>">⠿</span>
+				<button type="button" class="bqw-row-toggle" aria-label="<?php esc_attr_e( 'Expand', 'bomedia-quote-wizard' ); ?>">▸</button>
+				<span class="bqw-row-name"><?php echo esc_html( $breadcrumb ); ?></span>
+				<button type="button" class="bqw-row-remove" aria-label="<?php esc_attr_e( 'Remove', 'bomedia-quote-wizard' ); ?>">×</button>
+			</div>
+			<div class="bqw-row-body" hidden>
+				<?php $this->render_row_products( $term_id, $cfg ); ?>
+			</div>
+		</li>
+		<?php
+	}
 
-		echo '<div class="bqw-cat-row" data-term-id="' . esc_attr( (string) $term_id ) . '" draggable="true">';
-		echo '<span class="bqw-drag-handle" aria-hidden="true">⋮⋮</span>';
-		printf(
-			'<label for="%s" class="bqw-cat-label"><input type="checkbox" id="%s" class="bqw-cat-cb" name="%s[wizard_categories][]" value="%d" %s /> %s <span class="bqw-cat-count">(%d)</span></label>',
-			esc_attr( $id ),
-			esc_attr( $id ),
-			esc_attr( self::OPT_WIZARD ),
-			$term_id,
-			$is_checked ? 'checked="checked"' : '',
-			esc_html( $breadcrumb ),
-			(int) $term->count
+	private function render_row_products( int $term_id, array $cfg ): void {
+		$products = get_posts(
+			[
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
+				'no_found_rows'  => true,
+				'tax_query'      => [
+					[
+						'taxonomy'         => 'product_cat',
+						'field'            => 'term_id',
+						'terms'            => $term_id,
+						'include_children' => false,
+					],
+				],
+			]
 		);
+		$total = count( $products );
 
-		$this->render_category_products_accordion( $term_id, $pbc[ $term_id ] ?? [], $is_checked );
+		$mode       = isset( $cfg['mode'] ) && 'manual' === $cfg['mode'] ? 'manual' : 'all';
+		$manual_ids = array_map( 'absint', (array) ( $cfg['ids'] ?? [] ) );
 
-		echo '</div>';
+		// In manual mode, sort by saved order; in all mode, keep menu_order/title order.
+		if ( 'manual' === $mode && ! empty( $manual_ids ) ) {
+			$by_pid = [];
+			foreach ( $products as $p ) {
+				$by_pid[ (int) $p->ID ] = $p;
+			}
+			$sorted = [];
+			foreach ( $manual_ids as $mid ) {
+				if ( isset( $by_pid[ $mid ] ) ) {
+					$sorted[] = $by_pid[ $mid ];
+					unset( $by_pid[ $mid ] );
+				}
+			}
+			foreach ( $by_pid as $p ) {
+				$sorted[] = $p;
+			}
+			$products = $sorted;
+		}
+
+		$opt = self::OPT_WIZARD;
+		?>
+		<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]" value="manual" />
+		<label class="bqw-mode-toggle">
+			<input type="checkbox" class="bqw-mode-cb"
+				name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]"
+				value="all" <?php checked( 'all' === $mode ); ?> />
+			<?php esc_html_e( 'Show all published products', 'bomedia-quote-wizard' ); ?>
+		</label>
+
+		<?php if ( 0 === $total ) : ?>
+			<p class="bqw-helper-mini"><?php esc_html_e( 'No published products in this category.', 'bomedia-quote-wizard' ); ?></p>
+		<?php else : ?>
+			<ul class="bqw-cat-prod-list" data-bqw-sortable="products">
+				<?php foreach ( $products as $product ) :
+					$pid     = (int) $product->ID;
+					$checked = 'all' === $mode || in_array( $pid, $manual_ids, true );
+					?>
+					<li draggable="true">
+						<span class="bqw-drag-handle bqw-drag-handle-prod" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'bomedia-quote-wizard' ); ?>">⠿</span>
+						<label>
+							<input type="checkbox"
+								class="bqw-prod-cb"
+								name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][ids][]"
+								value="<?php echo esc_attr( (string) $pid ); ?>"
+								<?php checked( $checked ); ?>
+								<?php disabled( 'all' === $mode ); ?> />
+							<?php echo esc_html( $product->post_title ); ?>
+						</label>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+			<p class="bqw-helper-mini"><?php esc_html_e( 'Drag products to reorder. In "Show all published" mode, dragging will switch to manual to preserve the new order.', 'bomedia-quote-wizard' ); ?></p>
+		<?php endif; ?>
+		<?php
 	}
 
 	private function breadcrumb_label( $term, array $lookup ): string {
@@ -641,97 +841,6 @@ final class Settings {
 			$guard++;
 		}
 		return implode( ' › ', array_reverse( $names ) );
-	}
-
-	private function render_category_products_accordion( int $term_id, array $cfg, bool $cat_is_checked ): void {
-		$products = get_posts(
-			[
-				'post_type'      => 'product',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'ASC',
-				'no_found_rows'  => true,
-				'tax_query'      => [
-					[
-						'taxonomy'         => 'product_cat',
-						'field'            => 'term_id',
-						'terms'            => $term_id,
-						'include_children' => false,
-					],
-				],
-			]
-		);
-		$total = count( $products );
-		if ( 0 === $total ) {
-			return;
-		}
-
-		$mode       = isset( $cfg['mode'] ) && 'manual' === $cfg['mode'] ? 'manual' : 'all';
-		$manual_ids = array_map( 'absint', (array) ( $cfg['ids'] ?? [] ) );
-
-		// Sort products: ids order first (when manual), then remaining alphabetically.
-		$by_id = [];
-		foreach ( $products as $p ) {
-			$by_id[ (int) $p->ID ] = $p;
-		}
-		$sorted = [];
-		foreach ( $manual_ids as $mid ) {
-			if ( isset( $by_id[ $mid ] ) ) {
-				$sorted[] = $by_id[ $mid ];
-				unset( $by_id[ $mid ] );
-			}
-		}
-		foreach ( $by_id as $p ) {
-			$sorted[] = $p;
-		}
-
-		$active_count = 'all' === $mode
-			? $total
-			: count( array_intersect( $manual_ids, array_map( static function ( $p ) { return (int) $p->ID; }, $products ) ) );
-
-		$opt    = self::OPT_WIZARD;
-		$style  = $cat_is_checked ? '' : 'display:none;';
-		$detail = sprintf(
-			/* translators: 1: number of selected products, 2: total products in category */
-			__( 'Products to expose (%1$d of %2$d)', 'bomedia-quote-wizard' ),
-			$active_count,
-			$total
-		);
-		?>
-		<details class="bqw-cat-acc" style="<?php echo esc_attr( $style ); ?>">
-			<summary><?php echo esc_html( $detail ); ?></summary>
-			<div class="bqw-cat-acc-body">
-				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]" value="manual" />
-				<label class="bqw-mode-toggle">
-					<input type="checkbox" class="bqw-mode-cb"
-						name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][mode]"
-						value="all" <?php checked( 'all' === $mode ); ?> />
-					<?php esc_html_e( 'Show all published products', 'bomedia-quote-wizard' ); ?>
-				</label>
-				<ul class="bqw-cat-prod-list" data-bqw-sortable="products">
-					<?php foreach ( $sorted as $product ) :
-						$pid     = (int) $product->ID;
-						$checked = 'all' === $mode || in_array( $pid, $manual_ids, true );
-						?>
-						<li draggable="true">
-							<span class="bqw-drag-handle" aria-hidden="true">⋮⋮</span>
-							<label>
-								<input type="checkbox"
-									class="bqw-prod-cb"
-									name="<?php echo esc_attr( $opt ); ?>[products_by_category][<?php echo esc_attr( (string) $term_id ); ?>][ids][]"
-									value="<?php echo esc_attr( (string) $pid ); ?>"
-									<?php checked( $checked ); ?>
-									<?php disabled( 'all' === $mode ); ?> />
-								<?php echo esc_html( $product->post_title ); ?>
-							</label>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-				<p class="description bqw-helper-mini"><?php esc_html_e( 'Drag the dotted handles to reorder products in the wizard (manual mode only).', 'bomedia-quote-wizard' ); ?></p>
-			</div>
-		</details>
-		<?php
 	}
 
 	/* ---------------------------------------------------------------------

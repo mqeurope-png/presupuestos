@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.3.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.3.1\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,8 +19,17 @@ msgstr ""
 msgid "Account email"
 msgstr ""
 
+msgid "Add"
+msgstr ""
+
+msgid "Add categories from the list on the left."
+msgstr ""
+
 msgid "Add machines from another category"
 msgstr "Adicionar máquinas de outra categoria"
+
+msgid "Added"
+msgstr ""
 
 msgid "AgileCRM"
 msgstr ""
@@ -50,6 +59,9 @@ msgid "Application step"
 msgstr ""
 
 msgid "Auto (site language)"
+msgstr ""
+
+msgid "Available categories"
 msgstr ""
 
 msgid "Back"
@@ -124,10 +136,10 @@ msgstr "Dados"
 msgid "Domain"
 msgstr ""
 
-msgid "Drag rows to reorder. Checked categories show first; the order here is the order shown in the wizard."
+msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
 msgstr ""
 
-msgid "Drag the dotted handles to reorder products in the wizard (manual mode only)."
+msgid "Drag to reorder"
 msgstr ""
 
 msgid "Edit selection"
@@ -144,6 +156,9 @@ msgstr ""
 
 msgid "Estimated monthly volume"
 msgstr "Volume mensal estimado"
+
+msgid "Expand"
+msgstr ""
 
 msgid "File logging"
 msgstr ""
@@ -235,6 +250,9 @@ msgstr "Nenhuma máquina selecionada."
 msgid "No product categories found."
 msgstr ""
 
+msgid "No published products in this category."
+msgstr ""
+
 msgid "No third-party keys needed. Combined with the existing honeypot and minimum-fill-time guards, blocks the vast majority of bots."
 msgstr ""
 
@@ -250,7 +268,7 @@ msgstr "Telefone"
 msgid "Phone is required."
 msgstr "O telefone é obrigatório."
 
-msgid "Pick the WooCommerce product categories to expose in the wizard. Subcategories are indented."
+msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr ""
 
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
@@ -283,9 +301,6 @@ msgstr "Produto de interesse"
 msgid "Products of interest"
 msgstr "Produtos de interesse"
 
-msgid "Products to expose (%1$d of %2$d)"
-msgstr ""
-
 msgid "Quick check:"
 msgstr "Verificação rápida:"
 
@@ -316,6 +331,12 @@ msgstr ""
 msgid "Save your changes before testing."
 msgstr ""
 
+msgid "Search categories"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
 msgid "Security & marketing"
 msgstr ""
 
@@ -323,6 +344,9 @@ msgid "Security check failed."
 msgstr ""
 
 msgid "Security check failed. Reload the page."
+msgstr ""
+
+msgid "Selected (drag to reorder)"
 msgstr ""
 
 msgid "Send request"
@@ -338,6 +362,9 @@ msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr ""
 
 msgid "Show all published products"
+msgstr ""
+
+msgid "Show empty"
 msgstr ""
 
 msgid "Solicitud presupuesto web"
@@ -376,6 +403,9 @@ msgstr "A resposta de verificação está incorreta. Tente novamente."
 msgid "This field is required."
 msgstr "Este campo é obrigatório."
 
+msgid "Toggle children"
+msgstr ""
+
 msgid "When checked, the lead is tagged \"marketing-optin\" in AgileCRM and the custom field Marketing_Optin is set to \"yes\"."
 msgstr ""
 
@@ -410,6 +440,9 @@ msgid "Your selected machines"
 msgstr "Máquinas selecionadas"
 
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
+msgstr ""
+
+msgid "selected"
 msgstr ""
 
 msgid "← Back to categories"
