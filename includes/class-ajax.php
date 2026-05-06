@@ -29,6 +29,193 @@ final class Ajax {
 		add_action( 'wp_ajax_nopriv_bqw_submit', [ $this, 'handle_submit' ] );
 		add_action( 'wp_ajax_bqw_get_products_by_category', [ $this, 'handle_get_products' ] );
 		add_action( 'wp_ajax_nopriv_bqw_get_products_by_category', [ $this, 'handle_get_products' ] );
+		add_action( 'wp_ajax_bqw_matchmaker', [ $this, 'handle_matchmaker' ] );
+		add_action( 'wp_ajax_nopriv_bqw_matchmaker', [ $this, 'handle_matchmaker' ] );
+	}
+
+	/**
+	 * Scores published products against the user's matchmaker answers and
+	 * returns the top 3 with score >= 50%.
+	 */
+	public function handle_matchmaker(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+
+		$ans = wp_unslash( $_POST['answers'] ?? [] );
+		if ( ! is_array( $ans ) ) {
+			$ans = [];
+		}
+		$applications = array_map( 'sanitize_text_field', (array) ( $ans['application'] ?? [] ) );
+		$materials    = array_map( 'sanitize_text_field', (array) ( $ans['materials'] ?? [] ) );
+		$volume       = sanitize_text_field( (string) ( $ans['volume'] ?? '' ) );
+		$format       = sanitize_text_field( (string) ( $ans['format'] ?? '' ) );
+		$budget       = sanitize_text_field( (string) ( $ans['budget'] ?? '' ) );
+
+		$w = Settings::get_wizard();
+
+		$attr_application = (string) ( $w['matchmaker_attr_application'] ?? '' );
+		$attr_materials   = (string) ( $w['matchmaker_attr_materials'] ?? '' );
+		$attr_volume      = (string) ( $w['matchmaker_attr_volume'] ?? '' );
+		$attr_format      = (string) ( $w['matchmaker_attr_format'] ?? '' );
+		$attr_budget      = (string) ( $w['matchmaker_attr_budget'] ?? '' );
+
+		$weights = [
+			'application' => (int) ( $w['matchmaker_w_application'] ?? 40 ),
+			'materials'   => (int) ( $w['matchmaker_w_materials'] ?? 30 ),
+			'volume'      => (int) ( $w['matchmaker_w_volume'] ?? 20 ),
+			'format'      => (int) ( $w['matchmaker_w_format'] ?? 10 ),
+		];
+
+		// Restrict to the categories the wizard exposes.
+		$cat_ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
+		$args = [
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 200,
+			'no_found_rows'  => true,
+		];
+		if ( $cat_ids ) {
+			$args['tax_query'] = [
+				[
+					'taxonomy'         => 'product_cat',
+					'field'            => 'term_id',
+					'terms'            => $cat_ids,
+					'include_children' => false,
+				],
+			];
+		}
+		$query = new \WP_Query( $args );
+
+		$ranked = [];
+		foreach ( $query->posts as $p ) {
+			$pid     = (int) $p->ID;
+			$product = function_exists( 'wc_get_product' ) ? wc_get_product( $pid ) : null;
+			if ( ! $product ) {
+				continue;
+			}
+
+			// Budget filter (hard).
+			if ( $budget && $attr_budget ) {
+				$buckets = self::attr_terms( $product, $attr_budget );
+				if ( $buckets && ! self::ci_in( $budget, $buckets ) ) {
+					continue;
+				}
+			}
+
+			$matched = 0;
+			$total   = 0;
+			$reasons = [];
+
+			$total += $weights['application'];
+			if ( $attr_application && $applications ) {
+				$terms_app = self::attr_terms( $product, $attr_application );
+				$hits = self::ci_intersect_count( $applications, $terms_app );
+				if ( $hits > 0 ) {
+					$matched += $weights['application'];
+					$reasons[] = sprintf( __( 'covers %s', 'bomedia-quote-wizard' ), implode( ', ', array_slice( $applications, 0, 2 ) ) );
+				}
+			}
+
+			$total += $weights['materials'];
+			if ( $attr_materials && $materials ) {
+				$terms_m = self::attr_terms( $product, $attr_materials );
+				$hits = self::ci_intersect_count( $materials, $terms_m );
+				if ( $hits > 0 ) {
+					$matched += (int) round( $weights['materials'] * ( $hits / max( 1, count( $materials ) ) ) );
+					$reasons[] = sprintf( __( 'works with %s', 'bomedia-quote-wizard' ), implode( ', ', array_slice( $materials, 0, 2 ) ) );
+				}
+			}
+
+			$total += $weights['volume'];
+			if ( $attr_volume && $volume ) {
+				$terms_v = self::attr_terms( $product, $attr_volume );
+				if ( $terms_v && self::ci_in( $volume, $terms_v ) ) {
+					$matched += $weights['volume'];
+					$reasons[] = sprintf( __( 'fits %s monthly volume', 'bomedia-quote-wizard' ), $volume );
+				}
+			}
+
+			$total += $weights['format'];
+			if ( $attr_format && $format ) {
+				$terms_f = self::attr_terms( $product, $attr_format );
+				if ( $terms_f && self::ci_in( $format, $terms_f ) ) {
+					$matched += $weights['format'];
+					$reasons[] = sprintf( __( 'supports %s', 'bomedia-quote-wizard' ), $format );
+				}
+			}
+
+			$score = $total > 0 ? (int) round( ( $matched / $total ) * 100 ) : 0;
+			if ( $score < 50 ) {
+				continue;
+			}
+
+			// Primary category lookup for tagging later.
+			$primary_cat = '';
+			$primary_cat_slug = '';
+			$primary_cat_id = 0;
+			$ts = wp_get_post_terms( $pid, 'product_cat' );
+			if ( $ts && ! is_wp_error( $ts ) ) {
+				$primary_cat       = $ts[0]->name;
+				$primary_cat_slug  = $ts[0]->slug;
+				$primary_cat_id    = (int) $ts[0]->term_id;
+			}
+
+			$ranked[] = [
+				'id'           => $pid,
+				'name'         => $p->post_title,
+				'sku'          => (string) $product->get_sku(),
+				'image'        => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
+				'score'        => $score,
+				'reasons'      => array_slice( array_unique( $reasons ), 0, 2 ),
+				'categoryId'   => $primary_cat_id,
+				'categorySlug' => $primary_cat_slug,
+				'categoryName' => $primary_cat,
+			];
+		}
+
+		usort( $ranked, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+		$ranked = array_slice( $ranked, 0, 3 );
+
+		wp_send_json_success( [ 'recommendations' => $ranked ] );
+	}
+
+	private static function attr_terms( $product, string $attr_slug ): array {
+		if ( ! $product || '' === $attr_slug ) {
+			return [];
+		}
+		$value = $product->get_attribute( $attr_slug );
+		if ( '' === $value ) {
+			return [];
+		}
+		// Multiple values are returned comma-separated.
+		$parts = array_map( 'trim', explode( ',', $value ) );
+		return array_filter( $parts, 'strlen' );
+	}
+
+	private static function ci_in( string $needle, array $haystack ): bool {
+		$n = self::norm( $needle );
+		foreach ( $haystack as $h ) {
+			if ( self::norm( $h ) === $n ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static function ci_intersect_count( array $a, array $b ): int {
+		$bn = array_map( [ self::class, 'norm' ], $b );
+		$count = 0;
+		foreach ( $a as $x ) {
+			if ( in_array( self::norm( $x ), $bn, true ) ) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+
+	private static function norm( string $s ): string {
+		return mb_strtolower( trim( $s ) );
 	}
 
 	/**
@@ -159,13 +346,13 @@ final class Ajax {
 			wp_send_json_error( [ 'message' => __( 'Please take a moment before submitting.', 'bomedia-quote-wizard' ) ], 400 );
 		}
 
-		// Math captcha.
+		// Captcha (math, reCAPTCHA v2/v3, Turnstile, hCaptcha).
 		if ( Captcha::is_enabled() ) {
-			$ans   = $_POST['bqw_captcha_answer'] ?? '';
-			$tok   = isset( $_POST['bqw_captcha_token'] ) ? (string) wp_unslash( $_POST['bqw_captcha_token'] ) : '';
-			$ts    = isset( $_POST['bqw_captcha_ts'] ) ? absint( $_POST['bqw_captcha_ts'] ) : 0;
-			if ( ! Captcha::verify( $ans, $tok, $ts ) ) {
-				wp_send_json_error( [ 'message' => __( 'The verification answer is incorrect. Please try again.', 'bomedia-quote-wizard' ) ], 400 );
+			$req = wp_unslash( $_POST );
+			$req['remote_ip'] = self::client_ip();
+			$result = Captcha::provider()->verify( $req );
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( [ 'message' => $result->get_error_message() ], 400 );
 			}
 		}
 
@@ -183,10 +370,18 @@ final class Ajax {
 		// Render thanks template snippet.
 		$thanks_html = $this->render_thanks_html( $data );
 
+		// Optional post-submit redirect (for conversion tracking).
+		$redirect = (string) Settings::get( 'redirect_url', '' );
+		if ( $redirect && $lead_id ) {
+			$redirect = add_query_arg( 'lead_id', $lead_id, $redirect );
+		}
+
 		wp_send_json_success(
 			[
-				'message' => __( 'Thanks! We received your request.', 'bomedia-quote-wizard' ),
-				'html'    => $thanks_html,
+				'message'  => __( 'Thanks! We received your request.', 'bomedia-quote-wizard' ),
+				'html'     => $thanks_html,
+				'redirect' => $redirect,
+				'lead_id'  => $lead_id,
 			]
 		);
 	}

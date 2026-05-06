@@ -63,8 +63,38 @@ final class Settings {
 			'wizard_language'       => '',
 			'privacy_url'           => '',
 			'enable_captcha'        => 1,
+			'captcha_provider'      => 'math',
+			'recaptcha_site_key'    => '',
+			'recaptcha_secret_key'  => '',
+			'recaptcha_v3_threshold' => 0.5,
+			'turnstile_site_key'    => '',
+			'turnstile_secret_key'  => '',
+			'hcaptcha_site_key'     => '',
+			'hcaptcha_secret_key'   => '',
 			'enable_email_optin'    => 0,
 			'email_optin_label'     => 'Sí, me gustaría recibir novedades de producto y ofertas por email.',
+
+			// v1.4.0 additions:
+			'enable_hero'           => 1,
+			'hero_title'            => 'Encuentra tu solución de impresión ideal',
+			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
+			'hero_image_id'         => 0,
+			'hero_trust'            => "shield-alt|10 años de experiencia\nawards|Distribuidor oficial\ngroups|+500 clientes\nphone|Soporte personalizado",
+			'enable_microcopy'      => 1,
+			'microcopy_messages'    => "Vamos allá\nGenial, sigamos\nCasi lo tenemos\nÚltima pregunta\nListo para mandarlo",
+			'enable_matchmaker'     => 1,
+			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
+			'matchmaker_budget_options'  => "Hasta 5.000 €\n5.000–15.000 €\n15.000–40.000 €\nMás de 40.000 €",
+			'matchmaker_attr_application' => '',
+			'matchmaker_attr_materials'   => '',
+			'matchmaker_attr_volume'      => '',
+			'matchmaker_attr_format'      => '',
+			'matchmaker_attr_budget'      => '',
+			'matchmaker_w_application'    => 40,
+			'matchmaker_w_materials'      => 30,
+			'matchmaker_w_volume'         => 20,
+			'matchmaker_w_format'         => 10,
+			'option_images'         => [],
 		];
 	}
 
@@ -73,6 +103,7 @@ final class Settings {
 			'notify_emails'  => get_option( 'admin_email' ),
 			'notify_subject' => 'Nueva solicitud de presupuesto: {producto} - {empresa}',
 			'enable_log'     => 1,
+			'redirect_url'   => '',
 		];
 	}
 
@@ -237,8 +268,67 @@ final class Settings {
 		$out['wizard_language']     = sanitize_text_field( $input['wizard_language'] ?? '' );
 		$out['privacy_url']         = esc_url_raw( $input['privacy_url'] ?? '' );
 		$out['enable_captcha']      = ! empty( $input['enable_captcha'] ) ? 1 : 0;
+		$out['captcha_provider']    = in_array( $input['captcha_provider'] ?? '', array_keys( Captcha::providers_list() ), true )
+			? $input['captcha_provider']
+			: 'math';
+		$out['recaptcha_site_key']  = sanitize_text_field( $input['recaptcha_site_key'] ?? '' );
+		if ( isset( $input['recaptcha_secret_key'] ) ) {
+			$nv = trim( (string) $input['recaptcha_secret_key'] );
+			if ( '' !== $nv && '********' !== $nv ) {
+				$out['recaptcha_secret_key'] = self::encrypt( $nv );
+			}
+		}
+		$out['recaptcha_v3_threshold'] = max( 0.0, min( 1.0, (float) ( $input['recaptcha_v3_threshold'] ?? 0.5 ) ) );
+		$out['turnstile_site_key']  = sanitize_text_field( $input['turnstile_site_key'] ?? '' );
+		if ( isset( $input['turnstile_secret_key'] ) ) {
+			$nv = trim( (string) $input['turnstile_secret_key'] );
+			if ( '' !== $nv && '********' !== $nv ) {
+				$out['turnstile_secret_key'] = self::encrypt( $nv );
+			}
+		}
+		$out['hcaptcha_site_key']   = sanitize_text_field( $input['hcaptcha_site_key'] ?? '' );
+		if ( isset( $input['hcaptcha_secret_key'] ) ) {
+			$nv = trim( (string) $input['hcaptcha_secret_key'] );
+			if ( '' !== $nv && '********' !== $nv ) {
+				$out['hcaptcha_secret_key'] = self::encrypt( $nv );
+			}
+		}
 		$out['enable_email_optin']  = ! empty( $input['enable_email_optin'] ) ? 1 : 0;
 		$out['email_optin_label']   = sanitize_text_field( $input['email_optin_label'] ?? '' );
+
+		// Hero.
+		$out['enable_hero']      = ! empty( $input['enable_hero'] ) ? 1 : 0;
+		$out['hero_title']       = sanitize_text_field( $input['hero_title'] ?? '' );
+		$out['hero_subtitle']    = sanitize_text_field( $input['hero_subtitle'] ?? '' );
+		$out['hero_image_id']    = absint( $input['hero_image_id'] ?? 0 );
+		$out['hero_trust']       = $this->sanitize_lines( (string) ( $input['hero_trust'] ?? '' ) );
+
+		// Microcopy.
+		$out['enable_microcopy']  = ! empty( $input['enable_microcopy'] ) ? 1 : 0;
+		$out['microcopy_messages'] = $this->sanitize_lines( (string) ( $input['microcopy_messages'] ?? '' ) );
+
+		// Matchmaker.
+		$out['enable_matchmaker']           = ! empty( $input['enable_matchmaker'] ) ? 1 : 0;
+		$out['matchmaker_format_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_format_options'] ?? '' ) );
+		$out['matchmaker_budget_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_budget_options'] ?? '' ) );
+		$out['matchmaker_attr_application'] = sanitize_text_field( $input['matchmaker_attr_application'] ?? '' );
+		$out['matchmaker_attr_materials']   = sanitize_text_field( $input['matchmaker_attr_materials'] ?? '' );
+		$out['matchmaker_attr_volume']      = sanitize_text_field( $input['matchmaker_attr_volume'] ?? '' );
+		$out['matchmaker_attr_format']      = sanitize_text_field( $input['matchmaker_attr_format'] ?? '' );
+		$out['matchmaker_attr_budget']      = sanitize_text_field( $input['matchmaker_attr_budget'] ?? '' );
+		$out['matchmaker_w_application']    = max( 0, min( 100, (int) ( $input['matchmaker_w_application'] ?? 40 ) ) );
+		$out['matchmaker_w_materials']      = max( 0, min( 100, (int) ( $input['matchmaker_w_materials'] ?? 30 ) ) );
+		$out['matchmaker_w_volume']         = max( 0, min( 100, (int) ( $input['matchmaker_w_volume'] ?? 20 ) ) );
+		$out['matchmaker_w_format']         = max( 0, min( 100, (int) ( $input['matchmaker_w_format'] ?? 10 ) ) );
+
+		// Option images: map of "context|optionLabel" => attachment ID.
+		$option_images = [];
+		if ( isset( $input['option_images'] ) && is_array( $input['option_images'] ) ) {
+			foreach ( $input['option_images'] as $key => $aid ) {
+				$option_images[ sanitize_text_field( (string) $key ) ] = absint( $aid );
+			}
+		}
+		$out['option_images'] = $option_images;
 
 		// Merge products_by_category, preserving entries for categories not posted
 		// (so unchecking a category does not erase its product filter config).
@@ -268,6 +358,7 @@ final class Settings {
 		$out['notify_emails']  = sanitize_text_field( $input['notify_emails'] ?? '' );
 		$out['notify_subject'] = sanitize_text_field( $input['notify_subject'] ?? '' );
 		$out['enable_log']     = ! empty( $input['enable_log'] ) ? 1 : 0;
+		$out['redirect_url']   = esc_url_raw( $input['redirect_url'] ?? '' );
 
 		return $out;
 	}
@@ -338,12 +429,16 @@ final class Settings {
 			.bqw-cat-prod-list li.bqw-dragging{opacity:0.4;background:#eef5ff;}
 			.bqw-cat-prod-list input:disabled + *{color:#888;}
 			.bqw-helper-mini{margin:8px 0 0;font-size:11px;color:#888;font-style:italic;}
+			.bqw-sort-placeholder{visibility:visible !important;background:#dbeafe;border:2px dashed #0066cc;border-radius:6px;height:36px;margin:6px 0;}
+			.bqw-cat-prod-list .bqw-sort-placeholder{height:24px;}
 		';
 		wp_register_style( 'bqw-admin-inline', false, [], BQW_VERSION );
 		wp_enqueue_style( 'bqw-admin-inline' );
 		wp_add_inline_style( 'bqw-admin-inline', $inline_css );
 
-		wp_enqueue_script( 'bqw-admin', BQW_PLUGIN_URL . 'assets/js/admin.js', [], BQW_VERSION, true );
+		wp_enqueue_script( 'jquery-ui-sortable' );
+		wp_enqueue_media();
+		wp_enqueue_script( 'bqw-admin', BQW_PLUGIN_URL . 'assets/js/admin.js', [ 'jquery', 'jquery-ui-sortable' ], BQW_VERSION, true );
 		wp_localize_script(
 			'bqw-admin',
 			'BQW_Admin',
@@ -527,15 +622,154 @@ final class Settings {
 				</tr>
 			</table>
 
+			<h2 class="title"><?php esc_html_e( 'Hero (welcome screen)', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Show hero', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_hero]" value="1" <?php checked( ! empty( $s['enable_hero'] ) ); ?> /> <?php esc_html_e( 'Render a welcome screen before step 1.', 'bomedia-quote-wizard' ); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Title', 'bomedia-quote-wizard' ); ?></label></th>
+					<td><input type="text" class="large-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hero_title]" value="<?php echo esc_attr( $s['hero_title'] ); ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Subtitle', 'bomedia-quote-wizard' ); ?></label></th>
+					<td><input type="text" class="large-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hero_subtitle]" value="<?php echo esc_attr( $s['hero_subtitle'] ); ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Background image', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<?php $this->render_media_picker( 'hero_image_id', (int) ( $s['hero_image_id'] ?? 0 ) ); ?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Trust signals', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hero_trust]" rows="4" cols="60" class="large-text code"><?php echo esc_textarea( $s['hero_trust'] ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Microcopy between steps', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Show microcopy', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_microcopy]" value="1" <?php checked( ! empty( $s['enable_microcopy'] ) ); ?> /> <?php esc_html_e( 'Display brief encouragement messages when advancing.', 'bomedia-quote-wizard' ); ?></label>
+						<p style="margin-top:8px;">
+							<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[microcopy_messages]" rows="6" cols="60" class="large-text code"><?php echo esc_textarea( $s['microcopy_messages'] ); ?></textarea>
+						</p>
+						<p class="description"><?php esc_html_e( 'One message per line, in step order. Default: 5 messages for hero→step1, 1→2, 2→3, 3→4, pre-submit.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Matchmaker mode', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Enable matchmaker', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_matchmaker]" value="1" <?php checked( ! empty( $s['enable_matchmaker'] ) ); ?> /> <?php esc_html_e( 'Offer "Help me choose" path that recommends top-3 products by score.', 'bomedia-quote-wizard' ); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Format options', 'bomedia-quote-wizard' ); ?></label></th>
+					<td><textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_format_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_format_options'] ); ?></textarea></td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Budget options', 'bomedia-quote-wizard' ); ?></label></th>
+					<td><textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_budget_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_budget_options'] ); ?></textarea></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Attribute mapping (Woo product attribute slugs)', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<p><label><?php esc_html_e( 'Application:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_application]" value="<?php echo esc_attr( $s['matchmaker_attr_application'] ); ?>" placeholder="pa_aplicacion" /></label></p>
+						<p><label><?php esc_html_e( 'Materials:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_materials]" value="<?php echo esc_attr( $s['matchmaker_attr_materials'] ); ?>" placeholder="pa_materiales" /></label></p>
+						<p><label><?php esc_html_e( 'Volume:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_volume]" value="<?php echo esc_attr( $s['matchmaker_attr_volume'] ); ?>" placeholder="pa_volumen" /></label></p>
+						<p><label><?php esc_html_e( 'Max format:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_format]" value="<?php echo esc_attr( $s['matchmaker_attr_format'] ); ?>" placeholder="pa_formato" /></label></p>
+						<p><label><?php esc_html_e( 'Budget bucket:', 'bomedia-quote-wizard' ); ?> <input type="text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_attr_budget]" value="<?php echo esc_attr( $s['matchmaker_attr_budget'] ); ?>" placeholder="pa_precio" /></label></p>
+						<p class="description"><?php esc_html_e( 'Slug of the WooCommerce attribute (e.g. pa_aplicacion). The matchmaker compares each product\'s attribute terms against the user picks.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Scoring weights (percent)', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<p><label><?php esc_html_e( 'Application:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_application]" value="<?php echo esc_attr( (string) $s['matchmaker_w_application'] ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Materials:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_materials]" value="<?php echo esc_attr( (string) $s['matchmaker_w_materials'] ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Volume:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_volume]" value="<?php echo esc_attr( (string) $s['matchmaker_w_volume'] ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Format:', 'bomedia-quote-wizard' ); ?> <input type="number" min="0" max="100" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_w_format]" value="<?php echo esc_attr( (string) $s['matchmaker_w_format'] ); ?>" /></label></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Option images', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<td>
+						<p class="description"><?php esc_html_e( 'Optional images shown above each option card. The plugin renders a generic icon if none is set.', 'bomedia-quote-wizard' ); ?></p>
+						<?php $this->render_option_image_pickers( $s ); ?>
+					</td>
+				</tr>
+			</table>
+
 			<h2 class="title"><?php esc_html_e( 'Security & marketing', 'bomedia-quote-wizard' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Bot verification', 'bomedia-quote-wizard' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_captcha]" value="1" <?php checked( ! empty( $s['enable_captcha'] ) ); ?> />
-							<?php esc_html_e( 'Show a built-in math challenge ("3 + 5 = ?") on the confirmation step.', 'bomedia-quote-wizard' ); ?>
-						</label>
-						<p class="description"><?php esc_html_e( 'No third-party keys needed. Combined with the existing honeypot and minimum-fill-time guards, blocks the vast majority of bots.', 'bomedia-quote-wizard' ); ?></p>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_captcha]" value="1" <?php checked( ! empty( $s['enable_captcha'] ) ); ?> /> <?php esc_html_e( 'Enable captcha challenge before submit.', 'bomedia-quote-wizard' ); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label><?php esc_html_e( 'Captcha provider', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<select name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[captcha_provider]" id="bqw_captcha_provider">
+							<?php foreach ( Captcha::providers_list() as $slug => $label ) : ?>
+								<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $s['captcha_provider'] ?? 'math', $slug ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</td>
+				</tr>
+				<tr class="bqw-captcha-keys bqw-captcha-keys-recaptcha_v2 bqw-captcha-keys-recaptcha_v3">
+					<th scope="row"><?php esc_html_e( 'reCAPTCHA keys', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<p><label><?php esc_html_e( 'Site key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[recaptcha_site_key]" value="<?php echo esc_attr( $s['recaptcha_site_key'] ?? '' ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Secret key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[recaptcha_secret_key]" value="<?php echo ! empty( $s['recaptcha_secret_key'] ) ? '********' : ''; ?>" autocomplete="new-password" /></label></p>
+						<p><label><?php esc_html_e( 'v3 score threshold (0.0–1.0):', 'bomedia-quote-wizard' ); ?>
+							<input type="number" step="0.05" min="0" max="1" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[recaptcha_v3_threshold]" value="<?php echo esc_attr( (string) ( $s['recaptcha_v3_threshold'] ?? 0.5 ) ); ?>" /></label></p>
+						<p class="description"><?php
+							/* translators: %s: URL */
+							printf( wp_kses( __( 'Need keys? Create them at <a href="%s" target="_blank" rel="noopener">Google reCAPTCHA Admin</a>.', 'bomedia-quote-wizard' ), [ 'a' => [ 'href' => [], 'target' => [], 'rel' => [] ] ] ), 'https://www.google.com/recaptcha/admin/create' );
+						?></p>
+					</td>
+				</tr>
+				<tr class="bqw-captcha-keys bqw-captcha-keys-turnstile">
+					<th scope="row"><?php esc_html_e( 'Turnstile keys', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<p><label><?php esc_html_e( 'Site key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[turnstile_site_key]" value="<?php echo esc_attr( $s['turnstile_site_key'] ?? '' ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Secret key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[turnstile_secret_key]" value="<?php echo ! empty( $s['turnstile_secret_key'] ) ? '********' : ''; ?>" autocomplete="new-password" /></label></p>
+						<p class="description"><?php
+							printf( wp_kses( __( 'Need keys? Create them at <a href="%s" target="_blank" rel="noopener">Cloudflare Turnstile</a>.', 'bomedia-quote-wizard' ), [ 'a' => [ 'href' => [], 'target' => [], 'rel' => [] ] ] ), 'https://dash.cloudflare.com/?to=/:account/turnstile' );
+						?></p>
+					</td>
+				</tr>
+				<tr class="bqw-captcha-keys bqw-captcha-keys-hcaptcha">
+					<th scope="row"><?php esc_html_e( 'hCaptcha keys', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<p><label><?php esc_html_e( 'Site key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hcaptcha_site_key]" value="<?php echo esc_attr( $s['hcaptcha_site_key'] ?? '' ); ?>" /></label></p>
+						<p><label><?php esc_html_e( 'Secret key', 'bomedia-quote-wizard' ); ?><br/>
+							<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[hcaptcha_secret_key]" value="<?php echo ! empty( $s['hcaptcha_secret_key'] ) ? '********' : ''; ?>" autocomplete="new-password" /></label></p>
+						<p class="description"><?php
+							printf( wp_kses( __( 'Need keys? Create them at <a href="%s" target="_blank" rel="noopener">hCaptcha Dashboard</a>.', 'bomedia-quote-wizard' ), [ 'a' => [ 'href' => [], 'target' => [], 'rel' => [] ] ] ), 'https://dashboard.hcaptcha.com/sites' );
+						?></p>
 					</td>
 				</tr>
 				<tr>
@@ -549,12 +783,68 @@ final class Settings {
 							<input type="text" id="bqw_email_optin_label" class="large-text" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[email_optin_label]"
 								value="<?php echo esc_attr( $s['email_optin_label'] ); ?>" />
 						</p>
-						<p class="description"><?php esc_html_e( 'When checked, the lead is tagged "marketing-optin" in AgileCRM and the custom field Marketing_Optin is set to "yes".', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
+		<script>
+		(function () {
+			var sel = document.getElementById('bqw_captcha_provider');
+			if (!sel) return;
+			function apply() {
+				var v = sel.value;
+				document.querySelectorAll('.bqw-captcha-keys').forEach(function (row) {
+					row.style.display = row.classList.contains('bqw-captcha-keys-' + v) ? '' : 'none';
+				});
+			}
+			sel.addEventListener('change', apply);
+			apply();
+		})();
+		</script>
+		<?php
+	}
+
+	private function render_option_image_pickers( array $s ): void {
+		$option_images = (array) ( $s['option_images'] ?? [] );
+		$contexts = [
+			'application' => [ __( 'Application', 'bomedia-quote-wizard' ), $s['application_options'] ?? '' ],
+			'materials'   => [ __( 'Materials', 'bomedia-quote-wizard' ), $s['materials_options'] ?? '' ],
+			'volume'      => [ __( 'Monthly volume', 'bomedia-quote-wizard' ), $s['volume_options'] ?? '' ],
+			'format'      => [ __( 'Format (matchmaker)', 'bomedia-quote-wizard' ), $s['matchmaker_format_options'] ?? '' ],
+			'budget'      => [ __( 'Budget (matchmaker)', 'bomedia-quote-wizard' ), $s['matchmaker_budget_options'] ?? '' ],
+		];
+		foreach ( $contexts as $ctx => $row ) {
+			[ $title, $raw ] = $row;
+			$lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) $raw ) ?: [] ), 'strlen' ) );
+			if ( ! $lines ) {
+				continue;
+			}
+			echo '<details style="margin:0 0 12px;border:1px solid #e5e7eb;border-radius:4px;background:#f9fafb;">';
+			echo '<summary style="padding:8px 12px;cursor:pointer;font-weight:600;">' . esc_html( $title ) . '</summary>';
+			echo '<div style="padding:8px 12px;">';
+			foreach ( $lines as $opt ) {
+				$key = $ctx . '|' . $opt;
+				$aid = (int) ( $option_images[ $key ] ?? 0 );
+				echo '<p style="display:flex;align-items:center;gap:10px;margin:4px 0;"><span style="min-width:160px;">' . esc_html( $opt ) . '</span>';
+				$this->render_media_picker( 'option_images][' . esc_attr( $key ), $aid );
+				echo '</p>';
+			}
+			echo '</div></details>';
+		}
+	}
+
+	private function render_media_picker( string $name_suffix, int $current_id ): void {
+		$opt = self::OPT_WIZARD;
+		$url = $current_id ? wp_get_attachment_image_url( $current_id, 'thumbnail' ) : '';
+		?>
+		<span class="bqw-media-picker">
+			<input type="hidden" name="<?php echo esc_attr( $opt . '[' . $name_suffix . ']' ); ?>" value="<?php echo esc_attr( (string) $current_id ); ?>" class="bqw-media-id" />
+			<img class="bqw-media-preview" src="<?php echo esc_url( $url ); ?>" alt=""
+				style="<?php echo $url ? '' : 'display:none;'; ?>width:48px;height:48px;object-fit:cover;border-radius:4px;border:1px solid #e5e7eb;vertical-align:middle;" />
+			<button type="button" class="button bqw-media-pick"><?php echo $current_id ? esc_html__( 'Change', 'bomedia-quote-wizard' ) : esc_html__( 'Pick image', 'bomedia-quote-wizard' ); ?></button>
+			<button type="button" class="button-link bqw-media-clear" <?php echo $current_id ? '' : 'style="display:none;"'; ?>><?php esc_html_e( 'Remove', 'bomedia-quote-wizard' ); ?></button>
+		</span>
 		<?php
 	}
 
@@ -584,6 +874,14 @@ final class Settings {
 					<th scope="row"><?php esc_html_e( 'File logging', 'bomedia-quote-wizard' ); ?></th>
 					<td>
 						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[enable_log]" value="1" <?php checked( ! empty( $s['enable_log'] ) ); ?> /> <?php esc_html_e( 'Write log file in uploads/bqw-logs/', 'bomedia-quote-wizard' ); ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_redirect_url"><?php esc_html_e( 'Post-submit redirect URL', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="url" id="bqw_redirect_url" class="large-text" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[redirect_url]"
+							value="<?php echo esc_attr( $s['redirect_url'] ?? '' ); ?>" placeholder="https://boprint.net/enviado/" />
+						<p class="description"><?php esc_html_e( 'When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen.', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -734,7 +1032,7 @@ final class Settings {
 		$term_id    = (int) $term->term_id;
 		$breadcrumb = $this->breadcrumb_label( $term, $by_id );
 		?>
-		<li class="bqw-selected-row" data-term-id="<?php echo esc_attr( (string) $term_id ); ?>" draggable="true">
+		<li class="bqw-selected-row" data-term-id="<?php echo esc_attr( (string) $term_id ); ?>">
 			<input type="hidden" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[selected_categories][]" value="<?php echo esc_attr( (string) $term_id ); ?>" />
 			<div class="bqw-selected-row-head">
 				<span class="bqw-drag-handle" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'bomedia-quote-wizard' ); ?>">⠿</span>
@@ -809,7 +1107,7 @@ final class Settings {
 					$pid     = (int) $product->ID;
 					$checked = 'all' === $mode || in_array( $pid, $manual_ids, true );
 					?>
-					<li draggable="true">
+					<li>
 						<span class="bqw-drag-handle bqw-drag-handle-prod" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'bomedia-quote-wizard' ); ?>">⠿</span>
 						<label>
 							<input type="checkbox"

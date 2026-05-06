@@ -89,22 +89,57 @@ final class Shortcode {
 			}
 		}
 
-		$settings   = Settings::get_wizard();
+		$settings = Settings::get_wizard();
+		$notif    = Settings::get_notifications();
+
+		// Captcha context for the active provider.
+		$captcha_ctx = null;
+		if ( ! empty( $settings['enable_captcha'] ) ) {
+			$provider    = Captcha::provider();
+			$captcha_ctx = $provider->build_context();
+			$script_url  = $provider->script_url();
+			if ( $script_url ) {
+				wp_enqueue_script( 'bqw-captcha-provider', $script_url, [], null, true );
+			}
+		}
+
+		$option_images = (array) ( $settings['option_images'] ?? [] );
+
 		$wizard_cfg = [
 			'forced_category_id'  => $forced_category_id,
 			'forced_product'      => $forced_product,
 			'categories'          => $categories,
 			'enable_application'  => ! empty( $settings['enable_application'] ),
-			'application_options' => $this->lines_to_array( $settings['application_options'] ?? '' ),
+			'application_options' => $this->options_with_images( $this->lines_to_array( $settings['application_options'] ?? '' ), 'application', $option_images ),
 			'enable_materials'    => ! empty( $settings['enable_materials'] ),
-			'materials_options'   => $this->lines_to_array( $settings['materials_options'] ?? '' ),
+			'materials_options'   => $this->options_with_images( $this->lines_to_array( $settings['materials_options'] ?? '' ), 'materials', $option_images ),
 			'enable_volume'       => ! empty( $settings['enable_volume'] ),
-			'volume_options'      => $this->lines_to_array( $settings['volume_options'] ?? '' ),
+			'volume_options'      => $this->options_with_images( $this->lines_to_array( $settings['volume_options'] ?? '' ), 'volume', $option_images ),
 			'privacy_url'         => $settings['privacy_url'] ?? '',
 			'fallback_email'      => $this->fallback_contact_email(),
 			'enable_captcha'      => ! empty( $settings['enable_captcha'] ),
+			'captcha'             => $captcha_ctx,
 			'enable_email_optin'  => ! empty( $settings['enable_email_optin'] ),
 			'email_optin_label'   => $settings['email_optin_label'] ?? '',
+
+			// Hero.
+			'enable_hero'         => ! empty( $settings['enable_hero'] ),
+			'hero_title'          => $settings['hero_title'] ?? '',
+			'hero_subtitle'       => $settings['hero_subtitle'] ?? '',
+			'hero_image_url'      => ! empty( $settings['hero_image_id'] ) ? wp_get_attachment_image_url( (int) $settings['hero_image_id'], 'large' ) : '',
+			'hero_trust'          => $this->parse_trust_lines( $settings['hero_trust'] ?? '' ),
+
+			// Microcopy.
+			'enable_microcopy'    => ! empty( $settings['enable_microcopy'] ),
+			'microcopy_messages'  => $this->lines_to_array( $settings['microcopy_messages'] ?? '' ),
+
+			// Matchmaker.
+			'enable_matchmaker'   => ! empty( $settings['enable_matchmaker'] ),
+			'matchmaker_format_options' => $this->options_with_images( $this->lines_to_array( $settings['matchmaker_format_options'] ?? '' ), 'format', $option_images ),
+			'matchmaker_budget_options' => $this->options_with_images( $this->lines_to_array( $settings['matchmaker_budget_options'] ?? '' ), 'budget', $option_images ),
+
+			// Redirect.
+			'redirect_url'        => $notif['redirect_url'] ?? '',
 		];
 
 		$this->assets_needed = true;
@@ -156,6 +191,38 @@ final class Shortcode {
 		unload_textdomain( 'bomedia-quote-wizard' );
 		load_plugin_textdomain( 'bomedia-quote-wizard', false, dirname( plugin_basename( BQW_PLUGIN_FILE ) ) . '/languages' );
 		return true;
+	}
+
+	private function options_with_images( array $labels, string $context, array $option_images ): array {
+		$out = [];
+		foreach ( $labels as $label ) {
+			$key = $context . '|' . $label;
+			$aid = isset( $option_images[ $key ] ) ? (int) $option_images[ $key ] : 0;
+			$out[] = [
+				'label' => $label,
+				'image' => $aid ? (string) wp_get_attachment_image_url( $aid, 'medium' ) : '',
+			];
+		}
+		return $out;
+	}
+
+	private function parse_trust_lines( string $raw ): array {
+		$lines = preg_split( '/\r\n|\r|\n/', $raw ) ?: [];
+		$out   = [];
+		foreach ( $lines as $ln ) {
+			$ln = trim( $ln );
+			if ( '' === $ln ) {
+				continue;
+			}
+			if ( false !== strpos( $ln, '|' ) ) {
+				[ $icon, $text ] = array_map( 'trim', explode( '|', $ln, 2 ) );
+			} else {
+				$icon = 'yes';
+				$text = $ln;
+			}
+			$out[] = [ 'icon' => sanitize_html_class( $icon ), 'text' => $text ];
+		}
+		return $out;
 	}
 
 	private function fallback_contact_email(): string {
@@ -216,6 +283,10 @@ final class Shortcode {
 			'machinesOfInterest' => __( 'Machines of interest', 'bomedia-quote-wizard' ),
 			'noSelection'   => __( 'No machines selected.', 'bomedia-quote-wizard' ),
 			'remove'        => __( 'Remove', 'bomedia-quote-wizard' ),
+			'matchScore'    => __( 'Matches at', 'bomedia-quote-wizard' ),
+			'noMatches'     => __( "Your case is specific. Let's talk directly.", 'bomedia-quote-wizard' ),
+			'format'        => __( 'Format', 'bomedia-quote-wizard' ),
+			'budget'        => __( 'Budget', 'bomedia-quote-wizard' ),
 		];
 	}
 

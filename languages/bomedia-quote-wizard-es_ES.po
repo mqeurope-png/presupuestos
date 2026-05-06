@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.3.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.4.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -58,6 +58,15 @@ msgstr "Aplicación (una o varias)"
 msgid "Application step"
 msgstr "Paso de aplicación"
 
+msgid "Application:"
+msgstr "Aplicación:"
+
+msgid "Approximate budget? (optional)"
+msgstr "¿Presupuesto orientativo? (opcional)"
+
+msgid "Attribute mapping (Woo product attribute slugs)"
+msgstr "Mapeo de atributos (slugs de WooCommerce)"
+
 msgid "Auto (site language)"
 msgstr "Auto (idioma del sitio)"
 
@@ -70,6 +79,12 @@ msgstr "Atrás"
 msgid "Back to home"
 msgstr "Volver al inicio"
 
+msgid "Background image"
+msgstr "Imagen de fondo"
+
+msgid "Best matches for you"
+msgstr "Las mejores opciones para ti"
+
 msgid "Bomedia Quote Wizard"
 msgstr "Bomedia Quote Wizard"
 
@@ -78,6 +93,24 @@ msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. 
 
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
+
+msgid "Budget"
+msgstr "Presupuesto"
+
+msgid "Budget (matchmaker)"
+msgstr "Presupuesto (matchmaker)"
+
+msgid "Budget bucket:"
+msgstr "Rango de presupuesto:"
+
+msgid "Budget options"
+msgstr "Opciones de presupuesto"
+
+msgid "Captcha provider"
+msgstr "Proveedor de captcha"
+
+msgid "Change"
+msgstr "Cambiar"
 
 msgid "Checkbox label"
 msgstr "Texto de la casilla"
@@ -91,6 +124,9 @@ msgstr "Elige un modelo"
 msgid "Close"
 msgstr "Cerrar"
 
+msgid "Cloudflare Turnstile"
+msgstr "Cloudflare Turnstile"
+
 msgid "Comma separated, e.g. web-lead, boprint"
 msgstr "Separadas por comas, ej. web-lead, boprint"
 
@@ -102,9 +138,6 @@ msgstr "Empresa"
 
 msgid "Company is required."
 msgstr "La empresa es obligatoria."
-
-msgid "Confirm"
-msgstr "Confirmar"
 
 msgid "Confirmation"
 msgstr "Confirmación"
@@ -118,6 +151,9 @@ msgstr "Conexión fallida: "
 msgid "Contact us"
 msgstr "Contáctanos"
 
+msgid "Continue"
+msgstr "Continuar"
+
 msgid "Country"
 msgstr "País"
 
@@ -130,8 +166,8 @@ msgstr "Fecha"
 msgid "Default tags"
 msgstr "Tags por defecto"
 
-msgid "Details"
-msgstr "Datos"
+msgid "Display brief encouragement messages when advancing."
+msgstr "Muestra mensajes breves de ánimo al avanzar."
 
 msgid "Domain"
 msgstr "Dominio"
@@ -154,8 +190,17 @@ msgstr "Asunto del email"
 msgid "Enable"
 msgstr "Activar"
 
+msgid "Enable captcha challenge before submit."
+msgstr "Activa la verificación captcha antes del envío."
+
+msgid "Enable matchmaker"
+msgstr "Habilitar matchmaker"
+
 msgid "Estimated monthly volume"
 msgstr "Volumen mensual estimado"
+
+msgid "Estimated monthly volume?"
+msgstr "¿Volumen mensual estimado?"
 
 msgid "Expand"
 msgstr "Desplegar"
@@ -169,14 +214,41 @@ msgstr "Nombre"
 msgid "Forbidden"
 msgstr "Prohibido"
 
+msgid "Format"
+msgstr "Formato"
+
+msgid "Format (matchmaker)"
+msgstr "Formato (matchmaker)"
+
+msgid "Format options"
+msgstr "Opciones de formato"
+
+msgid "Format:"
+msgstr "Formato:"
+
+msgid "Google reCAPTCHA v2 (checkbox)"
+msgstr "Google reCAPTCHA v2 (checkbox)"
+
+msgid "Google reCAPTCHA v3 (invisible, score)"
+msgstr "Google reCAPTCHA v3 (invisible, score)"
+
+msgid "Help me choose"
+msgstr "Ayúdame a elegir"
+
 msgid "Helps us avoid spam."
 msgstr "Nos ayuda a evitar spam."
+
+msgid "Hero (welcome screen)"
+msgstr "Hero (pantalla de bienvenida)"
 
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr "He leído y acepto la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>"
 
 msgid "I have read and accept the privacy policy"
 msgstr "He leído y acepto la política de privacidad"
+
+msgid "I know which machine I want"
+msgstr "Sé qué máquina quiero"
 
 msgid "I'm not sure"
 msgstr "No estoy seguro"
@@ -205,6 +277,12 @@ msgstr "Máquinas de interés:"
 msgid "Marketing opt-in"
 msgstr "Opt-in de marketing"
 
+msgid "Matches at"
+msgstr "Encaja al"
+
+msgid "Matchmaker mode"
+msgstr "Modo Matchmaker"
+
 msgid "Materials"
 msgstr "Materiales"
 
@@ -214,11 +292,26 @@ msgstr "Materiales (selección múltiple)"
 msgid "Materials step"
 msgstr "Paso de materiales"
 
+msgid "Materials:"
+msgstr "Materiales:"
+
+msgid "Math (no setup)"
+msgstr "Matemática (sin configuración)"
+
+msgid "Max format:"
+msgstr "Formato máximo:"
+
+msgid "Maximum piece size?"
+msgstr "¿Tamaño máximo de pieza?"
+
 msgid "Message (optional)"
 msgstr "Mensaje (opcional)"
 
 msgid "Message:"
 msgstr "Mensaje:"
+
+msgid "Microcopy between steps"
+msgstr "Microcopy entre pasos"
 
 msgid "Missing category."
 msgstr "Falta la categoría."
@@ -238,6 +331,15 @@ msgstr "Nombre"
 msgid "Name is required."
 msgstr "El nombre es obligatorio."
 
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
+
 msgid "Next"
 msgstr "Siguiente"
 
@@ -253,14 +355,29 @@ msgstr "No se encontraron categorías de producto."
 msgid "No published products in this category."
 msgstr "No hay productos publicados en esta categoría."
 
-msgid "No third-party keys needed. Combined with the existing honeypot and minimum-fill-time guards, blocks the vast majority of bots."
-msgstr "No requiere claves de terceros. Junto con el honeypot y el tiempo mínimo, bloquea la mayoría de bots."
-
 msgid "Notifications"
 msgstr "Notificaciones"
 
+msgid "Offer \"Help me choose\" path that recommends top-3 products by score."
+msgstr "Ofrece un camino \"Ayúdame a elegir\" que recomienda los 3 mejores productos según score."
+
+msgid "On which materials?"
+msgstr "¿En qué materiales?"
+
+msgid "One message per line, in step order. Default: 5 messages for hero→step1, 1→2, 2→3, 3→4, pre-submit."
+msgstr "Un mensaje por línea, en orden de paso. Por defecto: 5 mensajes para hero→1, 1→2, 2→3, 3→4, pre-envío."
+
 msgid "One option per line."
 msgstr "Una opción por línea."
+
+msgid "One per line, format: dashicon-slug|Text. Example: shield-alt|10 years of experience"
+msgstr "Una por línea, formato: dashicon-slug|Texto. Ejemplo: shield-alt|10 años de experiencia"
+
+msgid "Option images"
+msgstr "Imágenes de opciones"
+
+msgid "Optional images shown above each option card. The plugin renders a generic icon if none is set."
+msgstr "Imágenes opcionales sobre cada card. El plugin muestra un icono genérico si no hay imagen."
 
 msgid "Phone"
 msgstr "Teléfono"
@@ -270,6 +387,9 @@ msgstr "El teléfono es obligatorio."
 
 msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr "Elige categorías en la columna de la izquierda y arrastra para reordenar en la derecha. Despliega una fila para afinar qué productos aparecen y en qué orden."
+
+msgid "Pick image"
+msgstr "Elegir imagen"
 
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
 msgstr "Placeholders: {nombre}, {empresa}, {producto}"
@@ -286,6 +406,9 @@ msgstr "Selecciona al menos una máquina."
 msgid "Please take a moment before submitting."
 msgstr "Tómate un momento antes de enviar."
 
+msgid "Post-submit redirect URL"
+msgstr "URL de redirección post-envío"
+
 msgid "Privacy policy URL"
 msgstr "URL política de privacidad"
 
@@ -300,6 +423,9 @@ msgstr "Producto de interés"
 
 msgid "Products of interest"
 msgstr "Productos de interés"
+
+msgid "Protected by Google reCAPTCHA."
+msgstr "Protegido por Google reCAPTCHA."
 
 msgid "Quick check:"
 msgstr "Comprobación rápida:"
@@ -322,6 +448,9 @@ msgstr "Emails destinatarios"
 msgid "Remove"
 msgstr "Quitar"
 
+msgid "Render a welcome screen before step 1."
+msgstr "Renderiza una pantalla de bienvenida antes del paso 1."
+
 msgid "Requested model:"
 msgstr "Modelo solicitado:"
 
@@ -331,11 +460,17 @@ msgstr "Reintentar envío"
 msgid "Save your changes before testing."
 msgstr "Guarda los cambios antes de probar."
 
+msgid "Scoring weights (percent)"
+msgstr "Pesos del scoring (porcentaje)"
+
 msgid "Search categories"
 msgstr "Buscar categorías"
 
 msgid "Search…"
 msgstr "Buscar…"
+
+msgid "Secret key"
+msgstr "Secret key"
 
 msgid "Security & marketing"
 msgstr "Seguridad y marketing"
@@ -346,6 +481,9 @@ msgstr "Falló la comprobación de seguridad."
 msgid "Security check failed. Reload the page."
 msgstr "Falló la comprobación de seguridad. Recarga la página."
 
+msgid "See recommendations"
+msgstr "Ver recomendaciones"
+
 msgid "Selected (drag to reorder)"
 msgstr "Seleccionadas (arrastra para reordenar)"
 
@@ -355,9 +493,6 @@ msgstr "Enviar solicitud"
 msgid "Sending…"
 msgstr "Enviando…"
 
-msgid "Show a built-in math challenge (\"3 + 5 = ?\") on the confirmation step."
-msgstr "Muestra un reto matemático integrado (\"3 + 5 = ?\") en el paso de confirmación."
-
 msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr "Muestra una casilla de opt-in de marketing en el paso de contacto."
 
@@ -366,6 +501,18 @@ msgstr "Mostrar todos los productos publicados"
 
 msgid "Show empty"
 msgstr "Mostrar vacías"
+
+msgid "Show hero"
+msgstr "Mostrar hero"
+
+msgid "Show microcopy"
+msgstr "Mostrar microcopy"
+
+msgid "Site key"
+msgstr "Site key"
+
+msgid "Slug of the WooCommerce attribute (e.g. pa_aplicacion). The matchmaker compares each product's attribute terms against the user picks."
+msgstr "Slug del atributo de WooCommerce (ej. pa_aplicacion). El matchmaker compara los términos de atributo de cada producto con las elecciones del usuario."
 
 msgid "Solicitud presupuesto web"
 msgstr "Solicitud presupuesto web"
@@ -379,11 +526,17 @@ msgstr "URL de origen"
 msgid "Source site"
 msgstr "Sitio de origen"
 
+msgid "Start"
+msgstr "Empezar"
+
 msgid "Status"
 msgstr "Estado"
 
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr "Almacenado cifrado con AUTH_KEY. Deja el valor enmascarado para conservar el actual."
+
+msgid "Subtitle"
+msgstr "Subtítulo"
 
 msgid "Summary"
 msgstr "Resumen"
@@ -400,14 +553,38 @@ msgstr "¡Gracias! Hemos recibido tu solicitud."
 msgid "The verification answer is incorrect. Please try again."
 msgstr "La respuesta de verificación es incorrecta. Inténtalo de nuevo."
 
+msgid "The verification expired. Please reload the page."
+msgstr "La verificación expiró. Recarga la página."
+
 msgid "This field is required."
 msgstr "Este campo es obligatorio."
+
+msgid "Title"
+msgstr "Titular"
 
 msgid "Toggle children"
 msgstr "Mostrar/ocultar hijos"
 
-msgid "When checked, the lead is tagged \"marketing-optin\" in AgileCRM and the custom field Marketing_Optin is set to \"yes\"."
-msgstr "Si se marca, el lead lleva el tag \"marketing-optin\" en AgileCRM y el campo personalizado Marketing_Optin se pone a \"yes\"."
+msgid "Trust signals"
+msgstr "Trust signals"
+
+msgid "Turnstile could not verify your submission."
+msgstr "Turnstile no pudo verificar tu envío."
+
+msgid "Turnstile keys"
+msgstr "Claves de Turnstile"
+
+msgid "Turnstile verification failed."
+msgstr "La verificación de Turnstile falló."
+
+msgid "Volume:"
+msgstr "Volumen:"
+
+msgid "What do you want to produce?"
+msgstr "¿Qué quieres producir?"
+
+msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
+msgstr "Si se rellena, tras un envío exitoso se redirige al usuario aquí con ?lead_id={id}. Útil para tracking de conversiones. Déjalo vacío para mostrar la pantalla de gracias del plugin."
 
 msgid "Wizard"
 msgstr "Wizard"
@@ -433,17 +610,59 @@ msgstr "Has seleccionado 1 máquina"
 msgid "Your application"
 msgstr "Tu aplicación"
 
+msgid "Your case is specific. Let's talk directly."
+msgstr "Tu caso es específico. Hablemos directamente."
+
 msgid "Your details"
 msgstr "Tus datos"
 
 msgid "Your selected machines"
 msgstr "Máquinas seleccionadas"
 
+msgid "Your submission looks suspicious. Try again."
+msgstr "Tu envío parece sospechoso. Inténtalo de nuevo."
+
+msgid "covers %s"
+msgstr "cubre %s"
+
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
 msgstr "ej. \"bomedia\" para bomedia.agilecrm.com"
 
+msgid "fits %s monthly volume"
+msgstr "encaja con un volumen mensual de %s"
+
+msgid "hCaptcha"
+msgstr "hCaptcha"
+
+msgid "hCaptcha could not verify your submission."
+msgstr "hCaptcha no pudo verificar tu envío."
+
+msgid "hCaptcha keys"
+msgstr "Claves de hCaptcha"
+
+msgid "hCaptcha verification failed."
+msgstr "La verificación de hCaptcha falló."
+
+msgid "reCAPTCHA could not verify your submission."
+msgstr "reCAPTCHA no pudo verificar tu envío."
+
+msgid "reCAPTCHA keys"
+msgstr "Claves de reCAPTCHA"
+
+msgid "reCAPTCHA verification failed."
+msgstr "La verificación de reCAPTCHA falló."
+
 msgid "selected"
 msgstr "seleccionadas"
+
+msgid "supports %s"
+msgstr "soporta %s"
+
+msgid "v3 score threshold (0.0–1.0):"
+msgstr "Umbral de score v3 (0.0–1.0):"
+
+msgid "works with %s"
+msgstr "funciona con %s"
 
 msgid "← Back to categories"
 msgstr "← Volver a categorías"
