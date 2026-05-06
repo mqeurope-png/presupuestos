@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.5.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.5.1\n"
 "Report-Msgid-Bugs-To: https://bomedia.net/\n"
 "POT-Creation-Date: 2026-05-06 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -135,7 +135,7 @@ msgstr ""
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr ""
 
-#: includes/class-settings.php:821
+#: includes/class-settings.php:806
 msgid "Bot verification"
 msgstr ""
 
@@ -151,15 +151,15 @@ msgstr ""
 msgid "Budget options"
 msgstr ""
 
-#: includes/class-settings.php:785
+#: includes/class-settings.php:877
 msgid "Bulk AI notes"
 msgstr ""
 
-#: includes/class-settings.php:796
+#: includes/class-settings.php:878
 msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
 msgstr ""
 
-#: includes/class-settings.php:827
+#: includes/class-settings.php:812
 msgid "Captcha provider"
 msgstr ""
 
@@ -167,7 +167,7 @@ msgstr ""
 msgid "Change"
 msgstr ""
 
-#: includes/class-settings.php:882
+#: includes/class-settings.php:867
 msgid "Checkbox label"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgstr ""
 msgid "Customer is not sure, asks for help."
 msgstr ""
 
-#: includes/class-settings.php:802
+#: includes/class-settings.php:787
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr ""
 
@@ -291,7 +291,7 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: includes/class-settings.php:823
+#: includes/class-settings.php:808
 msgid "Enable captcha challenge before submit."
 msgstr ""
 
@@ -315,7 +315,7 @@ msgstr ""
 msgid "Expand"
 msgstr ""
 
-#: includes/class-settings.php:788
+#: includes/class-settings.php:881
 msgid "Export JSON"
 msgstr ""
 
@@ -393,7 +393,7 @@ msgstr ""
 msgid "I'm not sure, help me choose"
 msgstr ""
 
-#: includes/class-settings.php:794
+#: includes/class-settings.php:888
 msgid "Import JSON"
 msgstr ""
 
@@ -426,7 +426,7 @@ msgstr ""
 msgid "Machines of interest:"
 msgstr ""
 
-#: includes/class-settings.php:876
+#: includes/class-settings.php:861
 msgid "Marketing opt-in"
 msgstr ""
 
@@ -511,15 +511,15 @@ msgstr ""
 msgid "Name is required."
 msgstr ""
 
-#: includes/class-settings.php:859
+#: includes/class-settings.php:844
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
 msgstr ""
 
-#: includes/class-settings.php:847
+#: includes/class-settings.php:832
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
 msgstr ""
 
-#: includes/class-settings.php:871
+#: includes/class-settings.php:856
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
 msgstr ""
 
@@ -607,11 +607,11 @@ msgstr ""
 msgid "OpenAI returned malformed data."
 msgstr ""
 
-#: includes/class-settings.php:808
+#: includes/class-settings.php:793
 msgid "Option images"
 msgstr ""
 
-#: includes/class-settings.php:812
+#: includes/class-settings.php:797
 msgid "Optional images shown above each option card. The plugin renders a generic icon if none is set."
 msgstr ""
 
@@ -741,13 +741,13 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
+#: includes/class-settings.php:826
 #: includes/class-settings.php:841
-#: includes/class-settings.php:856
-#: includes/class-settings.php:868
+#: includes/class-settings.php:853
 msgid "Secret key"
 msgstr ""
 
-#: includes/class-settings.php:818
+#: includes/class-settings.php:803
 msgid "Security & marketing"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgstr ""
 msgid "Sending…"
 msgstr ""
 
-#: includes/class-settings.php:879
+#: includes/class-settings.php:864
 msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr ""
 
@@ -801,9 +801,9 @@ msgstr ""
 msgid "Show microcopy"
 msgstr ""
 
+#: includes/class-settings.php:824
 #: includes/class-settings.php:839
-#: includes/class-settings.php:854
-#: includes/class-settings.php:866
+#: includes/class-settings.php:851
 msgid "Site key"
 msgstr ""
 
@@ -895,7 +895,7 @@ msgstr ""
 msgid "Turnstile could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:852
+#: includes/class-settings.php:837
 msgid "Turnstile keys"
 msgstr ""
 
@@ -1000,7 +1000,7 @@ msgstr ""
 msgid "hCaptcha could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:864
+#: includes/class-settings.php:849
 msgid "hCaptcha keys"
 msgstr ""
 
@@ -1013,7 +1013,7 @@ msgstr ""
 msgid "reCAPTCHA could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:837
+#: includes/class-settings.php:822
 msgid "reCAPTCHA keys"
 msgstr ""
 
@@ -1026,7 +1026,7 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-#: includes/class-settings.php:843
+#: includes/class-settings.php:828
 msgid "v3 score threshold (0.0–1.0):"
 msgstr ""
 

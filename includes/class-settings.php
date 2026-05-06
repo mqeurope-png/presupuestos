@@ -782,21 +782,6 @@ final class Settings {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Bulk AI notes', 'bomedia-quote-wizard' ); ?></th>
-					<td>
-						<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bqw_export_ai_notes' ), 'bqw_export_ai_notes' ) ); ?>">
-							<?php esc_html_e( 'Export JSON', 'bomedia-quote-wizard' ); ?>
-						</a>
-						<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;margin-left:8px;">
-							<?php wp_nonce_field( 'bqw_import_ai_notes', 'bqw_ai_notes_nonce' ); ?>
-							<input type="hidden" name="action" value="bqw_import_ai_notes" />
-							<input type="file" name="bqw_ai_notes_file" accept="application/json,.json" />
-							<button class="button" type="submit"><?php esc_html_e( 'Import JSON', 'bomedia-quote-wizard' ); ?></button>
-						</form>
-						<p class="description"><?php esc_html_e( 'Bulk-edit the per-product internal AI notes by slug. Format: { "product-slug": "notes…" }.', 'bomedia-quote-wizard' ); ?></p>
-					</td>
-				</tr>
-				<tr>
 					<td colspan="2">
 						<p class="description" style="background:#fef9c3;padding:8px 10px;border-left:3px solid #ca8a04;border-radius:3px;">
 							<?php esc_html_e( 'Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent.', 'bomedia-quote-wizard' ); ?>
@@ -888,6 +873,21 @@ final class Settings {
 			</table>
 			<?php submit_button(); ?>
 		</form>
+
+		<h2 class="title" style="margin-top:32px;"><?php esc_html_e( 'Bulk AI notes', 'bomedia-quote-wizard' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'Bulk-edit the per-product internal AI notes by slug. Format: { "product-slug": "notes…" }.', 'bomedia-quote-wizard' ); ?></p>
+		<p>
+			<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bqw_export_ai_notes' ), 'bqw_export_ai_notes' ) ); ?>">
+				<?php esc_html_e( 'Export JSON', 'bomedia-quote-wizard' ); ?>
+			</a>
+		</p>
+		<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'bqw_import_ai_notes', 'bqw_ai_notes_nonce' ); ?>
+			<input type="hidden" name="action" value="bqw_import_ai_notes" />
+			<input type="file" name="bqw_ai_notes_file" accept="application/json,.json" />
+			<button class="button" type="submit"><?php esc_html_e( 'Import JSON', 'bomedia-quote-wizard' ); ?></button>
+		</form>
+
 		<script>
 		(function () {
 			var sel = document.getElementById('bqw_captcha_provider');
