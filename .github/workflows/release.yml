@@ -1,0 +1,42 @@
+name: Build release zip
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Package plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build zip
+        run: |
+          mkdir -p build/bomedia-quote-wizard
+          rsync -a --exclude='.git' \
+                   --exclude='.github' \
+                   --exclude='node_modules' \
+                   --exclude='vendor' \
+                   --exclude='*.log' \
+                   --exclude='build' \
+                   --exclude='.gitignore' \
+                   --exclude='*.zip' \
+                   ./ build/bomedia-quote-wizard/
+          cd build && zip -r "../bomedia-quote-wizard-${GITHUB_REF_NAME}.zip" bomedia-quote-wizard
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bomedia-quote-wizard
+          path: bomedia-quote-wizard-*.zip
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bomedia-quote-wizard-*.zip
