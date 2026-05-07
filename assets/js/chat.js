@@ -1,9 +1,18 @@
-/* Bomedia Quote Wizard — chatbot frontend (v1.7.1, scripted backbone). */
+/* Bomedia Quote Wizard — chatbot frontend (v1.7.2, scripted backbone). */
 (function () {
 	'use strict';
-	if (typeof window.BQW === 'undefined') return;
+	// First-line breadcrumb so the file's mere presence is visible in dev tools.
+	try { console.log('[bqw chat] script loaded'); } catch (e) {}
+
+	if (typeof window.BQW === 'undefined') {
+		try { console.warn('[bqw chat] window.BQW is undefined — wp_localize_script did not run before this file. Aborting.'); } catch (e) {}
+		return;
+	}
 	var root = document.getElementById('bqw-chat-wrap');
-	if (!root) return;
+	if (!root) {
+		try { console.warn('[bqw chat] #bqw-chat-wrap not found — template did not render. Aborting.'); } catch (e) {}
+		return;
+	}
 
 	var cfg       = window.BQW.config || {};
 	var i18n      = window.BQW.i18n || {};

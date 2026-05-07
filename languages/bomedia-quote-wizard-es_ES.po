@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.2\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"

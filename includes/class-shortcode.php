@@ -144,7 +144,7 @@ final class Shortcode {
 		wp_enqueue_style( 'bqw-chat' );
 		wp_enqueue_script( 'bqw-chat' );
 		wp_localize_script(
-			'bqw-wizard',
+			'bqw-chat',
 			'BQW',
 			[
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
