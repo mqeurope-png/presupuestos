@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.4\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.5\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -14,6 +14,9 @@ msgid "%1$s ago · %2$d products cached"
 msgstr ""
 
 msgid "%s, our team will contact you shortly with a personalized quote."
+msgstr ""
+
+msgid "(no entries yet — run the chatbot once)"
 msgstr ""
 
 msgid "(skipped)"
@@ -134,6 +137,9 @@ msgid "Bomedia assistant"
 msgstr ""
 
 msgid "Bot verification"
+msgstr ""
+
+msgid "Brands in catalog:"
 msgstr ""
 
 msgid "Budget"
@@ -295,6 +301,9 @@ msgstr ""
 msgid "File logging"
 msgstr ""
 
+msgid "Filter diagnostic"
+msgstr ""
+
 msgid "First message"
 msgstr ""
 
@@ -387,6 +396,9 @@ msgstr ""
 
 msgid "Last name"
 msgstr "Apelido"
+
+msgid "Last recommendation calls:"
+msgstr ""
 
 msgid "Lead"
 msgstr ""
@@ -673,6 +685,9 @@ msgstr ""
 msgid "Save your changes before testing."
 msgstr ""
 
+msgid "Saved mapping:"
+msgstr ""
+
 msgid "Search categories"
 msgstr ""
 
@@ -698,6 +713,9 @@ msgid "Selected (drag to reorder)"
 msgstr ""
 
 msgid "Send"
+msgstr ""
+
+msgid "Send my details →"
 msgstr ""
 
 msgid "Send my request"
@@ -793,6 +811,9 @@ msgstr ""
 msgid "Task types (step 1)"
 msgstr ""
 
+msgid "Tasks defined:"
+msgstr ""
+
 msgid "Tell us what you need…"
 msgstr ""
 
@@ -822,6 +843,9 @@ msgstr ""
 
 msgid "This field is required."
 msgstr "Este campo é obrigatório."
+
+msgid "Tip: a [NO MATCH] line means the filter dropped every product. Lines like \"products=0/30\" mean the brand IDs you selected do not match any product's \"brand\" field in the catalog."
+msgstr ""
 
 msgid "Title"
 msgstr ""
@@ -929,6 +953,9 @@ msgid "Your selected machines"
 msgstr "Máquinas selecionadas"
 
 msgid "Your submission looks suspicious. Try again."
+msgstr ""
+
+msgid "all brands (no filter)"
 msgstr ""
 
 msgid "calls today"

@@ -590,8 +590,29 @@
 	/* =========================================================
 	 * Init
 	 * ========================================================= */
+	function resetRecPanel() {
+		// Hard reset — clear any stale cards from a previous session.
+		if (recPanelBody) {
+			recPanelBody.innerHTML = '';
+			var p = document.createElement('p');
+			p.className = 'bqw-rec-placeholder';
+			p.textContent = i18n.recPlaceholder || 'Your recommended machines will appear here as we chat.';
+			recPanelBody.appendChild(p);
+		}
+		if (recPanelFoot) recPanelFoot.hidden = true;
+		if (recFab) {
+			recFab.classList.remove('is-shown');
+			if (recFabCount) {
+				recFabCount.textContent = '';
+				recFabCount.style.display = 'none';
+			}
+		}
+		if (recPanel) recPanel.classList.remove('is-open');
+	}
+
 	function init() {
 		buildCountries();
+		resetRecPanel();
 
 		chatForm.addEventListener('submit', function (e) {
 			e.preventDefault();

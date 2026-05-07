@@ -367,18 +367,24 @@ final class Chat {
 
 		switch ( $next['type'] ?? '' ) {
 			case 'ai_recommendations':
-				$recs = self::generate_recommendations( $session_id, $lang );
-				$msg  = empty( $recs )
+				$recs       = self::generate_recommendations( $session_id, $lang );
+				$no_match   = empty( $recs );
+				$msg        = $no_match
 					? __( "Your case is specific. Drop your details below and our team will reach out with a tailored proposal.", 'bomedia-quote-wizard' )
 					: __( "Based on what you told me, here are the machines I'd recommend:", 'bomedia-quote-wizard' );
-				Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => $next_id, 'recommendations' => count( $recs ) ] );
+				Conversations::append( $session_id, 'assistant', $msg, [
+					'step_id'         => $next_id,
+					'recommendations' => count( $recs ),
+					'no_match'        => $no_match,
+				] );
 				wp_send_json_success( [ 'step' => [
 					'id'              => $next_id,
 					'type'            => 'recommendations',
 					'message'         => $msg,
 					'recommendations' => $recs,
-					'cta'             => __( 'Continue and request quote →', 'bomedia-quote-wizard' ),
-					'cta_to'          => empty( $recs ) ? 'contact' : 'free_chat',
+					'no_match'        => $no_match,
+					'cta'             => $no_match ? __( 'Send my details →', 'bomedia-quote-wizard' ) : __( 'Continue and request quote →', 'bomedia-quote-wizard' ),
+					'cta_to'          => $no_match ? 'contact' : 'free_chat',
 					'free_chat_hint'  => __( 'Ask me anything about these machines, or skip to send.', 'bomedia-quote-wizard' ),
 				] ] );
 
@@ -499,31 +505,33 @@ final class Chat {
 		$products    = self::catalog_for_prompt( $lang );
 		$task_values = (array) ( $answers['task_types_values'] ?? [] );
 		$mapping     = (array) Settings::get( 'task_brand_map', [] );
-		$allowed     = [];
+		$allowed_raw = [];
 		foreach ( $task_values as $tv ) {
 			if ( ! empty( $mapping[ $tv ] ) && is_array( $mapping[ $tv ] ) ) {
 				foreach ( $mapping[ $tv ] as $b ) {
-					$allowed[] = (string) $b;
+					$allowed_raw[] = (string) $b;
 				}
 			}
 		}
-		$allowed = array_values( array_unique( array_filter( $allowed ) ) );
-		if ( ! empty( $allowed ) ) {
-			$before = count( $products );
-			$products = array_values( array_filter( $products, static function ( $p ) use ( $allowed ) {
-				return in_array( (string) ( $p['brand'] ?? '' ), $allowed, true );
+		$allowed_raw = array_values( array_unique( array_filter( $allowed_raw ) ) );
+		// Case-insensitive set for comparing against product['brand'].
+		$allowed_norm = array_map( 'strtolower', $allowed_raw );
+
+		$before = count( $products );
+		if ( ! empty( $allowed_norm ) ) {
+			$products = array_values( array_filter( $products, static function ( $p ) use ( $allowed_norm ) {
+				$pb = strtolower( (string) ( $p['brand'] ?? '' ) );
+				return in_array( $pb, $allowed_norm, true );
 			} ) );
-			self::log_recommendation( $session_id, $task_values, $allowed, $before, count( $products ) );
-			// If filter blanked the catalog (e.g. mismatched brand ids), fall back to all to avoid empty result.
+			$after = count( $products );
+			self::log_recommendation( $session_id, $task_values, $allowed_raw, $before, $after, $after === 0 );
+			// CHANGED in v1.7.5: no silent fallback. Return empty so the
+			// chat says "your case is specific" and gets a no-match-found tag.
 			if ( empty( $products ) ) {
-				$products = self::catalog_for_prompt( $lang );
+				return [];
 			}
 		} else {
-			self::log_recommendation( $session_id, $task_values, [], count( $products ), count( $products ) );
-		}
-
-		if ( empty( $products ) ) {
-			return [];
+			self::log_recommendation( $session_id, $task_values, [], $before, $before, false );
 		}
 
 		$client = new OpenAI_Client();
@@ -752,7 +760,7 @@ final class Chat {
 	 * Catalog helpers
 	 * ============================================================ */
 
-	private static function log_recommendation( string $session_id, array $task_values, array $allowed_brands, int $before_count, int $after_count ): void {
+	private static function log_recommendation( string $session_id, array $task_values, array $allowed_brands, int $before_count, int $after_count, bool $no_match = false ): void {
 		$u = wp_upload_dir();
 		if ( ! empty( $u['error'] ) ) {
 			return;
@@ -762,8 +770,9 @@ final class Chat {
 			wp_mkdir_p( $dir );
 		}
 		$line = sprintf(
-			"[%s] session=%s task_types=%s brands=%s products=%d/%d\n",
+			"[%s]%s session=%s task_types=%s brands=%s products=%d/%d\n",
 			gmdate( 'Y-m-d H:i:s' ),
+			$no_match ? ' [NO MATCH]' : '',
 			substr( $session_id, 0, 8 ),
 			implode( ',', $task_values ),
 			implode( ',', $allowed_brands ),

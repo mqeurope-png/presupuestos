@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.4\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.5\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -15,6 +15,9 @@ msgstr "Hace %1$s · %2$d productos cacheados"
 
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
+
+msgid "(no entries yet — run the chatbot once)"
+msgstr "(sin entradas todavía — ejecuta el chatbot una vez)"
 
 msgid "(skipped)"
 msgstr "(saltada)"
@@ -135,6 +138,9 @@ msgstr "Asistente de Bomedia"
 
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
+
+msgid "Brands in catalog:"
+msgstr "Marcas en catálogo:"
 
 msgid "Budget"
 msgstr "Presupuesto"
@@ -295,6 +301,9 @@ msgstr "Exportar JSON"
 msgid "File logging"
 msgstr "Registro a archivo"
 
+msgid "Filter diagnostic"
+msgstr "Diagnóstico del filtro"
+
 msgid "First message"
 msgstr "Primer mensaje"
 
@@ -387,6 +396,9 @@ msgstr "Último mensaje"
 
 msgid "Last name"
 msgstr "Apellidos"
+
+msgid "Last recommendation calls:"
+msgstr "Últimas recomendaciones:"
 
 msgid "Lead"
 msgstr "Lead"
@@ -673,6 +685,9 @@ msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
 msgid "Save your changes before testing."
 msgstr "Guarda los cambios antes de probar."
 
+msgid "Saved mapping:"
+msgstr "Mapping guardado:"
+
 msgid "Search categories"
 msgstr "Buscar categorías"
 
@@ -699,6 +714,9 @@ msgstr "Seleccionadas (arrastra para reordenar)"
 
 msgid "Send"
 msgstr "Enviar"
+
+msgid "Send my details →"
+msgstr "Enviar mis datos →"
 
 msgid "Send my request"
 msgstr "Enviar mi solicitud"
@@ -793,6 +811,9 @@ msgstr "Mapeo tipo de tarea → marcas"
 msgid "Task types (step 1)"
 msgstr "Tipos de tarea (paso 1)"
 
+msgid "Tasks defined:"
+msgstr "Tareas definidas:"
+
 msgid "Tell us what you need…"
 msgstr "Cuéntanos qué necesitas…"
 
@@ -822,6 +843,9 @@ msgstr "La verificación expiró. Recarga la página."
 
 msgid "This field is required."
 msgstr "Este campo es obligatorio."
+
+msgid "Tip: a [NO MATCH] line means the filter dropped every product. Lines like \"products=0/30\" mean the brand IDs you selected do not match any product's \"brand\" field in the catalog."
+msgstr "Pista: una línea [NO MATCH] significa que el filtro descartó todos los productos. \"products=0/30\" significa que los IDs de marca que marcaste no coinciden con el campo \"brand\" de ningún producto del catálogo."
 
 msgid "Title"
 msgstr "Titular"
@@ -930,6 +954,9 @@ msgstr "Máquinas seleccionadas"
 
 msgid "Your submission looks suspicious. Try again."
 msgstr "Tu envío parece sospechoso. Inténtalo de nuevo."
+
+msgid "all brands (no filter)"
+msgstr "todas las marcas (sin filtro)"
 
 msgid "calls today"
 msgstr "llamadas hoy"

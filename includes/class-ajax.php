@@ -329,14 +329,21 @@ final class Ajax {
 			$history = Conversations::history( (string) $data['session_id'], 100 );
 			$data['conversation_history'] = $history;
 
-			// Track whether the user actually conversed (>= 1 user message).
-			$user_msgs = 0;
+			// Track whether the user actually conversed (>= 1 user message)
+			// and whether the recommendation pass produced 0 matches.
+			$user_msgs   = 0;
+			$no_match    = false;
 			foreach ( $history as $h ) {
 				if ( 'user' === $h['role'] ) {
 					$user_msgs++;
 				}
+				$meta = is_string( $h['metadata'] ) ? json_decode( (string) $h['metadata'], true ) : [];
+				if ( is_array( $meta ) && ! empty( $meta['no_match'] ) ) {
+					$no_match = true;
+				}
 			}
 			$data['conversation_user_messages'] = $user_msgs;
+			$data['no_match_brand_filter']      = $no_match;
 
 			$summary = Chat::summarise( (string) $data['session_id'], substr( get_locale(), 0, 2 ) );
 			if ( ! empty( $summary['summary'] ) ) {
@@ -658,6 +665,10 @@ final class Ajax {
 			}
 		} elseif ( 'knows-machine' === $origin ) {
 			$tags[] = 'knows-machine';
+		}
+		// No matching machine in the brand filter — sales should reach out manually.
+		if ( ! empty( $data['no_match_brand_filter'] ) ) {
+			$tags[] = 'no-match-found';
 		}
 		$tags = array_values( array_unique( $tags ) );
 

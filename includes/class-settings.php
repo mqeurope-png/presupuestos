@@ -1051,33 +1051,105 @@ final class Settings {
 			return;
 		}
 
-		echo '<div class="bqw-task-map">';
-		foreach ( $tasks as $task_value => $task_label ) {
+		// Inline styles scoped to this widget so the layout doesn't collide
+		// with theme overrides.
+		?>
+		<style>
+			.bqw-tbm-fieldset { border:1px solid #d1d5db; border-radius:6px; padding:14px 18px; margin:0 0 14px; background:#fff; }
+			.bqw-tbm-fieldset legend { font-weight:700; font-size:13px; padding:0 8px; display:flex; align-items:center; gap:8px; }
+			.bqw-tbm-fieldset legend code { background:#f3f4f6; color:#475569; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:400; font-family:Menlo,Consolas,monospace; }
+			.bqw-tbm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px 24px; margin-top:6px; }
+			.bqw-tbm-grid label { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:4px; font-size:13px; cursor:pointer; }
+			.bqw-tbm-grid label:hover { background:#f8fafc; }
+			.bqw-tbm-grid label input[type="checkbox"] { margin:0; }
+			.bqw-tbm-grid label code { color:#94a3b8; font-size:10px; font-family:Menlo,Consolas,monospace; }
+		</style>
+		<div class="bqw-task-map">
+		<?php foreach ( $tasks as $task_value => $task_label ) :
 			$selected = (array) ( $current[ $task_value ] ?? [] );
-			echo '<fieldset style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin:0 0 10px;background:#fff;">';
-			echo '<legend style="font-weight:700;font-size:13px;padding:0 6px;">' . esc_html( $task_label );
-			echo ' <code style="background:#f3f4f6;color:#475569;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:400;">' . esc_html( $task_value ) . '</code></legend>';
-			foreach ( $brands as $b ) {
-				$brand_id    = (string) ( $b['id'] ?? '' );
-				$brand_label = (string) ( $b['label'] ?? $brand_id );
-				if ( '' === $brand_id ) {
-					continue;
+			?>
+			<fieldset class="bqw-tbm-fieldset">
+				<legend>
+					<span><?php echo esc_html( $task_label ); ?></span>
+					<code><?php echo esc_html( $task_value ); ?></code>
+				</legend>
+				<div class="bqw-tbm-grid">
+				<?php foreach ( $brands as $b ) :
+					$brand_id    = (string) ( $b['id'] ?? '' );
+					$brand_label = (string) ( $b['label'] ?? $brand_id );
+					if ( '' === $brand_id ) {
+						continue;
+					}
+					$id      = 'bqw_tbm_' . $task_value . '_' . sanitize_html_class( $brand_id );
+					$checked = in_array( $brand_id, $selected, true );
+					?>
+					<label for="<?php echo esc_attr( $id ); ?>">
+						<input type="checkbox"
+							id="<?php echo esc_attr( $id ); ?>"
+							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[task_brand_map][<?php echo esc_attr( $task_value ); ?>][]"
+							value="<?php echo esc_attr( $brand_id ); ?>"
+							<?php checked( $checked ); ?> />
+						<span><?php echo esc_html( $brand_label ); ?></span>
+						<code><?php echo esc_html( $brand_id ); ?></code>
+					</label>
+				<?php endforeach; ?>
+				</div>
+			</fieldset>
+		<?php endforeach; ?>
+		</div>
+		<?php
+		// Diagnostic panel reading the live recommendations.log.
+		$this->render_brand_filter_diagnostic( $tasks, $brands, $current );
+	}
+
+	private function render_brand_filter_diagnostic( array $tasks, array $brands, array $current ): void {
+		$brand_ids = array_values( array_filter( array_map( static function ( $b ) { return (string) ( $b['id'] ?? '' ); }, $brands ) ) );
+
+		// Try to parse the last 3 entries of recommendations.log.
+		$log_lines = [];
+		$u         = wp_upload_dir();
+		if ( empty( $u['error'] ) ) {
+			$file = trailingslashit( $u['basedir'] ) . 'bqw-logs/recommendations.log';
+			if ( file_exists( $file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions
+				$content = @file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+				if ( is_array( $content ) ) {
+					$log_lines = array_slice( $content, -3 );
 				}
-				$id      = 'bqw_tbm_' . $task_value . '_' . sanitize_html_class( $brand_id );
-				$checked = in_array( $brand_id, $selected, true );
-				printf(
-					'<label for="%1$s" style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-size:13px;"><input type="checkbox" id="%1$s" name="%2$s[task_brand_map][%3$s][]" value="%4$s" %5$s /> %6$s</label>',
-					esc_attr( $id ),
-					esc_attr( self::OPT_WIZARD ),
-					esc_attr( $task_value ),
-					esc_attr( $brand_id ),
-					$checked ? 'checked="checked"' : '',
-					esc_html( $brand_label )
-				);
 			}
-			echo '</fieldset>';
 		}
-		echo '</div>';
+		?>
+		<details style="margin-top:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;">
+			<summary style="padding:10px 14px;cursor:pointer;font-weight:700;"><?php esc_html_e( 'Filter diagnostic', 'bomedia-quote-wizard' ); ?></summary>
+			<div style="padding:12px 18px;font-size:13px;color:#0f172a;">
+				<p style="margin:0 0 6px;"><strong><?php esc_html_e( 'Tasks defined:', 'bomedia-quote-wizard' ); ?></strong>
+					<code style="font-size:11px;"><?php echo esc_html( implode( ', ', array_keys( $tasks ) ) ); ?></code>
+				</p>
+				<p style="margin:0 0 6px;"><strong><?php esc_html_e( 'Brands in catalog:', 'bomedia-quote-wizard' ); ?></strong>
+					<code style="font-size:11px;"><?php echo esc_html( implode( ', ', $brand_ids ) ); ?></code>
+				</p>
+				<p style="margin:0 0 8px;"><strong><?php esc_html_e( 'Saved mapping:', 'bomedia-quote-wizard' ); ?></strong></p>
+				<ul style="margin:0 0 12px;padding-left:18px;">
+					<?php foreach ( $tasks as $task_value => $task_label ) :
+						$picks = (array) ( $current[ $task_value ] ?? [] ); ?>
+						<li>
+							<code style="font-size:11px;"><?php echo esc_html( $task_value ); ?></code>
+							<?php echo $picks ? '→ <code style="font-size:11px;">' . esc_html( implode( ', ', $picks ) ) . '</code>' : '<em style="color:#94a3b8;">' . esc_html__( 'all brands (no filter)', 'bomedia-quote-wizard' ) . '</em>'; ?>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+				<p style="margin:0 0 6px;"><strong><?php esc_html_e( 'Last recommendation calls:', 'bomedia-quote-wizard' ); ?></strong></p>
+				<?php if ( empty( $log_lines ) ) : ?>
+					<p style="margin:0;color:#94a3b8;font-style:italic;"><?php esc_html_e( '(no entries yet — run the chatbot once)', 'bomedia-quote-wizard' ); ?></p>
+				<?php else : ?>
+					<pre style="background:#0f172a;color:#cbd5e1;padding:10px 12px;border-radius:4px;overflow:auto;font-size:11px;line-height:1.45;margin:0;"><?php
+					echo esc_html( implode( "\n", $log_lines ) );
+					?></pre>
+				<?php endif; ?>
+				<p style="margin:8px 0 0;color:#475569;font-size:12px;"><?php esc_html_e( 'Tip: a [NO MATCH] line means the filter dropped every product. Lines like "products=0/30" mean the brand IDs you selected do not match any product\'s "brand" field in the catalog.', 'bomedia-quote-wizard' ); ?></p>
+			</div>
+		</details>
+		<?php
 	}
 
 	private function render_media_picker( string $name_suffix, int $current_id ): void {

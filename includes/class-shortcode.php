@@ -271,6 +271,7 @@ final class Shortcode {
 			'continueToQuote' => __( 'Continue and request quote →', 'bomedia-quote-wizard' ),
 			'skipQuestion'  => __( 'Skip this question', 'bomedia-quote-wizard' ),
 			'send'          => __( 'Send', 'bomedia-quote-wizard' ),
+			'recPlaceholder' => __( 'Your recommended machines will appear here as we chat.', 'bomedia-quote-wizard' ),
 		];
 	}
 
