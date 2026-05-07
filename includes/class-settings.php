@@ -88,6 +88,13 @@ final class Settings {
 			'enable_matchmaker'     => 1,
 			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
 			'matchmaker_budget_options'  => "Hasta 5.000 €\n5.000–15.000 €\n15.000–40.000 €\nMás de 40.000 €",
+			'task_brand_map'        => [
+				'uv_objects' => [ 'artisjet', 'smartjet' ],
+				'textile'    => [ 'artisjet', 'mbo_dtf' ],
+				'laser'      => [ 'flux' ],
+				'packaging'  => [ 'pimpam', 'mbo' ],
+				'unsure'     => [],
+			],
 
 			// AI Recommendations (replaces manual scoring in v1.5).
 			'enable_ai_matchmaker'  => 1,
@@ -316,6 +323,20 @@ final class Settings {
 		$out['enable_matchmaker']           = ! empty( $input['enable_matchmaker'] ) ? 1 : 0;
 		$out['matchmaker_format_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_format_options'] ?? '' ) );
 		$out['matchmaker_budget_options']   = $this->sanitize_lines( (string) ( $input['matchmaker_budget_options'] ?? '' ) );
+
+		// Task → brands mapping.
+		$tbm = [];
+		if ( isset( $input['task_brand_map'] ) && is_array( $input['task_brand_map'] ) ) {
+			foreach ( $input['task_brand_map'] as $task_value => $brands ) {
+				$task_value = sanitize_key( (string) $task_value );
+				if ( '' === $task_value ) {
+					continue;
+				}
+				$brands = array_values( array_unique( array_filter( array_map( 'sanitize_text_field', (array) $brands ), 'strlen' ) ) );
+				$tbm[ $task_value ] = $brands;
+			}
+		}
+		$out['task_brand_map'] = $tbm;
 
 		// AI matchmaker.
 		$out['enable_ai_matchmaker'] = ! empty( $input['enable_ai_matchmaker'] ) ? 1 : 0;
@@ -709,6 +730,16 @@ final class Settings {
 				</tr>
 			</table>
 
+			<h2 class="title"><?php esc_html_e( 'Task type → brands mapping', 'bomedia-quote-wizard' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<td>
+						<p class="description"><?php esc_html_e( 'For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click "Refresh now" above first if you do not see all of them.', 'bomedia-quote-wizard' ); ?></p>
+						<?php $this->render_task_brand_map( (array) ( $s['task_brand_map'] ?? [] ) ); ?>
+					</td>
+				</tr>
+			</table>
+
 			<h2 class="title"><?php esc_html_e( 'AI Recommendations (OpenAI)', 'bomedia-quote-wizard' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -972,6 +1003,50 @@ final class Settings {
 		})();
 		</script>
 		<?php
+	}
+
+	private function render_task_brand_map( array $current ): void {
+		$tasks = [
+			'uv_objects' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ),
+			'textile'    => __( 'Print on textile', 'bomedia-quote-wizard' ),
+			'laser'      => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),
+			'packaging'  => __( 'Labels / packaging', 'bomedia-quote-wizard' ),
+			'unsure'     => __( "I'm not sure", 'bomedia-quote-wizard' ),
+		];
+		$brands = Catalog_Client::get_brands();
+		if ( empty( $brands ) ) {
+			echo '<p style="background:#fef9c3;padding:8px 10px;border-left:3px solid #ca8a04;border-radius:3px;">' .
+				esc_html__( 'No brands cached yet. Click "Refresh now" in the AI Catalog source section, then come back.', 'bomedia-quote-wizard' ) . '</p>';
+			return;
+		}
+
+		echo '<div class="bqw-task-map">';
+		foreach ( $tasks as $task_value => $task_label ) {
+			$selected = (array) ( $current[ $task_value ] ?? [] );
+			echo '<fieldset style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin:0 0 10px;background:#fff;">';
+			echo '<legend style="font-weight:700;font-size:13px;padding:0 6px;">' . esc_html( $task_label );
+			echo ' <code style="background:#f3f4f6;color:#475569;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:400;">' . esc_html( $task_value ) . '</code></legend>';
+			foreach ( $brands as $b ) {
+				$brand_id    = (string) ( $b['id'] ?? '' );
+				$brand_label = (string) ( $b['label'] ?? $brand_id );
+				if ( '' === $brand_id ) {
+					continue;
+				}
+				$id      = 'bqw_tbm_' . $task_value . '_' . sanitize_html_class( $brand_id );
+				$checked = in_array( $brand_id, $selected, true );
+				printf(
+					'<label for="%1$s" style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-size:13px;"><input type="checkbox" id="%1$s" name="%2$s[task_brand_map][%3$s][]" value="%4$s" %5$s /> %6$s</label>',
+					esc_attr( $id ),
+					esc_attr( self::OPT_WIZARD ),
+					esc_attr( $task_value ),
+					esc_attr( $brand_id ),
+					$checked ? 'checked="checked"' : '',
+					esc_html( $brand_label )
+				);
+			}
+			echo '</fieldset>';
+		}
+		echo '</div>';
 	}
 
 	private function render_media_picker( string $name_suffix, int $current_id ): void {

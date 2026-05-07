@@ -44,11 +44,11 @@ final class Chat {
 				'message' => __( 'Great. What are you interested in doing? You can pick more than one.', 'bomedia-quote-wizard' ),
 				'type'    => 'multi_options',
 				'options' => [
-					[ 'label' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ), 'icon' => 'package' ],
-					[ 'label' => __( 'Print on textile', 'bomedia-quote-wizard' ),         'icon' => 'tshirt'  ],
-					[ 'label' => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),   'icon' => 'metal'   ],
-					[ 'label' => __( 'Labels / packaging', 'bomedia-quote-wizard' ),       'icon' => 'package' ],
-					[ 'label' => __( "I'm not sure", 'bomedia-quote-wizard' ),             'icon' => 'help'    ],
+					[ 'label' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ), 'icon' => 'package', 'value' => 'uv_objects' ],
+					[ 'label' => __( 'Print on textile', 'bomedia-quote-wizard' ),         'icon' => 'tshirt',  'value' => 'textile'    ],
+					[ 'label' => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),   'icon' => 'metal',   'value' => 'laser'      ],
+					[ 'label' => __( 'Labels / packaging', 'bomedia-quote-wizard' ),       'icon' => 'package', 'value' => 'packaging'  ],
+					[ 'label' => __( "I'm not sure", 'bomedia-quote-wizard' ),             'icon' => 'help',    'value' => 'unsure'     ],
 				],
 				'allow_free_text' => true,
 				'next'            => 'application',
@@ -199,10 +199,21 @@ final class Chat {
 		if ( '' === $visible && $skip ) {
 			$visible = __( '(skipped)', 'bomedia-quote-wizard' );
 		}
+		// Map labels to stable option values (used for the task→brand filter).
+		$values = [];
+		foreach ( $selected as $label ) {
+			foreach ( (array) ( $current['options'] ?? [] ) as $opt ) {
+				if ( ( $opt['label'] ?? '' ) === $label && isset( $opt['value'] ) ) {
+					$values[] = (string) $opt['value'];
+				}
+			}
+		}
+
 		if ( '' !== $visible ) {
 			Conversations::append( $session_id, 'user', $visible, [
 				'step_id' => $step_id,
 				'selected' => $selected,
+				'values'  => $values,
 				'free_text' => $free_text,
 				'skipped' => $skip,
 			] );
@@ -353,12 +364,13 @@ final class Chat {
 		$script = self::script();
 		$rows   = Conversations::history( $session_id, 100 );
 		$out    = [
-			'task_types'   => [],
-			'applications' => [],
-			'materials'    => [],
-			'volume'       => '',
-			'formats'      => [],
-			'budget'       => '',
+			'task_types'        => [],
+			'task_types_values' => [],
+			'applications'      => [],
+			'materials'         => [],
+			'volume'            => '',
+			'formats'           => [],
+			'budget'            => '',
 		];
 		foreach ( $rows as $r ) {
 			if ( 'user' !== $r['role'] ) {
@@ -374,6 +386,7 @@ final class Chat {
 				continue;
 			}
 			$selected = (array) ( $meta['selected'] ?? [] );
+			$values   = array_values( array_filter( array_map( 'strval', (array) ( $meta['values'] ?? [] ) ) ) );
 			$free     = trim( (string) ( $meta['free_text'] ?? '' ) );
 			$picks    = $selected;
 			if ( '' !== $free && empty( $picks ) ) {
@@ -383,6 +396,10 @@ final class Chat {
 				$out[ $saves_to ] = array_values( array_unique( array_merge( $out[ $saves_to ], $picks ) ) );
 			} else {
 				$out[ $saves_to ] = $picks[0] ?? $out[ $saves_to ];
+			}
+			// Track stable values for task_type so we can map to brands.
+			if ( 'task_types' === $saves_to && ! empty( $values ) ) {
+				$out['task_types_values'] = array_values( array_unique( array_merge( $out['task_types_values'], $values ) ) );
 			}
 		}
 		return $out;
@@ -400,8 +417,33 @@ final class Chat {
 			return [];
 		}
 
-		// Filter catalog by task_types (best-effort: keep all if unknown).
-		$products = self::catalog_for_prompt( $lang );
+		// Filter catalog by task_type → brand mapping (configurable from admin).
+		$products    = self::catalog_for_prompt( $lang );
+		$task_values = (array) ( $answers['task_types_values'] ?? [] );
+		$mapping     = (array) Settings::get( 'task_brand_map', [] );
+		$allowed     = [];
+		foreach ( $task_values as $tv ) {
+			if ( ! empty( $mapping[ $tv ] ) && is_array( $mapping[ $tv ] ) ) {
+				foreach ( $mapping[ $tv ] as $b ) {
+					$allowed[] = (string) $b;
+				}
+			}
+		}
+		$allowed = array_values( array_unique( array_filter( $allowed ) ) );
+		if ( ! empty( $allowed ) ) {
+			$before = count( $products );
+			$products = array_values( array_filter( $products, static function ( $p ) use ( $allowed ) {
+				return in_array( (string) ( $p['brand'] ?? '' ), $allowed, true );
+			} ) );
+			self::log_recommendation( $session_id, $task_values, $allowed, $before, count( $products ) );
+			// If filter blanked the catalog (e.g. mismatched brand ids), fall back to all to avoid empty result.
+			if ( empty( $products ) ) {
+				$products = self::catalog_for_prompt( $lang );
+			}
+		} else {
+			self::log_recommendation( $session_id, $task_values, [], count( $products ), count( $products ) );
+		}
+
 		if ( empty( $products ) ) {
 			return [];
 		}
@@ -554,6 +596,28 @@ final class Chat {
 	/* ============================================================
 	 * Catalog helpers
 	 * ============================================================ */
+
+	private static function log_recommendation( string $session_id, array $task_values, array $allowed_brands, int $before_count, int $after_count ): void {
+		$u = wp_upload_dir();
+		if ( ! empty( $u['error'] ) ) {
+			return;
+		}
+		$dir = trailingslashit( $u['basedir'] ) . 'bqw-logs';
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+		}
+		$line = sprintf(
+			"[%s] session=%s task_types=%s brands=%s products=%d/%d\n",
+			gmdate( 'Y-m-d H:i:s' ),
+			substr( $session_id, 0, 8 ),
+			implode( ',', $task_values ),
+			implode( ',', $allowed_brands ),
+			$after_count,
+			$before_count
+		);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		@file_put_contents( $dir . '/recommendations.log', $line, FILE_APPEND | LOCK_EX );
+	}
 
 	private static function catalog_for_prompt( string $lang ): array {
 		$out = [];

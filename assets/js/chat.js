@@ -30,6 +30,14 @@
 	var backToChat   = document.getElementById('bqw-back-to-chat');
 	var form         = document.getElementById('bqw-form');
 	var thanksBox    = document.getElementById('bqw-thanks');
+	var recPanel     = document.getElementById('bqw-rec-panel');
+	var recPanelBody = document.getElementById('bqw-rec-panel-body');
+	var recPanelFoot = document.getElementById('bqw-rec-panel-foot');
+	var recCounter   = document.getElementById('bqw-rec-counter');
+	var recCta       = document.getElementById('bqw-rec-cta');
+	var recPanelClose = document.getElementById('bqw-rec-panel-close');
+	var recFab       = document.getElementById('bqw-rec-fab');
+	var recFabCount  = document.getElementById('bqw-rec-fab-count');
 	var redirectURL  = root.dataset.redirect || '';
 	var lang         = root.dataset.language || 'en';
 
@@ -174,18 +182,36 @@
 	}
 
 	function renderRecommendations(recs) {
-		if (!recs || !recs.length) return;
-		var box = document.createElement('div');
-		box.className = 'bqw-bubble bqw-bubble-assistant bqw-bubble-recs';
-		var avatar = document.createElement('span');
-		avatar.className = 'bqw-bubble-avatar'; avatar.textContent = 'B'; avatar.setAttribute('aria-hidden', 'true');
-		box.appendChild(avatar);
-		var body = document.createElement('div');
-		body.className = 'bqw-bubble-body bqw-rec-list';
-		recs.forEach(function (r) { body.appendChild(buildRecCard(r)); });
-		box.appendChild(body);
-		stream.appendChild(box);
-		stream.scrollTo({ top: stream.scrollHeight, behavior: 'smooth' });
+		if (!recPanel || !recPanelBody) return;
+		recPanelBody.innerHTML = '';
+		if (!recs || !recs.length) {
+			var p = document.createElement('p');
+			p.className = 'bqw-rec-placeholder';
+			p.textContent = i18n.noMatches || "Your case is specific. Let's talk directly.";
+			recPanelBody.appendChild(p);
+			recPanelFoot.hidden = true;
+			return;
+		}
+		recs.forEach(function (r) { recPanelBody.appendChild(buildRecCard(r)); });
+		recPanelFoot.hidden = false;
+		updateRecCounter();
+		// Mobile: open panel + show FAB.
+		if (window.innerWidth < 900) {
+			recPanel.classList.add('is-open');
+			if (recFab) recFab.classList.add('is-shown');
+		}
+	}
+
+	function updateRecCounter() {
+		if (!recCounter || !recCta) return;
+		var picked = state.selection.length;
+		var total  = recPanelBody ? recPanelBody.querySelectorAll('.bqw-rec-card').length : 0;
+		recCounter.textContent = picked + ' / ' + total;
+		recCta.disabled = picked === 0;
+		if (recFabCount) {
+			recFabCount.textContent = picked > 0 ? String(picked) : '';
+			recFabCount.style.display = picked > 0 ? '' : 'none';
+		}
 	}
 
 	function buildRecCard(r) {
@@ -251,6 +277,7 @@
 				pickBtn.setAttribute('aria-pressed', 'false');
 				removeSelection(r.id);
 			}
+			updateRecCounter();
 		});
 		return card;
 	}
@@ -364,9 +391,8 @@
 			case 'recommendations':
 				renderRecommendations(step.recommendations || []);
 				optionsWrap.innerHTML = '';
-				renderCtaToContact(step.cta);
 				if (step.cta_to === 'free_chat') {
-					// Allow free-text Q&A immediately.
+					// Allow free-text Q&A immediately while the panel sits on the right.
 					textInput.disabled = false;
 					textInput.placeholder = step.free_chat_hint || (i18n.askAnything || 'Ask anything about these machines…');
 				} else {
@@ -549,6 +575,24 @@
 		});
 		skipBtn.addEventListener('click', function () { revealContactForm({ withHint: true }); });
 		backToChat.addEventListener('click', function (e) { e.preventDefault(); hideContactForm(); });
+
+		// Side-panel controls.
+		if (recPanelClose) {
+			recPanelClose.addEventListener('click', function () {
+				if (recPanel) recPanel.classList.remove('is-open');
+			});
+		}
+		if (recCta) {
+			recCta.addEventListener('click', function () {
+				if (recPanel) recPanel.classList.remove('is-open');
+				revealContactForm({ withHint: false });
+			});
+		}
+		if (recFab) {
+			recFab.addEventListener('click', function () {
+				if (recPanel) recPanel.classList.add('is-open');
+			});
+		}
 
 		form.addEventListener('submit', submitForm);
 

@@ -37,32 +37,53 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 		</header>
 	<?php endif; ?>
 
-	<div class="bqw-chat" id="bqw-chat">
+	<div class="bqw-chat-layout" id="bqw-chat-layout">
+		<main class="bqw-chat" id="bqw-chat">
 
-		<div class="bqw-chat-bar">
-			<div class="bqw-chat-title">
-				<span class="bqw-chat-avatar" aria-hidden="true">B</span>
-				<span><?php esc_html_e( 'Bomedia assistant', 'bomedia-quote-wizard' ); ?></span>
+			<div class="bqw-chat-bar">
+				<div class="bqw-chat-title">
+					<span class="bqw-chat-avatar" aria-hidden="true">B</span>
+					<span><?php esc_html_e( 'Bomedia assistant', 'bomedia-quote-wizard' ); ?></span>
+				</div>
+				<button type="button" class="bqw-chat-skip" id="bqw-skip-to-send" title="<?php esc_attr_e( 'Skip the conversation and just send your details', 'bomedia-quote-wizard' ); ?>">
+					<span class="bqw-skip-text"><?php esc_html_e( 'Skip to send', 'bomedia-quote-wizard' ); ?></span>
+					<span class="bqw-skip-icon" aria-hidden="true">→</span>
+				</button>
 			</div>
-			<button type="button" class="bqw-chat-skip" id="bqw-skip-to-send" title="<?php esc_attr_e( 'Skip the conversation and just send your details', 'bomedia-quote-wizard' ); ?>">
-				<span class="bqw-skip-text"><?php esc_html_e( 'Skip to send', 'bomedia-quote-wizard' ); ?></span>
-				<span class="bqw-skip-icon" aria-hidden="true">→</span>
-			</button>
-		</div>
 
-		<div class="bqw-chat-stream" id="bqw-chat-stream" aria-live="polite"></div>
+			<div class="bqw-chat-stream" id="bqw-chat-stream" aria-live="polite"></div>
 
-		<div class="bqw-chat-options" id="bqw-chat-options"></div>
+			<div class="bqw-chat-options" id="bqw-chat-options"></div>
 
-		<form class="bqw-chat-input" id="bqw-chat-form" autocomplete="off">
-			<input type="text" id="bqw-chat-text" name="content"
-				placeholder="<?php esc_attr_e( 'Or type your answer freely…', 'bomedia-quote-wizard' ); ?>"
-				autocomplete="off" />
-			<button type="submit" class="bqw-chat-send" aria-label="<?php esc_attr_e( 'Send', 'bomedia-quote-wizard' ); ?>">
-				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-			</button>
-		</form>
+			<form class="bqw-chat-input" id="bqw-chat-form" autocomplete="off">
+				<input type="text" id="bqw-chat-text" name="content"
+					placeholder="<?php esc_attr_e( 'Or type your answer freely…', 'bomedia-quote-wizard' ); ?>"
+					autocomplete="off" />
+				<button type="submit" class="bqw-chat-send" aria-label="<?php esc_attr_e( 'Send', 'bomedia-quote-wizard' ); ?>">
+					<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+				</button>
+			</form>
+		</main>
+
+		<aside class="bqw-rec-panel" id="bqw-rec-panel" aria-label="<?php esc_attr_e( 'Recommended machines', 'bomedia-quote-wizard' ); ?>">
+			<div class="bqw-rec-panel-head">
+				<h3><?php esc_html_e( 'Your recommendations', 'bomedia-quote-wizard' ); ?></h3>
+				<button type="button" class="bqw-rec-panel-close" id="bqw-rec-panel-close" aria-label="<?php esc_attr_e( 'Close', 'bomedia-quote-wizard' ); ?>">×</button>
+			</div>
+			<div class="bqw-rec-panel-body" id="bqw-rec-panel-body">
+				<p class="bqw-rec-placeholder"><?php esc_html_e( 'Your recommended machines will appear here as we chat.', 'bomedia-quote-wizard' ); ?></p>
+			</div>
+			<div class="bqw-rec-panel-foot" id="bqw-rec-panel-foot" hidden>
+				<span class="bqw-rec-counter" id="bqw-rec-counter">0 / 3</span>
+				<button type="button" class="bqw-btn bqw-btn-primary" id="bqw-rec-cta" disabled><?php esc_html_e( 'Request quote →', 'bomedia-quote-wizard' ); ?></button>
+			</div>
+		</aside>
 	</div>
+
+	<button type="button" class="bqw-rec-fab" id="bqw-rec-fab" hidden aria-label="<?php esc_attr_e( 'Show recommended machines', 'bomedia-quote-wizard' ); ?>">
+		<span class="bqw-rec-fab-count" id="bqw-rec-fab-count"></span>
+		<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/></svg>
+	</button>
 
 	<!-- Contact form (revealed when ready_for_contact OR skip-to-send). -->
 	<div class="bqw-contact-panel" id="bqw-contact-panel" hidden>

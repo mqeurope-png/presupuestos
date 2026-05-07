@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.2\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.3\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -340,6 +340,9 @@ msgstr ""
 msgid "First name"
 msgstr "Nome"
 
+msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
+msgstr ""
+
 msgid "Forbidden"
 msgstr ""
 
@@ -547,6 +550,9 @@ msgstr "Seguinte"
 msgid "No abandoned conversations with 3+ messages."
 msgstr ""
 
+msgid "No brands cached yet. Click \"Refresh now\" in the AI Catalog source section, then come back."
+msgstr ""
+
 msgid "No machines available in this category. Please contact us directly."
 msgstr "Sem máquinas disponíveis nesta categoria. Contacte-nos diretamente."
 
@@ -703,6 +709,9 @@ msgstr ""
 msgid "Recipient emails"
 msgstr ""
 
+msgid "Recommended machines"
+msgstr ""
+
 msgid "Refresh interval"
 msgstr ""
 
@@ -713,6 +722,9 @@ msgid "Remove"
 msgstr "Remover"
 
 msgid "Render a welcome screen before step 1."
+msgstr ""
+
+msgid "Request quote →"
 msgstr ""
 
 msgid "Requested model:"
@@ -787,6 +799,9 @@ msgstr ""
 msgid "Show hero"
 msgstr ""
 
+msgid "Show recommended machines"
+msgstr ""
+
 msgid "Site key"
 msgstr ""
 
@@ -837,6 +852,9 @@ msgstr ""
 
 msgid "Summary"
 msgstr "Resumo"
+
+msgid "Task type → brands mapping"
+msgstr ""
 
 msgid "Tell us what you need…"
 msgstr ""
@@ -972,6 +990,12 @@ msgstr ""
 
 msgid "Your details"
 msgstr "Os seus dados"
+
+msgid "Your recommendations"
+msgstr ""
+
+msgid "Your recommended machines will appear here as we chat."
+msgstr ""
 
 msgid "Your selected machines"
 msgstr "Máquinas selecionadas"

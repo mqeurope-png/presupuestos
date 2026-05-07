@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.2\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.3\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -340,6 +340,9 @@ msgstr "Primer mensaje"
 msgid "First name"
 msgstr "Nombre"
 
+msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
+msgstr "Para cada tarea del primer paso, elige qué marcas de Supabase puede recomendar la IA. Las marcas se leen del cache; pulsa \"Refrescar ahora\" arriba si no ves todas."
+
 msgid "Forbidden"
 msgstr "Prohibido"
 
@@ -547,6 +550,9 @@ msgstr "Siguiente"
 msgid "No abandoned conversations with 3+ messages."
 msgstr "No hay conversaciones abandonadas con 3 o más mensajes."
 
+msgid "No brands cached yet. Click \"Refresh now\" in the AI Catalog source section, then come back."
+msgstr "Aún no hay marcas en cache. Pulsa \"Refrescar ahora\" en la sección AI Catalog source y vuelve."
+
 msgid "No machines available in this category. Please contact us directly."
 msgstr "No hay máquinas disponibles en esta categoría. Contáctanos directamente."
 
@@ -703,6 +709,9 @@ msgstr "Prefiero no decirlo"
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
 
+msgid "Recommended machines"
+msgstr "Máquinas recomendadas"
+
 msgid "Refresh interval"
 msgstr "Intervalo de refresco"
 
@@ -714,6 +723,9 @@ msgstr "Quitar"
 
 msgid "Render a welcome screen before step 1."
 msgstr "Renderiza una pantalla de bienvenida antes del paso 1."
+
+msgid "Request quote →"
+msgstr "Pedir presupuesto →"
 
 msgid "Requested model:"
 msgstr "Modelo solicitado:"
@@ -787,6 +799,9 @@ msgstr "Mostrar vacías"
 msgid "Show hero"
 msgstr "Mostrar hero"
 
+msgid "Show recommended machines"
+msgstr "Ver máquinas recomendadas"
+
 msgid "Site key"
 msgstr "Site key"
 
@@ -837,6 +852,9 @@ msgstr "Subtítulo"
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "Task type → brands mapping"
+msgstr "Mapeo tipo de tarea → marcas"
 
 msgid "Tell us what you need…"
 msgstr "Cuéntanos qué necesitas…"
@@ -972,6 +990,12 @@ msgstr "Tu caso es específico. Hablemos directamente."
 
 msgid "Your details"
 msgstr "Tus datos"
+
+msgid "Your recommendations"
+msgstr "Tus recomendaciones"
+
+msgid "Your recommended machines will appear here as we chat."
+msgstr "Aquí aparecerán tus máquinas recomendadas según vayamos hablando."
 
 msgid "Your selected machines"
 msgstr "Máquinas seleccionadas"

@@ -1,7 +1,7 @@
 /* Bomedia Quote Wizard — chatbot styles (v1.7). */
 
 .bqw-chat-wrap {
-	max-width: 760px;
+	max-width: 1200px;
 	margin: 2.5rem auto;
 	background: var(--bqw-bg, #fff);
 	border-radius: var(--bqw-radius, 14px);
@@ -11,49 +11,198 @@
 	font-family: var(--bqw-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
 	line-height: 1.5;
 }
-.bqw-chat-wrap::before {
-	content: "";
-	display: block;
-	height: 6px;
-	background: linear-gradient(90deg, var(--bqw-primary, #0066cc) 0%, #4d8fea 50%, #ffb020 100%);
-}
 
-/* Hero (only on landing). */
+/* Hero (only on landing). Solid primary background, optional image with
+   uniform dark overlay for AA contrast over any photo. */
 .bqw-chat-hero {
 	position: relative;
-	padding: 1.6rem clamp(1rem, 3vw, 2rem) 1.4rem;
+	padding: 1.8rem clamp(1rem, 3vw, 2rem) 1.6rem;
 	color: #fff;
-	background: var(--bqw-primary, #0066cc);
+	background-color: var(--bqw-primary, #0066cc);
 	overflow: hidden;
 }
 .bqw-chat-hero-bg {
 	position: absolute; inset: 0;
 	background-size: cover;
 	background-position: center;
+	background-repeat: no-repeat;
 	z-index: 0;
 }
 .bqw-chat-hero-overlay {
 	position: absolute; inset: 0;
-	background: rgba(15, 23, 42, 0.62);
+	background: rgba(0, 0, 0, 0.6);
 	z-index: 1;
 }
 .bqw-chat-hero-content {
 	position: relative;
 	z-index: 2;
+	max-width: 760px;
+	margin: 0 auto;
 }
 .bqw-chat-hero-title {
 	margin: 0;
-	font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+	font-size: clamp(1.25rem, 2.4vw, 1.6rem);
 	font-weight: 800;
 	letter-spacing: -0.01em;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	color: #ffffff;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 .bqw-chat-hero-sub {
-	margin: 0.35rem 0 0;
-	color: rgba(255, 255, 255, 0.92);
-	font-size: clamp(0.9rem, 1.4vw, 1rem);
+	margin: 0.4rem 0 0;
+	color: #ffffff;
+	font-size: clamp(0.92rem, 1.4vw, 1rem);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .bqw-chat-wrap.is-flow-active .bqw-chat-hero { display: none !important; }
+
+/* Two-column layout (chat + recommendations panel). */
+.bqw-chat-layout {
+	display: flex;
+	gap: 1.25rem;
+	align-items: stretch;
+	padding: 0 clamp(0.5rem, 1.5vw, 1rem);
+}
+.bqw-chat-layout > .bqw-chat { flex: 1 1 60%; min-width: 0; }
+.bqw-chat-layout > .bqw-rec-panel { flex: 0 0 360px; }
+
+/* Recommendation side panel. */
+.bqw-rec-panel {
+	display: flex;
+	flex-direction: column;
+	background: var(--bqw-bg-soft, #f8fafc);
+	border: 1px solid var(--bqw-border, #e5e7eb);
+	border-radius: 12px;
+	margin: 0.5rem 0 1rem;
+	max-height: 720px;
+	overflow: hidden;
+}
+.bqw-rec-panel-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.7rem 0.9rem;
+	border-bottom: 1px solid var(--bqw-border, #e5e7eb);
+}
+.bqw-rec-panel-head h3 {
+	margin: 0;
+	font-size: 0.92rem;
+	font-weight: 700;
+	color: var(--bqw-text, #0f172a);
+}
+.bqw-rec-panel-close {
+	display: none;
+	background: transparent; border: 0; cursor: pointer;
+	font-size: 1.4rem; line-height: 1;
+	color: var(--bqw-muted, #64748b);
+}
+.bqw-rec-panel-body {
+	padding: 0.75rem;
+	overflow-y: auto;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+.bqw-rec-placeholder {
+	margin: 0;
+	padding: 1.2rem 0.5rem;
+	color: var(--bqw-muted, #64748b);
+	font-size: 0.85rem;
+	text-align: center;
+}
+.bqw-rec-panel-foot {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.7rem 0.9rem;
+	border-top: 1px solid var(--bqw-border, #e5e7eb);
+	background: #fff;
+}
+.bqw-rec-counter {
+	font-size: 0.82rem;
+	color: var(--bqw-muted, #64748b);
+}
+.bqw-rec-panel-foot .bqw-btn { margin-left: auto; }
+
+/* Vertical (column-friendly) variant of the rec card inside the panel. */
+.bqw-rec-panel .bqw-rec-card {
+	flex-direction: column;
+	align-items: stretch;
+	padding: 0;
+	background: #fff;
+	border: 2px solid var(--bqw-border, #e5e7eb);
+	box-shadow: var(--bqw-shadow-sm, 0 1px 2px rgba(15,23,42,0.06));
+}
+.bqw-rec-panel .bqw-rec-imgwrap {
+	width: 100%;
+}
+.bqw-rec-panel .bqw-rec-imgwrap .bqw-rec-img {
+	width: 100%;
+	height: 130px;
+	object-fit: cover;
+	border-radius: 10px 10px 0 0;
+}
+.bqw-rec-panel .bqw-rec-body { padding: 0.65rem 0.85rem; }
+.bqw-rec-panel .bqw-rec-pick {
+	margin: 0 0.85rem 0.85rem;
+	width: calc(100% - 1.7rem);
+	justify-content: center;
+}
+.bqw-rec-panel .bqw-rec-card.is-selected { border-color: var(--bqw-primary, #0066cc); }
+
+/* FAB on mobile to pop the panel. */
+.bqw-rec-fab {
+	display: none;
+	position: fixed;
+	right: 18px;
+	bottom: 18px;
+	z-index: 9000;
+	background: var(--bqw-primary, #0066cc);
+	color: #fff;
+	border: 0;
+	border-radius: 999px;
+	width: 56px;
+	height: 56px;
+	cursor: pointer;
+	box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+.bqw-rec-fab-count {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	background: var(--bqw-error, #dc2626);
+	color: #fff;
+	border-radius: 999px;
+	font-size: 0.7rem;
+	font-weight: 700;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Mobile (<900px): chat full-width, panel becomes overlay. */
+@media (max-width: 899px) {
+	.bqw-chat-layout { flex-direction: column; }
+	.bqw-chat-layout > .bqw-rec-panel {
+		position: fixed;
+		inset: 0;
+		z-index: 9001;
+		flex: 1 1 auto;
+		max-height: none;
+		margin: 0;
+		border-radius: 0;
+		transform: translateX(100%);
+		transition: transform 280ms ease;
+	}
+	.bqw-chat-layout > .bqw-rec-panel.is-open {
+		transform: translateX(0);
+	}
+	.bqw-rec-panel-close { display: inline-flex; }
+	.bqw-rec-fab.is-shown { display: inline-flex; align-items: center; justify-content: center; }
+}
 
 /* Chat container. */
 .bqw-chat {
