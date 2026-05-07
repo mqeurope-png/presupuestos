@@ -64,25 +64,10 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 		</div>
 
 		<?php if ( $captcha_on && $captcha ) : ?>
-			<div class="bqw-captcha" id="bqw-captcha" data-provider="<?php echo esc_attr( $captcha_provider ); ?>">
-				<?php if ( 'math' === $captcha_provider ) : ?>
-					<label for="bqw-captcha-answer">
-						<?php esc_html_e( 'Quick check:', 'bomedia-quote-wizard' ); ?>
-						<strong><?php echo esc_html( $captcha['question'] ); ?> = ?</strong>
-					</label>
-					<input type="number" id="bqw-captcha-answer" name="bqw_captcha_answer" inputmode="numeric" />
-					<input type="hidden" name="bqw_captcha_token" value="<?php echo esc_attr( $captcha['token'] ); ?>" />
-					<input type="hidden" name="bqw_captcha_ts" value="<?php echo esc_attr( (string) $captcha['ts'] ); ?>" />
-				<?php elseif ( 'recaptcha_v2' === $captcha_provider ) : ?>
-					<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $captcha['site_key'] ); ?>"></div>
-				<?php elseif ( 'recaptcha_v3' === $captcha_provider ) : ?>
-					<input type="hidden" name="g-recaptcha-response" id="bqw-recaptcha-v3" value="" />
-				<?php elseif ( 'turnstile' === $captcha_provider ) : ?>
-					<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( $captcha['site_key'] ); ?>"></div>
-				<?php elseif ( 'hcaptcha' === $captcha_provider ) : ?>
-					<div class="h-captcha" data-sitekey="<?php echo esc_attr( $captcha['site_key'] ); ?>"></div>
-				<?php endif; ?>
-			</div>
+			<input type="hidden" name="bqw_captcha_answer" id="bqw-captcha-answer" />
+			<input type="hidden" name="bqw_captcha_token" value="<?php echo esc_attr( (string) ( $captcha['token'] ?? '' ) ); ?>" />
+			<input type="hidden" name="bqw_captcha_ts" value="<?php echo esc_attr( (string) ( $captcha['ts'] ?? '' ) ); ?>" />
+			<input type="hidden" name="g-recaptcha-response" id="bqw-recaptcha-v3" value="" />
 		<?php endif; ?>
 	</form>
 

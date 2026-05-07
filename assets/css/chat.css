@@ -712,3 +712,24 @@
 	font-weight: 600;
 }
 .bqw-rec-no-more { text-align: center; font-style: italic; }
+
+/* v1.7.12 — captcha rendered inline in the final form. */
+.bqw-captcha-inline { display: flex; flex-direction: column; gap: 8px; }
+.bqw-captcha-math { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bqw-captcha-math strong {
+	font-size: 1rem;
+	background: var(--bqw-bg-soft, #f8fafc);
+	padding: 6px 12px;
+	border-radius: 6px;
+	white-space: nowrap;
+}
+.bqw-captcha-math input {
+	flex: 1;
+	min-width: 100px;
+	padding: 8px 10px;
+	border: 1.5px solid var(--bqw-border, #e5e7eb);
+	border-radius: 6px;
+	font: inherit;
+}
+.bqw-captcha-help { margin: 0; font-size: 0.78rem; color: var(--bqw-muted, #64748b); font-style: italic; }
+.g-recaptcha, .cf-turnstile, .h-captcha { transform-origin: 0 0; }

@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.11\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.12\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -104,6 +104,9 @@ msgid "All types"
 msgstr ""
 
 msgid "Almost done"
+msgstr ""
+
+msgid "Another spin"
 msgstr ""
 
 msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
@@ -712,6 +715,9 @@ msgstr ""
 msgid "Please accept the privacy policy."
 msgstr ""
 
+msgid "Please complete the verification."
+msgstr ""
+
 msgid "Please enter a valid email."
 msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
 
@@ -755,6 +761,9 @@ msgid "Products of interest"
 msgstr "Produkte von Interesse"
 
 msgid "Protected by Google reCAPTCHA."
+msgstr ""
+
+msgid "Quick check"
 msgstr ""
 
 msgid "Quick check:"
@@ -1054,6 +1063,9 @@ msgstr ""
 msgid "View on"
 msgstr ""
 
+msgid "View other options"
+msgstr ""
+
 msgid "View product →"
 msgstr ""
 
@@ -1110,6 +1122,9 @@ msgstr "Du hast %d Maschinen ausgewählt"
 
 msgid "You picked 1 machine"
 msgstr "Du hast 1 Maschine ausgewählt"
+
+msgid "You've seen all the available options."
+msgstr ""
 
 msgid "Your application"
 msgstr "Deine Anwendung"

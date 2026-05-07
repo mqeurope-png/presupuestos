@@ -344,6 +344,15 @@ final class Shortcode {
 			'searchMachinesCopy' => $cp( 'search_placeholder' ),
 			'noResults'          => $cp( 'no_results' ),
 			'removeHint'         => $cp( 'remove_hint' ),
+
+			// v1.7.12 — captcha labels.
+			'captchaQuick'   => __( 'Quick check', 'bomedia-quote-wizard' ),
+			'captchaHelp'    => __( 'Helps us avoid spam.', 'bomedia-quote-wizard' ),
+			'captchaV3Note'  => __( 'Protected by Google reCAPTCHA.', 'bomedia-quote-wizard' ),
+			'errCaptcha'     => __( 'Please complete the verification.', 'bomedia-quote-wizard' ),
+			'viewMoreRecs'   => __( 'View other options', 'bomedia-quote-wizard' ),
+			'anotherSpin'    => __( 'Another spin', 'bomedia-quote-wizard' ),
+			'noMoreRecs'     => __( "You've seen all the available options.", 'bomedia-quote-wizard' ),
 		];
 	}
 

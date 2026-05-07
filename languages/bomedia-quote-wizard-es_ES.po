@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.11\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.12\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -105,6 +105,9 @@ msgstr "Todos los tipos"
 
 msgid "Almost done"
 msgstr "Casi terminamos"
+
+msgid "Another spin"
+msgstr "Otra vuelta"
 
 msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
 msgstr "¿Quieres preguntarme algo sobre estas máquinas? O salta directo al envío."
@@ -302,7 +305,7 @@ msgid "Customer wizard answers are sent to OpenAI to generate recommendations. P
 msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
 
 msgid "Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default."
-msgstr ""
+msgstr "Personaliza todos los textos visibles del wizard. Las variables se sustituyen en runtime: {nombre} (nombre del visitante), {site_display_name} (el valor de arriba) y {n} (número de recomendaciones o selecciones). Deja un campo en blanco para usar el valor por defecto."
 
 msgid "Cut/engrave with laser"
 msgstr "Cortar y grabar con láser"
@@ -712,6 +715,9 @@ msgstr "Placeholders: {nombre}, {empresa}, {producto}"
 msgid "Please accept the privacy policy."
 msgstr ""
 
+msgid "Please complete the verification."
+msgstr "Por favor, completa la verificación."
+
 msgid "Please enter a valid email."
 msgstr "Introduce un email válido."
 
@@ -756,6 +762,9 @@ msgstr "Productos de interés"
 
 msgid "Protected by Google reCAPTCHA."
 msgstr "Protegido por Google reCAPTCHA."
+
+msgid "Quick check"
+msgstr "Verificación rápida"
 
 msgid "Quick check:"
 msgstr "Comprobación rápida:"
@@ -1054,6 +1063,9 @@ msgstr "Ver"
 msgid "View on"
 msgstr "Ver en"
 
+msgid "View other options"
+msgstr "Ver otras opciones"
+
 msgid "View product →"
 msgstr "Ver producto →"
 
@@ -1088,13 +1100,13 @@ msgid "Wizard"
 msgstr "Wizard"
 
 msgid "Wizard copy"
-msgstr ""
+msgstr "Textos del wizard"
 
 msgid "Wizard language"
 msgstr "Idioma del wizard"
 
 msgid "Wizard questions"
-msgstr ""
+msgstr "Preguntas del wizard"
 
 msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
@@ -1110,6 +1122,9 @@ msgstr "Has seleccionado %d máquinas"
 
 msgid "You picked 1 machine"
 msgstr "Has seleccionado 1 máquina"
+
+msgid "You've seen all the available options."
+msgstr "Has visto todas las opciones disponibles."
 
 msgid "Your application"
 msgstr "Tu aplicación"

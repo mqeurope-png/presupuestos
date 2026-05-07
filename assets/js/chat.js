@@ -1026,6 +1026,16 @@
 		}
 		left.appendChild(legal);
 
+		// v1.7.12 — render the captcha widget inside the left column (the
+		// previous version left it inside a hidden <form> so it never showed).
+		var captchaCfg = cfg.captcha || null;
+		if (cfg.enable_captcha && captchaCfg) {
+			var captchaBox = el('div', 'bqw-captcha-inline');
+			captchaBox.dataset.provider = captchaCfg.provider || 'math';
+			left.insertBefore(captchaBox, legal);
+			renderCaptcha(captchaBox, captchaCfg);
+		}
+
 		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row bqw-final-actions');
 		var submitBtn = el('button', 'bqw-btn bqw-btn-primary');
 		submitBtn.type = 'button';
@@ -1096,18 +1106,119 @@
 		});
 	}
 
+	// v1.7.12 — captcha widget state (set by renderCaptcha based on provider).
+	var captchaState = { provider: '', widgetId: null, mathReady: false };
+
+	function renderCaptcha(box, c) {
+		var prov = c.provider || 'math';
+		captchaState = { provider: prov, widgetId: null, mathReady: false };
+		box.innerHTML = '';
+
+		if (prov === 'math') {
+			box.innerHTML =
+				'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.captchaQuick || 'Quick check') + ' *</span>' +
+					'<div class="bqw-captcha-math"><strong>' + escapeHtml(c.question || '') + ' = ?</strong>' +
+						'<input type="number" id="bqw-captcha-input" inputmode="numeric" autocomplete="off" required></div></label>' +
+				'<p class="bqw-captcha-help">' + escapeHtml(i18n.captchaHelp || 'Helps us avoid spam.') + '</p>';
+			captchaState.mathReady = true;
+			return;
+		}
+		if (prov === 'recaptcha_v3') {
+			box.innerHTML = '<p class="bqw-captcha-help">' + escapeHtml(i18n.captchaV3Note || 'Protected by Google reCAPTCHA.') + '</p>';
+			return;
+		}
+		if (prov === 'recaptcha_v2') {
+			var div = el('div', 'g-recaptcha');
+			div.dataset.sitekey = c.site_key || '';
+			box.appendChild(div);
+			waitFor(function () { return window.grecaptcha && window.grecaptcha.render; }, function () {
+				try { captchaState.widgetId = window.grecaptcha.render(div, { sitekey: c.site_key }); } catch (e) {}
+			});
+			return;
+		}
+		if (prov === 'turnstile') {
+			var t = el('div', 'cf-turnstile');
+			t.dataset.sitekey = c.site_key || '';
+			box.appendChild(t);
+			waitFor(function () { return window.turnstile && window.turnstile.render; }, function () {
+				try { captchaState.widgetId = window.turnstile.render(t, { sitekey: c.site_key }); } catch (e) {}
+			});
+			return;
+		}
+		if (prov === 'hcaptcha') {
+			var h = el('div', 'h-captcha');
+			h.dataset.sitekey = c.site_key || '';
+			box.appendChild(h);
+			waitFor(function () { return window.hcaptcha && window.hcaptcha.render; }, function () {
+				try { captchaState.widgetId = window.hcaptcha.render(h, { sitekey: c.site_key }); } catch (e) {}
+			});
+			return;
+		}
+	}
+
+	function waitFor(predicate, cb) {
+		if (predicate()) return cb();
+		var tries = 0;
+		var timer = setInterval(function () {
+			tries++;
+			if (predicate()) { clearInterval(timer); cb(); }
+			else if (tries > 60) { clearInterval(timer); }
+		}, 100);
+	}
+
+	// Returns Promise<string> with the captcha token/answer ready to submit,
+	// or rejects with a user-facing message when the user must complete it.
 	function ensureCaptchaToken() {
-		var c = document.getElementById('bqw-captcha');
-		if (!c) return Promise.resolve();
-		var prov = c.dataset.provider;
-		if (prov === 'recaptcha_v3' && cfg.captcha && cfg.captcha.site_key && window.grecaptcha) {
-			return new Promise(function (resolve) {
+		var prov = captchaState.provider;
+		if (!prov) return Promise.resolve();
+		if (prov === 'math') {
+			var input = document.getElementById('bqw-captcha-input');
+			var ans   = input ? input.value.trim() : '';
+			if ('' === ans) return Promise.reject(new Error(i18n.errCaptcha || 'Please complete the verification.'));
+			document.getElementById('bqw-captcha-answer').value = ans;
+			return Promise.resolve();
+		}
+		if (prov === 'recaptcha_v3') {
+			if (!(window.grecaptcha && cfg.captcha && cfg.captcha.site_key)) {
+				return Promise.reject(new Error(i18n.errCaptcha || 'Captcha not ready.'));
+			}
+			return new Promise(function (resolve, reject) {
 				window.grecaptcha.ready(function () {
 					window.grecaptcha.execute(cfg.captcha.site_key, { action: cfg.captcha.action || 'boprint_quote' })
-						.then(function (token) { var t = document.getElementById('bqw-recaptcha-v3'); if (t) t.value = token; resolve(); })
-						.catch(function () { resolve(); });
+						.then(function (token) {
+							var t = document.getElementById('bqw-recaptcha-v3'); if (t) t.value = token;
+							resolve();
+						})
+						.catch(function () { reject(new Error(i18n.errCaptcha || 'Captcha failed. Please retry.')); });
 				});
 			});
+		}
+		if (prov === 'recaptcha_v2') {
+			var resp = window.grecaptcha && captchaState.widgetId !== null
+				? window.grecaptcha.getResponse(captchaState.widgetId)
+				: '';
+			if (!resp) return Promise.reject(new Error(i18n.errCaptcha || 'Please complete the captcha.'));
+			document.getElementById('bqw-recaptcha-v3').value = resp;
+			return Promise.resolve();
+		}
+		if (prov === 'turnstile') {
+			var tr = window.turnstile && captchaState.widgetId !== null
+				? window.turnstile.getResponse(captchaState.widgetId)
+				: '';
+			if (!tr) return Promise.reject(new Error(i18n.errCaptcha || 'Please complete the captcha.'));
+			// Turnstile token goes via 'cf-turnstile-response' field; reuse the
+			// server's existing 'g-recaptcha-response' channel by submitting in FormData manually.
+			document.getElementById('bqw-recaptcha-v3').value = '';
+			window.__bqwTurnstileToken = tr;
+			return Promise.resolve();
+		}
+		if (prov === 'hcaptcha') {
+			var hr = window.hcaptcha && captchaState.widgetId !== null
+				? window.hcaptcha.getResponse(captchaState.widgetId)
+				: '';
+			if (!hr) return Promise.reject(new Error(i18n.errCaptcha || 'Please complete the captcha.'));
+			window.__bqwHcaptchaToken = hr;
+			return Promise.resolve();
 		}
 		return Promise.resolve();
 	}
@@ -1133,7 +1244,6 @@
 
 		ensureCaptchaToken().then(function () {
 			var fd = new FormData(form);
-			// Append the form values from the wizard screen (form fields are hidden; we still have to write the data).
 			fd.set('first_name', state.contact_partial.name || '');
 			fd.set('email', state.contact_partial.email || '');
 			fd.set('last_name', '');
@@ -1143,6 +1253,8 @@
 			fd.set('message', message);
 			fd.set('privacy', privacy ? '1' : '');
 			if (optin) fd.set('email_optin', optinV ? '1' : '');
+			if (window.__bqwTurnstileToken) fd.set('cf-turnstile-response', window.__bqwTurnstileToken);
+			if (window.__bqwHcaptchaToken)  fd.set('h-captcha-response', window.__bqwHcaptchaToken);
 
 			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
 				.then(function (r) { return r.json(); })
@@ -1151,18 +1263,33 @@
 						if (json.data.redirect) { window.location.href = json.data.redirect; return; }
 						root.querySelector('.bqw-wiz-screen').hidden = true;
 						progress.hidden = true;
-						tray.hidden = true;
 						thanksBox.hidden = false;
 						thanksBox.innerHTML = json.data.html || '';
 						thanksBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
 					} else {
 						errBox.hidden = false;
 						errBox.textContent = (json && json.data && json.data.message) || i18n.genericError || 'Error';
+						resetCaptcha();
 					}
 				})
-				.catch(function () { errBox.hidden = false; errBox.textContent = i18n.genericError || 'Error'; })
+				.catch(function () { errBox.hidden = false; errBox.textContent = i18n.genericError || 'Error'; resetCaptcha(); })
 				.finally(function () { btn.disabled = false; if (spinner) spinner.hidden = true; });
+		}).catch(function (err) {
+			errBox.hidden = false;
+			errBox.textContent = (err && err.message) || (i18n.errCaptcha || 'Please complete the verification.');
+			btn.disabled = false; if (spinner) spinner.hidden = true;
 		});
+	}
+
+	function resetCaptcha() {
+		var prov = captchaState.provider;
+		try {
+			if (prov === 'recaptcha_v2' && window.grecaptcha && captchaState.widgetId !== null) window.grecaptcha.reset(captchaState.widgetId);
+			if (prov === 'turnstile' && window.turnstile && captchaState.widgetId !== null) window.turnstile.reset(captchaState.widgetId);
+			if (prov === 'hcaptcha' && window.hcaptcha && captchaState.widgetId !== null) window.hcaptcha.reset(captchaState.widgetId);
+		} catch (e) {}
+		window.__bqwTurnstileToken = '';
+		window.__bqwHcaptchaToken = '';
 	}
 
 	/* =========================================================

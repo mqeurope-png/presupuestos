@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.11\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.12\n"
 "Report-Msgid-Bugs-To: https://bomedia.net/\n"
 "POT-Creation-Date: 2026-05-06 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -143,6 +143,10 @@ msgstr ""
 
 #: includes/class-shortcode.php:313
 msgid "Almost done"
+msgstr ""
+
+#: includes/class-shortcode.php:354
+msgid "Another spin"
 msgstr ""
 
 #: includes/class-chat.php:464
@@ -616,6 +620,7 @@ msgstr ""
 msgid "Helper text above the inputs"
 msgstr ""
 
+#: includes/class-shortcode.php:350
 #: templates/wizard.php:239
 msgid "Helps us avoid spam."
 msgstr ""
@@ -1019,6 +1024,10 @@ msgstr ""
 msgid "Please accept the privacy policy."
 msgstr ""
 
+#: includes/class-shortcode.php:352
+msgid "Please complete the verification."
+msgstr ""
+
 #: includes/class-shortcode.php:244
 #: includes/class-shortcode.php:298
 msgid "Please enter a valid email."
@@ -1078,11 +1087,15 @@ msgstr ""
 msgid "Products of interest"
 msgstr ""
 
+#: includes/class-shortcode.php:351
 #: templates/wizard.php:233
 msgid "Protected by Google reCAPTCHA."
 msgstr ""
 
-#: templates/chat.php:70
+#: includes/class-shortcode.php:349
+msgid "Quick check"
+msgstr ""
+
 #: templates/wizard.php:223
 msgid "Quick check:"
 msgstr ""
@@ -1498,6 +1511,10 @@ msgstr ""
 msgid "View on"
 msgstr ""
 
+#: includes/class-shortcode.php:353
+msgid "View other options"
+msgstr ""
+
 #: includes/class-shortcode.php:264
 msgid "View product →"
 msgstr ""
@@ -1575,6 +1592,10 @@ msgstr ""
 
 #: includes/class-shortcode.php:255
 msgid "You picked 1 machine"
+msgstr ""
+
+#: includes/class-shortcode.php:355
+msgid "You've seen all the available options."
 msgstr ""
 
 #: includes/class-shortcode.php:223
