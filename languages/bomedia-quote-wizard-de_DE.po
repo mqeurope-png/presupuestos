@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.3\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.4\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,34 +19,7 @@ msgstr ""
 msgid "(skipped)"
 msgstr ""
 
-msgid "100 – 500"
-msgstr ""
-
-msgid "15,000 – 30,000 €"
-msgstr ""
-
-msgid "5,000 – 15,000 €"
-msgstr ""
-
-msgid "500 – 2000"
-msgstr ""
-
-msgid "60×90 cm"
-msgstr ""
-
-msgid "< 100 / month"
-msgstr ""
-
-msgid "> 2000"
-msgstr ""
-
 msgid "A valid email is required."
-msgstr ""
-
-msgid "A3 (297×420 mm)"
-msgstr ""
-
-msgid "A4 (210×297 mm)"
 msgstr ""
 
 msgid "AI Catalog source"
@@ -166,7 +139,7 @@ msgstr ""
 msgid "Budget"
 msgstr ""
 
-msgid "Budget options"
+msgid "Budget step"
 msgstr ""
 
 msgid "Bulk AI notes"
@@ -176,9 +149,6 @@ msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-
 msgstr ""
 
 msgid "Captcha provider"
-msgstr ""
-
-msgid "Cardboard"
 msgstr ""
 
 msgid "Catalog API key"
@@ -238,9 +208,6 @@ msgstr ""
 msgid "Continue and request quote →"
 msgstr ""
 
-msgid "Cotton"
-msgstr ""
-
 msgid "Could not parse the JSON file."
 msgstr ""
 
@@ -268,9 +235,6 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-msgid "Decoration / signage"
-msgstr ""
-
 msgid "Default tags"
 msgstr ""
 
@@ -281,9 +245,6 @@ msgid "Delete this conversation?"
 msgstr ""
 
 msgid "Domain"
-msgstr ""
-
-msgid "Don't know yet"
 msgstr ""
 
 msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
@@ -349,10 +310,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-msgid "Format options"
-msgstr ""
-
-msgid "Glass"
+msgid "Format step"
 msgstr ""
 
 msgid "Google reCAPTCHA v2 (checkbox)"
@@ -415,13 +373,7 @@ msgstr ""
 msgid "Import JSON"
 msgstr ""
 
-msgid "Industrial"
-msgstr ""
-
 msgid "Labels / packaging"
-msgstr ""
-
-msgid "Larger than 60×90"
 msgstr ""
 
 msgid "Last call:"
@@ -440,9 +392,6 @@ msgid "Lead"
 msgstr ""
 
 msgid "Lead data missing or corrupt."
-msgstr ""
-
-msgid "Leather"
 msgstr ""
 
 msgid "Leave empty to use the default Bomedia Composer endpoint."
@@ -499,9 +448,6 @@ msgstr ""
 msgid "Messages"
 msgstr ""
 
-msgid "Metal"
-msgstr ""
-
 msgid "Missing category."
 msgstr ""
 
@@ -521,9 +467,6 @@ msgid "Monthly volume"
 msgstr "Monatsvolumen"
 
 msgid "Monthly volume step"
-msgstr ""
-
-msgid "More than 30,000 €"
 msgstr ""
 
 msgid "Name"
@@ -580,6 +523,12 @@ msgstr ""
 msgid "One option per line."
 msgstr ""
 
+msgid "One option per line. The chat shows a \"Skip\" chip too."
+msgstr ""
+
+msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
+msgstr ""
+
 msgid "Open chat again →"
 msgstr ""
 
@@ -605,15 +554,6 @@ msgid "OpenAI returned malformed data."
 msgstr ""
 
 msgid "Or type your answer freely…"
-msgstr ""
-
-msgid "Other"
-msgstr ""
-
-msgid "PVC / acrylic"
-msgstr ""
-
-msgid "Packaging"
 msgstr ""
 
 msgid "Perfect. To send your personalised quote, I just need your details."
@@ -652,9 +592,6 @@ msgstr "Bitte wähle mindestens eine Maschine."
 msgid "Please take a moment before submitting."
 msgstr ""
 
-msgid "Polyester"
-msgstr ""
-
 msgid "Post-submit redirect URL"
 msgstr ""
 
@@ -679,9 +616,6 @@ msgstr "Produkt von Interesse"
 msgid "Products of interest"
 msgstr "Produkte von Interesse"
 
-msgid "Promotional / merch"
-msgstr ""
-
 msgid "Protected by Google reCAPTCHA."
 msgstr ""
 
@@ -701,9 +635,6 @@ msgid "Quote request wizard"
 msgstr ""
 
 msgid "REST API Key"
-msgstr ""
-
-msgid "Rather not say"
 msgstr ""
 
 msgid "Recipient emails"
@@ -802,6 +733,9 @@ msgstr ""
 msgid "Show recommended machines"
 msgstr ""
 
+msgid "Show the first \"What do you want to do?\" question."
+msgstr ""
+
 msgid "Site key"
 msgstr ""
 
@@ -856,6 +790,9 @@ msgstr "Zusammenfassung"
 msgid "Task type → brands mapping"
 msgstr ""
 
+msgid "Task types (step 1)"
+msgstr ""
+
 msgid "Tell us what you need…"
 msgstr ""
 
@@ -866,9 +803,6 @@ msgid "Test connection"
 msgstr ""
 
 msgid "Testing…"
-msgstr ""
-
-msgid "Textile / fashion"
 msgstr ""
 
 msgid "Thanks!"
@@ -905,9 +839,6 @@ msgid "Turnstile verification failed."
 msgstr ""
 
 msgid "Unknown step."
-msgstr ""
-
-msgid "Up to 5,000 €"
 msgstr ""
 
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
@@ -956,9 +887,6 @@ msgid "Wizard language"
 msgstr ""
 
 msgid "WooCommerce is not active. Activate it to pick categories."
-msgstr ""
-
-msgid "Wood"
 msgstr ""
 
 msgid "Write log file in uploads/bqw-logs/"

@@ -371,6 +371,33 @@
 			});
 	}
 
+	function applyActions(actions) {
+		actions.forEach(function (a) {
+			if (!a || !a.type) return;
+			if (a.type === 'update_recommendations' && Array.isArray(a.products)) {
+				renderRecommendations(a.products);
+			} else if (a.type === 'select_product' && a.product) {
+				// Add to selection if not already; toggle the matching card on if visible.
+				addSelection({
+					id: a.product.id, name: a.product.name, image: a.product.img || a.product.image || '',
+					sku: a.product.sku || '', brand: a.product.brand || '', price: a.product.price || '',
+					area: a.product.area || '', link: a.product.link || '', source: 'catalog',
+					categoryId: 0, categorySlug: a.product.brand || '', categoryName: a.product.brand || '',
+				});
+				var card = recPanelBody && recPanelBody.querySelector('.bqw-rec-card[data-product-id="' + a.product.id + '"]');
+				if (card) {
+					card.classList.add('is-selected');
+					var btn = card.querySelector('.bqw-rec-pick');
+					if (btn) btn.setAttribute('aria-pressed', 'true');
+				}
+				updateRecCounter();
+			} else if (a.type === 'go_to_contact') {
+				if (recPanel) recPanel.classList.remove('is-open');
+				revealContactForm({ withHint: false });
+			}
+		});
+	}
+
 	function applyStep(step) {
 		if (!step) return;
 		root.classList.add('is-flow-active');
@@ -405,6 +432,9 @@
 				renderCtaToContact(step.cta);
 				textInput.disabled = false;
 				textInput.placeholder = i18n.askAnything || 'Ask anything…';
+				if (step.actions && step.actions.length) {
+					applyActions(step.actions);
+				}
 				break;
 
 			case 'form':

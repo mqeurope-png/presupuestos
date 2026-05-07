@@ -65,6 +65,10 @@ final class Settings {
 			'materials_options'     => "Textil\nPVC\nMadera\nCristal\nMetal\nPapel\nCuero\nOtros",
 			'enable_volume'         => 1,
 			'volume_options'        => "<100\n100-500\n500-2000\n>2000",
+			'enable_format'         => 1,
+			'enable_budget'         => 1,
+			'enable_task_type'      => 1,
+			'task_type_options'     => "uv_objects|Imprimir sobre objetos (UV-LED)\ntextile|Imprimir textil\nlaser|Cortar y grabar con láser\npackaging|Etiquetar / packaging\nunsure|No estoy seguro",
 			'wizard_language'       => '',
 			'privacy_url'           => '',
 			'enable_captcha'        => 1,
@@ -276,6 +280,10 @@ final class Settings {
 		$out['materials_options']   = $this->sanitize_lines( $input['materials_options'] ?? '' );
 		$out['enable_volume']       = ! empty( $input['enable_volume'] ) ? 1 : 0;
 		$out['volume_options']      = $this->sanitize_lines( $input['volume_options'] ?? '' );
+		$out['enable_format']       = ! empty( $input['enable_format'] ) ? 1 : 0;
+		$out['enable_budget']       = ! empty( $input['enable_budget'] ) ? 1 : 0;
+		$out['enable_task_type']    = ! empty( $input['enable_task_type'] ) ? 1 : 0;
+		$out['task_type_options']   = $this->sanitize_lines( $input['task_type_options'] ?? '' );
 		$out['wizard_language']     = sanitize_text_field( $input['wizard_language'] ?? '' );
 		$out['privacy_url']         = esc_url_raw( $input['privacy_url'] ?? '' );
 		$out['enable_captcha']      = ! empty( $input['enable_captcha'] ) ? 1 : 0;
@@ -721,12 +729,28 @@ final class Settings {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php esc_html_e( 'Format options', 'bomedia-quote-wizard' ); ?></label></th>
-					<td><textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_format_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_format_options'] ); ?></textarea></td>
+					<th scope="row"><?php esc_html_e( 'Format step', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_format]" value="1" <?php checked( ! empty( $s['enable_format'] ) ); ?> /> <?php esc_html_e( 'Enable', 'bomedia-quote-wizard' ); ?></label><br/>
+						<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_format_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_format_options'] ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'One option per line. The chat shows a "Skip" chip too.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php esc_html_e( 'Budget options', 'bomedia-quote-wizard' ); ?></label></th>
-					<td><textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_budget_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_budget_options'] ); ?></textarea></td>
+					<th scope="row"><?php esc_html_e( 'Budget step', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_budget]" value="1" <?php checked( ! empty( $s['enable_budget'] ) ); ?> /> <?php esc_html_e( 'Enable', 'bomedia-quote-wizard' ); ?></label><br/>
+						<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[matchmaker_budget_options]" rows="4" cols="40" class="large-text code"><?php echo esc_textarea( $s['matchmaker_budget_options'] ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'One option per line. The chat shows a "Skip" chip too.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Task types (step 1)', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_task_type]" value="1" <?php checked( ! empty( $s['enable_task_type'] ) ); ?> /> <?php esc_html_e( 'Show the first "What do you want to do?" question.', 'bomedia-quote-wizard' ); ?></label><br/>
+						<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[task_type_options]" rows="6" cols="60" class="large-text code"><?php echo esc_textarea( $s['task_type_options'] ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
 				</tr>
 			</table>
 
@@ -1006,13 +1030,20 @@ final class Settings {
 	}
 
 	private function render_task_brand_map( array $current ): void {
-		$tasks = [
-			'uv_objects' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ),
-			'textile'    => __( 'Print on textile', 'bomedia-quote-wizard' ),
-			'laser'      => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),
-			'packaging'  => __( 'Labels / packaging', 'bomedia-quote-wizard' ),
-			'unsure'     => __( "I'm not sure", 'bomedia-quote-wizard' ),
-		];
+		$wiz   = self::get_wizard();
+		$tasks = [];
+		foreach ( Chat::parse_task_type_options( (string) ( $wiz['task_type_options'] ?? '' ) ) as $opt ) {
+			$tasks[ $opt['value'] ] = $opt['label'];
+		}
+		if ( empty( $tasks ) ) {
+			$tasks = [
+				'uv_objects' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ),
+				'textile'    => __( 'Print on textile', 'bomedia-quote-wizard' ),
+				'laser'      => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),
+				'packaging'  => __( 'Labels / packaging', 'bomedia-quote-wizard' ),
+				'unsure'     => __( "I'm not sure", 'bomedia-quote-wizard' ),
+			];
+		}
 		$brands = Catalog_Client::get_brands();
 		if ( empty( $brands ) ) {
 			echo '<p style="background:#fef9c3;padding:8px 10px;border-left:3px solid #ca8a04;border-radius:3px;">' .

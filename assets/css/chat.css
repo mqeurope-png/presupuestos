@@ -12,46 +12,42 @@
 	line-height: 1.5;
 }
 
-/* Hero (only on landing). Solid primary background, optional image with
-   uniform dark overlay for AA contrast over any photo. */
+/* Hero (only on landing).
+ * Strategy: solid primary background by default. When the admin uploads an
+ * image, the same element paints a uniform 0.6 black overlay on top of it
+ * via stacked linear-gradient + the --bqw-hero-bg CSS variable. No separate
+ * overlay div, no z-index gymnastics, immune to plugin CSS resets.
+ */
 .bqw-chat-hero {
-	position: relative;
-	padding: 1.8rem clamp(1rem, 3vw, 2rem) 1.6rem;
-	color: #fff;
 	background-color: var(--bqw-primary, #0066cc);
-	overflow: hidden;
-}
-.bqw-chat-hero-bg {
-	position: absolute; inset: 0;
+	background-image: none;
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	z-index: 0;
+	color: #ffffff;
+	padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
 }
-.bqw-chat-hero-overlay {
-	position: absolute; inset: 0;
-	background: rgba(0, 0, 0, 0.6);
-	z-index: 1;
+.bqw-chat-hero.has-bg-image {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--bqw-hero-bg);
 }
 .bqw-chat-hero-content {
-	position: relative;
-	z-index: 2;
 	max-width: 760px;
 	margin: 0 auto;
+}
+.bqw-chat-hero-title,
+.bqw-chat-hero-sub {
+	color: #ffffff !important;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 .bqw-chat-hero-title {
 	margin: 0;
 	font-size: clamp(1.25rem, 2.4vw, 1.6rem);
 	font-weight: 800;
 	letter-spacing: -0.01em;
-	color: #ffffff;
-	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 .bqw-chat-hero-sub {
 	margin: 0.4rem 0 0;
-	color: #ffffff;
 	font-size: clamp(0.92rem, 1.4vw, 1rem);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .bqw-chat-wrap.is-flow-active .bqw-chat-hero { display: none !important; }
 

@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.3\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.4\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,35 +19,8 @@ msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presup
 msgid "(skipped)"
 msgstr "(saltada)"
 
-msgid "100 – 500"
-msgstr "100 – 500"
-
-msgid "15,000 – 30,000 €"
-msgstr "15.000 – 30.000 €"
-
-msgid "5,000 – 15,000 €"
-msgstr "5.000 – 15.000 €"
-
-msgid "500 – 2000"
-msgstr "500 – 2000"
-
-msgid "60×90 cm"
-msgstr "60×90 cm"
-
-msgid "< 100 / month"
-msgstr "< 100 / mes"
-
-msgid "> 2000"
-msgstr "> 2000"
-
 msgid "A valid email is required."
 msgstr "Se requiere un correo electrónico válido."
-
-msgid "A3 (297×420 mm)"
-msgstr "A3 (297×420 mm)"
-
-msgid "A4 (210×297 mm)"
-msgstr "A4 (210×297 mm)"
 
 msgid "AI Catalog source"
 msgstr "Origen del catálogo IA"
@@ -166,8 +139,8 @@ msgstr "Verificación anti-bot"
 msgid "Budget"
 msgstr "Presupuesto"
 
-msgid "Budget options"
-msgstr "Opciones de presupuesto"
+msgid "Budget step"
+msgstr "Paso de presupuesto"
 
 msgid "Bulk AI notes"
 msgstr "Notas IA en bloque"
@@ -177,9 +150,6 @@ msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: {
 
 msgid "Captcha provider"
 msgstr "Proveedor de captcha"
-
-msgid "Cardboard"
-msgstr "Cartón"
 
 msgid "Catalog API key"
 msgstr "API key del catálogo"
@@ -238,9 +208,6 @@ msgstr "Continuar"
 msgid "Continue and request quote →"
 msgstr "Continuar y pedir presupuesto →"
 
-msgid "Cotton"
-msgstr "Algodón"
-
 msgid "Could not parse the JSON file."
 msgstr "No se pudo procesar el archivo JSON."
 
@@ -268,9 +235,6 @@ msgstr "Diario"
 msgid "Date"
 msgstr "Fecha"
 
-msgid "Decoration / signage"
-msgstr "Decoración / señalética"
-
 msgid "Default tags"
 msgstr "Tags por defecto"
 
@@ -282,9 +246,6 @@ msgstr "¿Eliminar esta conversación?"
 
 msgid "Domain"
 msgstr "Dominio"
-
-msgid "Don't know yet"
-msgstr "Aún no lo sé"
 
 msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
 msgstr "Arrastra productos para reordenar. En modo \"Mostrar todos los publicados\", arrastrar cambia a modo manual para conservar el nuevo orden."
@@ -349,11 +310,8 @@ msgstr "Prohibido"
 msgid "Format"
 msgstr "Formato"
 
-msgid "Format options"
-msgstr "Opciones de formato"
-
-msgid "Glass"
-msgstr "Vidrio"
+msgid "Format step"
+msgstr "Paso de formato"
 
 msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr "Google reCAPTCHA v2 (checkbox)"
@@ -415,14 +373,8 @@ msgstr "IP"
 msgid "Import JSON"
 msgstr "Importar JSON"
 
-msgid "Industrial"
-msgstr "Industrial"
-
 msgid "Labels / packaging"
 msgstr "Etiquetas / packaging"
-
-msgid "Larger than 60×90"
-msgstr "Más grande que 60×90"
 
 msgid "Last call:"
 msgstr "Última llamada:"
@@ -441,9 +393,6 @@ msgstr "Lead"
 
 msgid "Lead data missing or corrupt."
 msgstr "Faltan datos del lead o están corruptos."
-
-msgid "Leather"
-msgstr "Cuero"
 
 msgid "Leave empty to use the default Bomedia Composer endpoint."
 msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
@@ -499,9 +448,6 @@ msgstr "Mensaje:"
 msgid "Messages"
 msgstr "Mensajes"
 
-msgid "Metal"
-msgstr "Metal"
-
 msgid "Missing category."
 msgstr "Falta la categoría."
 
@@ -522,9 +468,6 @@ msgstr "Volumen mensual"
 
 msgid "Monthly volume step"
 msgstr "Paso de volumen mensual"
-
-msgid "More than 30,000 €"
-msgstr "Más de 30.000 €"
 
 msgid "Name"
 msgstr "Nombre"
@@ -580,6 +523,12 @@ msgstr "¿En qué materiales?"
 msgid "One option per line."
 msgstr "Una opción por línea."
 
+msgid "One option per line. The chat shows a \"Skip\" chip too."
+msgstr "Una opción por línea. El chat también muestra un chip \"Saltar\"."
+
+msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
+msgstr "Una por línea, formato: valor_estable|Etiqueta visible. El valor_estable es el que usa el mapping de marcas."
+
 msgid "Open chat again →"
 msgstr "Abrir el chat otra vez →"
 
@@ -606,15 +555,6 @@ msgstr "OpenAI devolvió datos mal formados."
 
 msgid "Or type your answer freely…"
 msgstr "O escribe tu respuesta libremente…"
-
-msgid "Other"
-msgstr "Otros"
-
-msgid "PVC / acrylic"
-msgstr "PVC / acrílico"
-
-msgid "Packaging"
-msgstr "Packaging"
 
 msgid "Perfect. To send your personalised quote, I just need your details."
 msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos."
@@ -652,9 +592,6 @@ msgstr "Selecciona al menos una máquina."
 msgid "Please take a moment before submitting."
 msgstr "Tómate un momento antes de enviar."
 
-msgid "Polyester"
-msgstr "Poliéster"
-
 msgid "Post-submit redirect URL"
 msgstr "URL de redirección post-envío"
 
@@ -679,9 +616,6 @@ msgstr "Producto de interés"
 msgid "Products of interest"
 msgstr "Productos de interés"
 
-msgid "Promotional / merch"
-msgstr "Promocional / merchandising"
-
 msgid "Protected by Google reCAPTCHA."
 msgstr "Protegido por Google reCAPTCHA."
 
@@ -702,9 +636,6 @@ msgstr "Asistente de solicitud de presupuesto"
 
 msgid "REST API Key"
 msgstr "Clave REST API"
-
-msgid "Rather not say"
-msgstr "Prefiero no decirlo"
 
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
@@ -802,6 +733,9 @@ msgstr "Mostrar hero"
 msgid "Show recommended machines"
 msgstr "Ver máquinas recomendadas"
 
+msgid "Show the first \"What do you want to do?\" question."
+msgstr "Mostrar la primera pregunta \"¿Qué te interesa hacer?\"."
+
 msgid "Site key"
 msgstr "Site key"
 
@@ -856,6 +790,9 @@ msgstr "Resumen"
 msgid "Task type → brands mapping"
 msgstr "Mapeo tipo de tarea → marcas"
 
+msgid "Task types (step 1)"
+msgstr "Tipos de tarea (paso 1)"
+
 msgid "Tell us what you need…"
 msgstr "Cuéntanos qué necesitas…"
 
@@ -867,9 +804,6 @@ msgstr "Probar conexión"
 
 msgid "Testing…"
 msgstr "Probando…"
-
-msgid "Textile / fashion"
-msgstr "Textil / moda"
 
 msgid "Thanks!"
 msgstr "¡Gracias!"
@@ -906,9 +840,6 @@ msgstr "La verificación de Turnstile falló."
 
 msgid "Unknown step."
 msgstr "Paso desconocido."
-
-msgid "Up to 5,000 €"
-msgstr "Hasta 5.000 €"
 
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
 msgstr "Sube un archivo JSON con { products: [...], brands: [...] } para sobrescribir el cache cuando el endpoint remoto no esté disponible."
@@ -957,9 +888,6 @@ msgstr "Idioma del wizard"
 
 msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
-
-msgid "Wood"
-msgstr "Madera"
 
 msgid "Write log file in uploads/bqw-logs/"
 msgstr "Escribir archivo de log en uploads/bqw-logs/"

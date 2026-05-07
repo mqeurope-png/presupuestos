@@ -106,6 +106,7 @@ final class OpenAI_Client {
 			. '- "reasons" must be in the customer\'s language (detected from their answers)' . "\n"
 			. '- Each reason: max 12 words, concrete, mention specific machine capability matching their need' . "\n"
 			. '- Do not invent capabilities not present in the product data' . "\n"
+			. '- CRITICAL: ONLY recommend product_id values from the array provided below. Do NOT mention or recommend any product that is not in that array. If you do not see a product matching the customer needs, return empty recommendations.' . "\n"
 			. '- Internal notes ARE PRIVATE — never quote them verbatim, just use them to inform your reasoning';
 
 		$apps      = self::join_list( $client_answers['application'] ?? [] );

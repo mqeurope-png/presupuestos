@@ -31,6 +31,33 @@ final class Chat {
 	 * ============================================================ */
 
 	public static function script(): array {
+		$w = Settings::get_wizard();
+
+		// Parse user-configurable lines into option arrays.
+		$task_opts = self::parse_task_type_options( (string) ( $w['task_type_options'] ?? '' ) );
+		// Pad to icons we know per stable value.
+		$task_icons = [
+			'uv_objects' => 'package',
+			'textile'    => 'tshirt',
+			'laser'      => 'metal',
+			'packaging'  => 'package',
+			'unsure'     => 'help',
+		];
+		$task_options = [];
+		foreach ( $task_opts as $t ) {
+			$task_options[] = [
+				'label' => $t['label'],
+				'value' => $t['value'],
+				'icon'  => $task_icons[ $t['value'] ] ?? '',
+			];
+		}
+
+		$application_options = self::lines_to_options( (string) ( $w['application_options'] ?? '' ) );
+		$materials_options   = self::lines_to_options( (string) ( $w['materials_options'] ?? '' ) );
+		$volume_options      = self::lines_to_options( (string) ( $w['volume_options'] ?? '' ) );
+		$format_options      = self::lines_to_options( (string) ( $w['matchmaker_format_options'] ?? '' ) );
+		$budget_options      = self::lines_to_options( (string) ( $w['matchmaker_budget_options'] ?? '' ) );
+
 		return [
 			'welcome' => [
 				'message' => __( "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine in 2 minutes. Ready?", 'bomedia-quote-wizard' ),
@@ -41,89 +68,56 @@ final class Chat {
 				],
 			],
 			'task_type' => [
+				'enabled' => ! empty( $w['enable_task_type'] ),
 				'message' => __( 'Great. What are you interested in doing? You can pick more than one.', 'bomedia-quote-wizard' ),
 				'type'    => 'multi_options',
-				'options' => [
-					[ 'label' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ), 'icon' => 'package', 'value' => 'uv_objects' ],
-					[ 'label' => __( 'Print on textile', 'bomedia-quote-wizard' ),         'icon' => 'tshirt',  'value' => 'textile'    ],
-					[ 'label' => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),   'icon' => 'metal',   'value' => 'laser'      ],
-					[ 'label' => __( 'Labels / packaging', 'bomedia-quote-wizard' ),       'icon' => 'package', 'value' => 'packaging'  ],
-					[ 'label' => __( "I'm not sure", 'bomedia-quote-wizard' ),             'icon' => 'help',    'value' => 'unsure'     ],
-				],
+				'options' => $task_options,
 				'allow_free_text' => true,
 				'next'            => 'application',
 				'saves_to'        => 'task_types',
 			],
 			'application' => [
+				'enabled' => ! empty( $w['enable_application'] ),
 				'message' => __( "Got it. What kind of products will you mostly produce?", 'bomedia-quote-wizard' ),
 				'type'    => 'multi_options',
-				'options' => [
-					[ 'label' => __( 'Textile / fashion', 'bomedia-quote-wizard' ),  'icon' => 'tshirt' ],
-					[ 'label' => __( 'Packaging', 'bomedia-quote-wizard' ),          'icon' => 'package' ],
-					[ 'label' => __( 'Promotional / merch', 'bomedia-quote-wizard' ),'icon' => 'gift' ],
-					[ 'label' => __( 'Industrial', 'bomedia-quote-wizard' ),         'icon' => 'factory' ],
-					[ 'label' => __( 'Decoration / signage', 'bomedia-quote-wizard' ),'icon' => 'home' ],
-					[ 'label' => __( 'Other', 'bomedia-quote-wizard' ),              'icon' => 'help' ],
-				],
+				'options' => $application_options,
 				'allow_free_text' => true,
 				'next'            => 'materials',
 				'saves_to'        => 'applications',
 			],
 			'materials' => [
+				'enabled' => ! empty( $w['enable_materials'] ),
 				'message' => __( 'Which materials will you print on most often?', 'bomedia-quote-wizard' ),
 				'type'    => 'multi_options',
-				'options' => [
-					[ 'label' => __( 'Cotton', 'bomedia-quote-wizard' ),    'icon' => 'fabric' ],
-					[ 'label' => __( 'Polyester', 'bomedia-quote-wizard' ), 'icon' => 'fabric' ],
-					[ 'label' => __( 'PVC / acrylic', 'bomedia-quote-wizard' ), 'icon' => 'plastic' ],
-					[ 'label' => __( 'Wood', 'bomedia-quote-wizard' ),      'icon' => 'wood' ],
-					[ 'label' => __( 'Metal', 'bomedia-quote-wizard' ),     'icon' => 'metal' ],
-					[ 'label' => __( 'Glass', 'bomedia-quote-wizard' ),     'icon' => 'glass' ],
-					[ 'label' => __( 'Leather', 'bomedia-quote-wizard' ),   'icon' => 'leather' ],
-					[ 'label' => __( 'Cardboard', 'bomedia-quote-wizard' ), 'icon' => 'cardboard' ],
-				],
+				'options' => $materials_options,
 				'allow_free_text' => true,
 				'next'            => 'volume',
 				'saves_to'        => 'materials',
 			],
 			'volume' => [
+				'enabled' => ! empty( $w['enable_volume'] ),
 				'message' => __( 'Roughly, what monthly volume do you expect?', 'bomedia-quote-wizard' ),
 				'type'    => 'single_option',
-				'options' => [
-					[ 'label' => __( '< 100 / month', 'bomedia-quote-wizard' ),   'icon' => 'volume-low' ],
-					[ 'label' => __( '100 – 500', 'bomedia-quote-wizard' ),      'icon' => 'volume-mid' ],
-					[ 'label' => __( '500 – 2000', 'bomedia-quote-wizard' ),     'icon' => 'volume-mid' ],
-					[ 'label' => __( '> 2000', 'bomedia-quote-wizard' ),         'icon' => 'volume-high' ],
-					[ 'label' => __( "Don't know yet", 'bomedia-quote-wizard' ), 'icon' => 'help' ],
-				],
+				'options' => $volume_options,
 				'allow_free_text' => true,
 				'next'            => 'format',
 				'saves_to'        => 'volume',
 			],
 			'format' => [
+				'enabled' => ! empty( $w['enable_format'] ),
 				'message' => __( 'What max piece size do you need? You can skip this question.', 'bomedia-quote-wizard' ),
 				'type'    => 'multi_options',
-				'options' => [
-					[ 'label' => __( 'A4 (210×297 mm)', 'bomedia-quote-wizard' ), 'icon' => 'format-small' ],
-					[ 'label' => __( 'A3 (297×420 mm)', 'bomedia-quote-wizard' ), 'icon' => 'format-medium' ],
-					[ 'label' => __( '60×90 cm', 'bomedia-quote-wizard' ),        'icon' => 'format-large' ],
-					[ 'label' => __( 'Larger than 60×90', 'bomedia-quote-wizard' ), 'icon' => 'format-large' ],
-				],
+				'options' => $format_options,
 				'allow_free_text' => true,
 				'allow_skip'      => true,
 				'next'            => 'budget',
 				'saves_to'        => 'formats',
 			],
 			'budget' => [
+				'enabled' => ! empty( $w['enable_budget'] ),
 				'message' => __( 'Any rough budget? Optional.', 'bomedia-quote-wizard' ),
 				'type'    => 'single_option',
-				'options' => [
-					[ 'label' => __( 'Up to 5,000 €', 'bomedia-quote-wizard' ),    'icon' => 'budget-low' ],
-					[ 'label' => __( '5,000 – 15,000 €', 'bomedia-quote-wizard' ), 'icon' => 'budget-mid' ],
-					[ 'label' => __( '15,000 – 30,000 €', 'bomedia-quote-wizard' ),'icon' => 'budget-mid' ],
-					[ 'label' => __( 'More than 30,000 €', 'bomedia-quote-wizard' ),'icon' => 'budget-high' ],
-					[ 'label' => __( "Rather not say", 'bomedia-quote-wizard' ),    'icon' => 'help' ],
-				],
+				'options' => $budget_options,
 				'allow_free_text' => true,
 				'allow_skip'      => true,
 				'next'            => 'recommendations',
@@ -143,6 +137,65 @@ final class Chat {
 		];
 	}
 
+	/**
+	 * Parses a textarea of "value|Label" lines (one per line). Falls back
+	 * gracefully when no `|` is provided.
+	 */
+	public static function parse_task_type_options( string $raw ): array {
+		$lines = preg_split( '/\r\n|\r|\n/', $raw ) ?: [];
+		$out   = [];
+		foreach ( $lines as $ln ) {
+			$ln = trim( $ln );
+			if ( '' === $ln ) {
+				continue;
+			}
+			$parts = explode( '|', $ln, 2 );
+			$value = sanitize_key( trim( (string) $parts[0] ) );
+			$label = isset( $parts[1] ) ? trim( (string) $parts[1] ) : trim( (string) $parts[0] );
+			if ( '' === $value ) {
+				continue;
+			}
+			$out[] = [ 'value' => $value, 'label' => $label ];
+		}
+		return $out;
+	}
+
+	private static function lines_to_options( string $raw ): array {
+		$lines = preg_split( '/\r\n|\r|\n/', $raw ) ?: [];
+		$out   = [];
+		foreach ( $lines as $ln ) {
+			$ln = trim( $ln );
+			if ( '' === $ln ) {
+				continue;
+			}
+			$out[] = [ 'label' => $ln ];
+		}
+		return $out;
+	}
+
+	/**
+	 * Walks the `next` chain skipping any step whose `enabled` flag is false.
+	 * Returns the first enabled target, or null on dead end / cycle.
+	 */
+	private static function resolve_next( array $script, ?string $start ): ?string {
+		$cursor = $start;
+		$guard  = 0;
+		while ( $cursor && isset( $script[ $cursor ] ) && $guard < 20 ) {
+			$guard++;
+			$step = $script[ $cursor ];
+			// Steps without explicit 'enabled' (welcome, task_type fallback, recommendations, free_chat, contact)
+			// are always treated as enabled.
+			$enabled = ! array_key_exists( 'enabled', $step ) || ! empty( $step['enabled'] );
+			$has_options = ! empty( $step['options'] );
+			$is_text_only = empty( $has_options ) && in_array( $step['type'] ?? '', [ 'options', 'multi_options', 'single_option' ], true );
+			if ( $enabled && ! $is_text_only ) {
+				return $cursor;
+			}
+			$cursor = $step['next'] ?? null;
+		}
+		return null;
+	}
+
 	/* ============================================================
 	 * AJAX entrypoints
 	 * ============================================================ */
@@ -157,7 +210,21 @@ final class Chat {
 		}
 
 		$script = self::script();
-		$step   = $script['welcome'];
+
+		// If task_type is disabled, the welcome step's "Yes, let's go" should
+		// jump directly to the next enabled step.
+		if ( isset( $script['welcome']['options'] ) ) {
+			foreach ( $script['welcome']['options'] as $idx => $opt ) {
+				if ( ( $opt['next'] ?? '' ) === 'task_type' ) {
+					$resolved = self::resolve_next( $script, 'task_type' );
+					if ( $resolved && 'task_type' !== $resolved ) {
+						$script['welcome']['options'][ $idx ]['next'] = $resolved;
+					}
+				}
+			}
+		}
+
+		$step     = $script['welcome'];
 		$envelope = self::step_to_envelope( 'welcome', $step );
 
 		// Persist the welcome message only once per session.
@@ -221,12 +288,15 @@ final class Chat {
 
 		// Free-chat step → route to OpenAI Q&A and stay on this step.
 		if ( 'ai_open' === ( $current['type'] ?? '' ) ) {
-			$reply = self::ai_followup( $session_id, $lang );
-			Conversations::append( $session_id, 'assistant', $reply, [ 'step_id' => $step_id ] );
+			$result  = self::ai_followup( $session_id, $lang );
+			$reply   = (string) ( $result['reply'] ?? '' );
+			$actions = (array) ( $result['actions'] ?? [] );
+			Conversations::append( $session_id, 'assistant', $reply, [ 'step_id' => $step_id, 'actions' => count( $actions ) ] );
 			wp_send_json_success( [ 'step' => [
 				'id'              => $step_id,
 				'type'            => 'free_chat',
 				'message'         => $reply,
+				'actions'         => $actions,
 				'allow_free_text' => true,
 				'cta'             => __( 'I have enough info — request quote →', 'bomedia-quote-wizard' ),
 				'cta_to'          => 'contact',
@@ -266,6 +336,14 @@ final class Chat {
 			}
 		} elseif ( '' !== $free_text ) {
 			$next_id = $current['next'] ?? null;
+		}
+
+		// Skip any disabled steps in the chain (admin disabled "format", etc.).
+		if ( $next_id && '__woo_classic' !== $next_id ) {
+			$resolved = self::resolve_next( $script, $next_id );
+			if ( $resolved ) {
+				$next_id = $resolved;
+			}
 		}
 
 		// Special meta target — direct shortcut to the contact form.
@@ -462,10 +540,14 @@ final class Chat {
 			return [];
 		}
 
+		// CRITICAL: index only the filtered set so an LLM hallucination of a
+		// product slug from outside the brand whitelist gets dropped.
+		$allowed_ids = array_flip( array_map( static function ( $p ) { return (string) ( $p['product_id'] ?? '' ); }, $products ) );
+		unset( $allowed_ids[''] );
 		$index = [];
 		foreach ( Catalog_Client::get_products() as $p ) {
 			$slug = (string) ( $p['id'] ?? '' );
-			if ( '' !== $slug ) {
+			if ( '' !== $slug && isset( $allowed_ids[ $slug ] ) ) {
 				$index[ $slug ] = $p;
 			}
 		}
@@ -534,15 +616,32 @@ final class Chat {
 		return [ 'matched' => $matched ?: null, 'clarification' => $clarif ?: null ];
 	}
 
-	private static function ai_followup( string $session_id, string $lang ) {
+	/**
+	 * Free-chat handler. Returns ['reply' => string, 'actions' => array].
+	 * Actions can be: update_recommendations, select_product, go_to_contact.
+	 */
+	private static function ai_followup( string $session_id, string $lang ): array {
+		$fallback_reply = __( "Sorry, I can't answer that right now. Drop your details below and our team will help you.", 'bomedia-quote-wizard' );
+
 		$enc = (string) Settings::get( 'openai_api_key', '' );
 		$key = '' !== $enc ? Settings::decrypt( $enc ) : '';
 		if ( '' === $key || OpenAI_Client::over_quota() ) {
-			return __( "Sorry, I can't answer that right now. Drop your details below and our team will help you.", 'bomedia-quote-wizard' );
+			return [ 'reply' => $fallback_reply, 'actions' => [] ];
 		}
 		$model    = (string) Settings::get( 'openai_model', 'gpt-4o-mini' ) ?: 'gpt-4o-mini';
 		$products = self::catalog_for_prompt( $lang );
-		$system   = 'You are a Bomedia sales assistant. The user just received product recommendations. Answer their follow-up question briefly (<60 words) in language ' . $lang . '. Never invent capabilities not in the catalog. If asked about prices, say a personalised quote will be sent. Catalog (only these are available): ' . wp_json_encode( $products );
+
+		$system = 'You are the Bomedia sales assistant in free-chat mode after the customer received recommendations. ' . "\n"
+			. 'Reply ONLY in valid JSON of the shape: {"reply": "<text in ' . $lang . ', under 60 words>", "actions": [<zero or more actions>]}. "actions" can be omitted (treat as empty).' . "\n"
+			. 'AVAILABLE ACTIONS:' . "\n"
+			. '- {"type":"update_recommendations","product_ids":["slug1","slug2","slug3"]} — when the user asks to see machines from another brand/category. Up to 3 product_ids, all from the catalog provided. The frontend will replace the side-panel cards.' . "\n"
+			. '- {"type":"select_product","product_id":"slug"} — when the user explicitly says they want to pick a single product by name.' . "\n"
+			. '- {"type":"go_to_contact"} — when the user clearly asks to send their details / get a quote.' . "\n"
+			. 'STRICT RULES:' . "\n"
+			. '- Never recommend product_ids that are not in the catalog.' . "\n"
+			. '- Never quote concrete prices. If asked, say a personalised quote will be sent.' . "\n"
+			. '- Do NOT include actions when the user is just asking a Q&A question (e.g. "does the X print on leather?"). Return only "reply".' . "\n"
+			. 'CATALOG (use only these product_ids): ' . wp_json_encode( $products );
 
 		$messages = [ [ 'role' => 'system', 'content' => $system ] ];
 		foreach ( Conversations::history( $session_id, 30 ) as $row ) {
@@ -553,24 +652,80 @@ final class Chat {
 		}
 
 		$body = [
-			'model'       => $model,
-			'messages'    => $messages,
-			'temperature' => 0.5,
+			'model'           => $model,
+			'messages'        => $messages,
+			'temperature'     => 0.4,
+			'response_format' => [ 'type' => 'json_object' ],
 		];
 		$response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', [
-			'timeout' => 18,
+			'timeout' => 20,
 			'headers' => [ 'Authorization' => 'Bearer ' . $key, 'Content-Type' => 'application/json' ],
 			'body'    => wp_json_encode( $body ),
 		] );
 		if ( is_wp_error( $response ) ) {
-			return __( "Sorry, I had a glitch. Try again in a moment.", 'bomedia-quote-wizard' );
+			return [ 'reply' => __( "Sorry, I had a glitch. Try again in a moment.", 'bomedia-quote-wizard' ), 'actions' => [] ];
 		}
-		$json = json_decode( (string) wp_remote_retrieve_body( $response ), true );
-		$msg  = isset( $json['choices'][0]['message']['content'] ) ? trim( (string) $json['choices'][0]['message']['content'] ) : '';
+		$json    = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		$content = $json['choices'][0]['message']['content'] ?? '';
+		$parsed  = json_decode( (string) $content, true );
 		// Cost accounting.
 		$usage = $json['usage'] ?? [];
 		OpenAI_Client::accumulate_cost( OpenAI_Client::estimate_cost( $model, (int) ( $usage['prompt_tokens'] ?? 0 ), (int) ( $usage['completion_tokens'] ?? 0 ) ) );
-		return $msg ?: __( 'Could you rephrase that?', 'bomedia-quote-wizard' );
+
+		$reply = is_array( $parsed ) && isset( $parsed['reply'] ) ? trim( (string) $parsed['reply'] ) : '';
+		if ( '' === $reply ) {
+			$reply = is_string( $content ) ? trim( $content ) : '';
+		}
+		if ( '' === $reply ) {
+			$reply = __( 'Could you rephrase that?', 'bomedia-quote-wizard' );
+		}
+
+		// Hydrate actions.
+		$actions     = [];
+		$catalog_idx = [];
+		foreach ( Catalog_Client::get_products() as $p ) {
+			$slug = (string) ( $p['id'] ?? '' );
+			if ( '' !== $slug ) {
+				$catalog_idx[ $slug ] = $p;
+			}
+		}
+		$raw_actions = ( is_array( $parsed ) && isset( $parsed['actions'] ) && is_array( $parsed['actions'] ) ) ? $parsed['actions'] : [];
+		foreach ( $raw_actions as $a ) {
+			if ( ! is_array( $a ) || empty( $a['type'] ) ) {
+				continue;
+			}
+			$type = sanitize_key( (string) $a['type'] );
+			if ( 'update_recommendations' === $type ) {
+				$ids = array_filter( array_map( 'sanitize_text_field', (array) ( $a['product_ids'] ?? [] ) ), 'strlen' );
+				$cards = [];
+				foreach ( $ids as $slug ) {
+					if ( ! isset( $catalog_idx[ $slug ] ) ) {
+						continue;
+					}
+					$loc = Catalog_Client::localize_product( $catalog_idx[ $slug ], $lang );
+					$cards[] = array_merge( $loc, [ 'score' => 0, 'reasons' => [], 'source' => 'catalog' ] );
+					if ( count( $cards ) >= 3 ) {
+						break;
+					}
+				}
+				if ( ! empty( $cards ) ) {
+					$actions[] = [ 'type' => 'update_recommendations', 'products' => $cards ];
+				}
+			} elseif ( 'select_product' === $type ) {
+				$slug = sanitize_text_field( (string) ( $a['product_id'] ?? '' ) );
+				if ( '' !== $slug && isset( $catalog_idx[ $slug ] ) ) {
+					$loc = Catalog_Client::localize_product( $catalog_idx[ $slug ], $lang );
+					$actions[] = [
+						'type'    => 'select_product',
+						'product' => array_merge( $loc, [ 'source' => 'catalog' ] ),
+					];
+				}
+			} elseif ( 'go_to_contact' === $type ) {
+				$actions[] = [ 'type' => 'go_to_contact' ];
+			}
+		}
+
+		return [ 'reply' => $reply, 'actions' => $actions ];
 	}
 
 	/* ============================================================

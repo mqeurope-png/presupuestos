@@ -24,12 +24,12 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 	data-language="<?php echo esc_attr( substr( get_locale(), 0, 2 ) ); ?>"
 	role="region" aria-label="<?php esc_attr_e( 'Quote chatbot', 'bomedia-quote-wizard' ); ?>">
 
-	<?php if ( $hero_on ) : ?>
-		<header class="bqw-chat-hero" id="bqw-chat-hero">
-			<?php if ( ! empty( $bqw_config['hero_image_url'] ) ) : ?>
-				<div class="bqw-chat-hero-bg" style="background-image:url('<?php echo esc_url( $bqw_config['hero_image_url'] ); ?>');" aria-hidden="true"></div>
-				<div class="bqw-chat-hero-overlay" aria-hidden="true"></div>
-			<?php endif; ?>
+	<?php if ( $hero_on ) :
+		$hero_bg = $bqw_config['hero_image_url'] ?? '';
+		$hero_classes = 'bqw-chat-hero' . ( $hero_bg ? ' has-bg-image' : '' );
+		$hero_style   = $hero_bg ? '--bqw-hero-bg: url(' . esc_url( $hero_bg ) . ');' : '';
+		?>
+		<header class="<?php echo esc_attr( $hero_classes ); ?>" id="bqw-chat-hero" style="<?php echo esc_attr( $hero_style ); ?>">
 			<div class="bqw-chat-hero-content">
 				<h2 class="bqw-chat-hero-title"><?php echo esc_html( $bqw_config['hero_title'] ?? '' ); ?></h2>
 				<p class="bqw-chat-hero-sub"><?php echo esc_html( $bqw_config['hero_subtitle'] ?? '' ); ?></p>
