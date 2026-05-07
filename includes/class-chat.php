@@ -17,10 +17,41 @@ defined( 'ABSPATH' ) || exit;
 final class Chat {
 
 	public static function register(): void {
-		add_action( 'wp_ajax_bqw_chat_init',           [ self::class, 'handle_init' ] );
-		add_action( 'wp_ajax_nopriv_bqw_chat_init',    [ self::class, 'handle_init' ] );
-		add_action( 'wp_ajax_bqw_chat_advance',        [ self::class, 'handle_advance' ] );
-		add_action( 'wp_ajax_nopriv_bqw_chat_advance', [ self::class, 'handle_advance' ] );
+		add_action( 'wp_ajax_bqw_chat_init',            [ self::class, 'handle_init' ] );
+		add_action( 'wp_ajax_nopriv_bqw_chat_init',     [ self::class, 'handle_init' ] );
+		add_action( 'wp_ajax_bqw_chat_advance',         [ self::class, 'handle_advance' ] );
+		add_action( 'wp_ajax_nopriv_bqw_chat_advance',  [ self::class, 'handle_advance' ] );
+		add_action( 'wp_ajax_bqw_partial_save',         [ self::class, 'handle_partial_save' ] );
+		add_action( 'wp_ajax_nopriv_bqw_partial_save',  [ self::class, 'handle_partial_save' ] );
+		add_action( 'wp_ajax_bqw_partial_step',         [ self::class, 'handle_partial_step' ] );
+		add_action( 'wp_ajax_nopriv_bqw_partial_step',  [ self::class, 'handle_partial_step' ] );
+	}
+
+	public static function handle_partial_save(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		$name       = sanitize_text_field( (string) ( $_POST['name'] ?? '' ) );
+		$email      = sanitize_email( (string) ( $_POST['email'] ?? '' ) );
+		if ( '' === $session_id || '' === $name || ! is_email( $email ) ) {
+			wp_send_json_error( [ 'message' => __( 'Please enter a valid name and email.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		Partial_Leads::upsert( $session_id, $name, $email );
+		wp_send_json_success( [ 'ok' => true ] );
+	}
+
+	public static function handle_partial_step(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		$step       = sanitize_text_field( (string) ( $_POST['step'] ?? '' ) );
+		if ( '' === $session_id || '' === $step ) {
+			wp_send_json_error( [ 'message' => 'Missing context' ], 400 );
+		}
+		Partial_Leads::update_step( $session_id, $step );
+		wp_send_json_success( [ 'ok' => true ] );
 	}
 
 	/* ============================================================
@@ -635,7 +666,7 @@ final class Chat {
 			] );
 		}
 		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
-		return array_slice( $cards, 0, 3 );
+		return array_slice( $cards, 0, 6 );
 	}
 
 	/**

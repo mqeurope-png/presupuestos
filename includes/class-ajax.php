@@ -395,6 +395,11 @@ final class Ajax {
 
 		Mailer::send_lead_notification( $data, $contact_url, $ok ? null : $error );
 
+		// Partial lead is now complete — drop it from the partial table.
+		if ( ! empty( $data['session_id'] ) ) {
+			Partial_Leads::delete( (string) $data['session_id'] );
+		}
+
 		// Render thanks template snippet.
 		$thanks_html = $this->render_thanks_html( $data );
 

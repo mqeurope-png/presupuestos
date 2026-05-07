@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.8\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.9\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -10,7 +10,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: bomedia-quote-wizard\n"
 
+msgid " and the processing of my data to receive a quote."
+msgstr ""
+
 msgid "%1$s ago · %2$d products cached"
+msgstr ""
+
+msgid "%d machines in your request:"
 msgstr ""
 
 msgid "%s, our team will contact you shortly with a personalized quote."
@@ -20,6 +26,9 @@ msgid "(no entries yet — run the chatbot once)"
 msgstr ""
 
 msgid "(skipped)"
+msgstr ""
+
+msgid "1 machine in your request:"
 msgstr ""
 
 msgid "A valid email is required."
@@ -40,6 +49,9 @@ msgstr ""
 msgid "Abandoned"
 msgstr ""
 
+msgid "Abandoned at step"
+msgstr ""
+
 msgid "Abandoned conversations"
 msgstr ""
 
@@ -57,6 +69,12 @@ msgstr ""
 
 msgid "Add machines from another category"
 msgstr "Maschinen aus einer anderen Kategorie hinzufügen"
+
+msgid "Add machines to request a quote"
+msgstr ""
+
+msgid "Add to request"
+msgstr ""
 
 msgid "Added"
 msgstr ""
@@ -83,6 +101,9 @@ msgid "All statuses"
 msgstr ""
 
 msgid "All types"
+msgstr ""
+
+msgid "Almost done"
 msgstr ""
 
 msgid "Any rough budget? Optional."
@@ -133,6 +154,9 @@ msgstr ""
 msgid "Based on what you told me, here are the machines I'd recommend:"
 msgstr ""
 
+msgid "Before we start, what should we call you?"
+msgstr ""
+
 msgid "Best matches for you"
 msgstr ""
 
@@ -140,9 +164,6 @@ msgid "Bomedia Quote Wizard"
 msgstr ""
 
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
-msgstr ""
-
-msgid "Bomedia assistant"
 msgstr ""
 
 msgid "Bot verification"
@@ -232,6 +253,9 @@ msgstr ""
 msgid "Continue and request quote →"
 msgstr ""
 
+msgid "Continue with selected"
+msgstr ""
+
 msgid "Could not parse the JSON file."
 msgstr ""
 
@@ -242,6 +266,12 @@ msgid "Country"
 msgstr "Land"
 
 msgid "Country code"
+msgstr ""
+
+msgid "Country is required."
+msgstr ""
+
+msgid "Created"
 msgstr ""
 
 msgid "Customer is not sure, asks for help."
@@ -266,6 +296,9 @@ msgid "Delete"
 msgstr ""
 
 msgid "Delete this conversation?"
+msgstr ""
+
+msgid "Delete this partial lead?"
 msgstr ""
 
 msgid "Domain"
@@ -373,10 +406,16 @@ msgstr ""
 msgid "Hero (welcome screen)"
 msgstr ""
 
+msgid "Hi %s, thanks for your interest."
+msgstr ""
+
 msgid "Hi! How would you like to choose your machine?"
 msgstr ""
 
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgstr ""
+
+msgid "I accept the "
 msgstr ""
 
 msgid "I have enough info — request quote →"
@@ -391,6 +430,9 @@ msgstr "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie"
 msgid "I know which machine I want"
 msgstr ""
 
+msgid "I want to receive product updates from Bomedia."
+msgstr ""
+
 msgid "I'm not sure"
 msgstr "Ich bin nicht sicher"
 
@@ -401,6 +443,9 @@ msgid "IP"
 msgstr ""
 
 msgid "Import JSON"
+msgstr ""
+
+msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
 msgstr ""
 
 msgid "Labels / packaging"
@@ -538,6 +583,9 @@ msgstr "Keine Maschinen in dieser Kategorie verfügbar. Bitte kontaktieren Sie u
 msgid "No machines selected."
 msgstr "Keine Maschinen ausgewählt."
 
+msgid "No partial leads yet."
+msgstr ""
+
 msgid "No product categories found."
 msgstr ""
 
@@ -568,9 +616,6 @@ msgstr ""
 msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
 msgstr ""
 
-msgid "Open chat again →"
-msgstr ""
-
 msgid "OpenAI API key"
 msgstr ""
 
@@ -598,6 +643,12 @@ msgstr ""
 msgid "Packaging"
 msgstr ""
 
+msgid "Partial leads"
+msgstr ""
+
+msgid "Partials"
+msgstr ""
+
 msgid "Perfect. To send your personalised quote, I just need your details."
 msgstr ""
 
@@ -622,8 +673,14 @@ msgstr ""
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
 msgstr ""
 
+msgid "Please accept the privacy policy."
+msgstr ""
+
 msgid "Please enter a valid email."
 msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
+
+msgid "Please enter a valid name and email."
+msgstr ""
 
 msgid "Please pick at least one application."
 msgstr "Bitte wähle mindestens eine Anwendung."
@@ -673,19 +730,16 @@ msgstr ""
 msgid "Quote Leads"
 msgstr ""
 
-msgid "Quote chatbot"
+msgid "Quote request wizard"
 msgstr ""
 
-msgid "Quote request wizard"
+msgid "Quote wizard"
 msgstr ""
 
 msgid "REST API Key"
 msgstr ""
 
 msgid "Recipient emails"
-msgstr ""
-
-msgid "Recommended machines"
 msgstr ""
 
 msgid "Refresh interval"
@@ -701,9 +755,6 @@ msgid "Render a welcome screen before step 1."
 msgstr ""
 
 msgid "Request quote"
-msgstr ""
-
-msgid "Request quote →"
 msgstr ""
 
 msgid "Requested model:"
@@ -763,9 +814,6 @@ msgstr ""
 msgid "Send my details →"
 msgstr ""
 
-msgid "Send my request"
-msgstr ""
-
 msgid "Send request"
 msgstr "Anfrage senden"
 
@@ -793,9 +841,6 @@ msgstr ""
 msgid "Show hero"
 msgstr ""
 
-msgid "Show recommended machines"
-msgstr ""
-
 msgid "Show the first \"What do you want to do?\" question."
 msgstr ""
 
@@ -805,13 +850,7 @@ msgstr ""
 msgid "Site key"
 msgstr ""
 
-msgid "Skip the conversation and just send your details"
-msgstr ""
-
 msgid "Skip this question"
-msgstr ""
-
-msgid "Skip to send"
 msgstr ""
 
 msgid "Solicitud presupuesto web"
@@ -830,6 +869,9 @@ msgid "Start"
 msgstr ""
 
 msgid "Status"
+msgstr ""
+
+msgid "Step %1$d of %2$d"
 msgstr ""
 
 msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
@@ -916,6 +958,9 @@ msgstr ""
 msgid "Unknown step."
 msgstr ""
 
+msgid "Updated"
+msgstr ""
+
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
 msgstr ""
 
@@ -940,7 +985,16 @@ msgstr ""
 msgid "View product →"
 msgstr ""
 
+msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
+msgstr ""
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr ""
+
+msgid "We found %d machines for you"
+msgstr ""
+
+msgid "We just need a couple more details."
 msgstr ""
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
@@ -973,9 +1027,6 @@ msgstr ""
 msgid "Write log file in uploads/bqw-logs/"
 msgstr ""
 
-msgid "You chose to skip the conversation. Want to use the assistant instead?"
-msgstr ""
-
 msgid "You must accept the privacy policy."
 msgstr "Du musst die Datenschutzerklärung akzeptieren."
 
@@ -997,16 +1048,19 @@ msgstr ""
 msgid "Your details"
 msgstr "Deine Daten"
 
-msgid "Your recommendations"
+msgid "Your recommended machines will appear here as we chat."
 msgstr ""
 
-msgid "Your recommended machines will appear here as we chat."
+msgid "Your request:"
 msgstr ""
 
 msgid "Your selected machines"
 msgstr "Deine ausgewählten Maschinen"
 
 msgid "Your submission looks suspicious. Try again."
+msgstr ""
+
+msgid "Your top matches"
 msgstr ""
 
 msgid "all brands (no filter)"
@@ -1034,6 +1088,9 @@ msgid "hCaptcha verification failed."
 msgstr ""
 
 msgid "more"
+msgstr ""
+
+msgid "privacy policy"
 msgstr ""
 
 msgid "reCAPTCHA could not verify your submission."

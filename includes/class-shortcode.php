@@ -283,6 +283,38 @@ final class Shortcode {
 			'categoryLabel' => __( 'Category', 'bomedia-quote-wizard' ),
 			'moreSuffix'    => __( 'more', 'bomedia-quote-wizard' ),
 			'picked'        => __( 'Selected', 'bomedia-quote-wizard' ),
+			// v1.7.9 — wizard screens.
+			'introTitle'    => __( 'Before we start, what should we call you?', 'bomedia-quote-wizard' ),
+			'introSub'      => __( "It takes 2 minutes. No spam — we only reply to your enquiry.", 'bomedia-quote-wizard' ),
+			'continue'      => __( 'Continue', 'bomedia-quote-wizard' ),
+			'errName'       => __( 'First name is required.', 'bomedia-quote-wizard' ),
+			'errEmail'      => __( 'Please enter a valid email.', 'bomedia-quote-wizard' ),
+			'errPhone'      => __( 'Phone is required.', 'bomedia-quote-wizard' ),
+			'errCountry'    => __( 'Country is required.', 'bomedia-quote-wizard' ),
+			'errPrivacy'    => __( 'Please accept the privacy policy.', 'bomedia-quote-wizard' ),
+			'stepCounter'   => __( 'Step %1$d of %2$d', 'bomedia-quote-wizard' ),
+			'recsTitle'     => __( 'Your top matches', 'bomedia-quote-wizard' ),
+			/* translators: %d: number of recommendations */
+			'recsSub'       => __( 'We found %d machines for you', 'bomedia-quote-wizard' ),
+			'addToRequest'  => __( 'Add to request', 'bomedia-quote-wizard' ),
+			'added'         => __( 'Added', 'bomedia-quote-wizard' ),
+			'tray1'         => __( '1 machine in your request:', 'bomedia-quote-wizard' ),
+			/* translators: %d: number of machines */
+			'trayN'         => __( '%d machines in your request:', 'bomedia-quote-wizard' ),
+			'trayEmpty'     => __( 'Add machines to request a quote', 'bomedia-quote-wizard' ),
+			'continueWith'  => __( 'Continue with selected', 'bomedia-quote-wizard' ),
+			'almostDone'    => __( 'Almost done', 'bomedia-quote-wizard' ),
+			'justTwoMore'   => __( 'We just need a couple more details.', 'bomedia-quote-wizard' ),
+			'yourRequest'   => __( 'Your request:', 'bomedia-quote-wizard' ),
+			/* translators: %s: visitor name */
+			'greetingTpl'   => __( 'Hi %s, thanks for your interest.', 'bomedia-quote-wizard' ),
+			'tellUs'        => __( 'Tell us what you need…', 'bomedia-quote-wizard' ),
+			'privacyPolicy' => __( 'privacy policy', 'bomedia-quote-wizard' ),
+			'acceptPrivacyPrefix' => __( 'I accept the ', 'bomedia-quote-wizard' ),
+			'acceptPrivacySuffix' => __( ' and the processing of my data to receive a quote.', 'bomedia-quote-wizard' ),
+			'optinDefault'  => __( 'I want to receive product updates from Bomedia.', 'bomedia-quote-wizard' ),
+			'searchMachines' => __( 'Search machines…', 'bomedia-quote-wizard' ),
+			'countryCode'   => __( 'Country code', 'bomedia-quote-wizard' ),
 		];
 	}
 

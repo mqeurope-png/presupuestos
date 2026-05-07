@@ -44,6 +44,7 @@ final class Plugin {
 
 		Settings::maybe_migrate();
 		Conversations::maybe_install();
+		Partial_Leads::maybe_install();
 
 		Lead_CPT::instance()->register();
 		Settings::instance()->register();
@@ -77,6 +78,7 @@ final class Plugin {
 
 		Settings::maybe_migrate();
 		Conversations::maybe_install();
+		Partial_Leads::maybe_install();
 	}
 
 	public static function deactivate(): void {

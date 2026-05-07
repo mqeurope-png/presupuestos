@@ -34,6 +34,8 @@ final class Lead_CPT {
 		add_action( 'admin_post_bqw_delete_session', [ $this, 'handle_delete_session' ] );
 		add_filter( 'post_row_actions', [ $this, 'row_actions' ], 10, 2 );
 		add_action( 'admin_menu', [ $this, 'register_abandoned_submenu' ] );
+		add_action( 'admin_menu', [ $this, 'register_partials_submenu' ] );
+		add_action( 'admin_post_bqw_delete_partial', [ $this, 'handle_delete_partial' ] );
 	}
 
 	public function register_abandoned_submenu(): void {
@@ -45,6 +47,83 @@ final class Lead_CPT {
 			'bqw-abandoned',
 			[ $this, 'render_abandoned_page' ]
 		);
+	}
+
+	public function register_partials_submenu(): void {
+		add_submenu_page(
+			'edit.php?post_type=' . self::POST_TYPE,
+			__( 'Partial leads', 'bomedia-quote-wizard' ),
+			__( 'Partials', 'bomedia-quote-wizard' ),
+			'edit_posts',
+			'bqw-partials',
+			[ $this, 'render_partials_page' ]
+		);
+	}
+
+	public function handle_delete_partial(): void {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( esc_html__( 'Forbidden', 'bomedia-quote-wizard' ) );
+		}
+		$id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
+		check_admin_referer( 'bqw_delete_partial_' . $id );
+		if ( $id ) {
+			Partial_Leads::delete_by_id( $id );
+		}
+		wp_safe_redirect( admin_url( 'edit.php?post_type=' . self::POST_TYPE . '&page=bqw-partials' ) );
+		exit;
+	}
+
+	public function render_partials_page(): void {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		$page = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$res  = Partial_Leads::paginated( 50, $page );
+		echo '<div class="wrap"><h1>' . esc_html__( 'Partial leads', 'bomedia-quote-wizard' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form.', 'bomedia-quote-wizard' ) . '</p>';
+		if ( empty( $res['rows'] ) ) {
+			echo '<p>' . esc_html__( 'No partial leads yet.', 'bomedia-quote-wizard' ) . '</p></div>';
+			return;
+		}
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th>' . esc_html__( 'Name', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Email', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Created', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Updated', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Abandoned at step', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'IP', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Actions', 'bomedia-quote-wizard' ) . '</th>';
+		echo '</tr></thead><tbody>';
+		foreach ( $res['rows'] as $r ) {
+			$delete_url = wp_nonce_url(
+				admin_url( 'admin-post.php?action=bqw_delete_partial&id=' . (int) $r['id'] ),
+				'bqw_delete_partial_' . (int) $r['id']
+			);
+			echo '<tr>';
+			echo '<td>' . esc_html( $r['name'] ) . '</td>';
+			echo '<td><a href="mailto:' . esc_attr( $r['email'] ) . '">' . esc_html( $r['email'] ) . '</a></td>';
+			echo '<td>' . esc_html( $r['created_at'] ) . '</td>';
+			echo '<td>' . esc_html( $r['updated_at'] ) . '</td>';
+			echo '<td><code>' . esc_html( $r['abandoned_step'] ?: '—' ) . '</code></td>';
+			echo '<td>' . esc_html( $r['ip'] ) . '</td>';
+			echo '<td><a href="' . esc_url( $delete_url ) . '" onclick="return confirm(\'' . esc_js( __( 'Delete this partial lead?', 'bomedia-quote-wizard' ) ) . '\');">' . esc_html__( 'Delete', 'bomedia-quote-wizard' ) . '</a></td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+		$total_pages = (int) ceil( $res['total'] / 50 );
+		if ( $total_pages > 1 ) {
+			echo '<div class="tablenav bottom"><div class="tablenav-pages">';
+			for ( $i = 1; $i <= $total_pages; $i++ ) {
+				$url = add_query_arg( [ 'post_type' => self::POST_TYPE, 'page' => 'bqw-partials', 'paged' => $i ], admin_url( 'edit.php' ) );
+				if ( $i === $page ) {
+					echo '<span class="page-numbers current">' . $i . '</span> ';
+				} else {
+					echo '<a class="page-numbers" href="' . esc_url( $url ) . '">' . $i . '</a> ';
+				}
+			}
+			echo '</div></div>';
+		}
+		echo '</div>';
 	}
 
 	public function render_abandoned_page(): void {

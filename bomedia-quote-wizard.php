@@ -3,7 +3,7 @@
  * Plugin Name:       Bomedia Quote Wizard
  * Plugin URI:        https://bomedia.net/
  * Description:       Multi-step quote request wizard for UV-LED printers and lasers. Brand-agnostic, multi-site, integrated with AgileCRM.
- * Version:           1.7.8
+ * Version:           1.7.9
  * Author:            Bomedia SL
  * Author URI:        https://bomedia.net/
  * License:           GPL-2.0-or-later
@@ -22,7 +22,7 @@ namespace Bomedia\QuoteWizard;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BQW_VERSION', '1.7.8' );
+define( 'BQW_VERSION', '1.7.9' );
 define( 'BQW_PLUGIN_FILE', __FILE__ );
 define( 'BQW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BQW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -39,6 +39,7 @@ require_once BQW_PLUGIN_DIR . 'includes/class-catalog-client.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-icons.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-product-meta.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-conversations.php';
+require_once BQW_PLUGIN_DIR . 'includes/class-partial-leads.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-chat.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-shortcode.php';
 require_once BQW_PLUGIN_DIR . 'includes/class-ajax.php';

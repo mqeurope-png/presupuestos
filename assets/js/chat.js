@@ -1,58 +1,53 @@
-/* Bomedia Quote Wizard — chatbot frontend (v1.7.2, scripted backbone). */
+/* Bomedia Quote Wizard — multi-screen wizard frontend (v1.7.9). */
 (function () {
 	'use strict';
-	// First-line breadcrumb so the file's mere presence is visible in dev tools.
-	try { console.log('[bqw chat] script loaded'); } catch (e) {}
+	try { console.log('[bqw wizard] script loaded'); } catch (e) {}
 
 	if (typeof window.BQW === 'undefined') {
-		try { console.warn('[bqw chat] window.BQW is undefined — wp_localize_script did not run before this file. Aborting.'); } catch (e) {}
+		try { console.warn('[bqw wizard] window.BQW is undefined.'); } catch (e) {}
 		return;
 	}
 	var root = document.getElementById('bqw-chat-wrap');
-	if (!root) {
-		try { console.warn('[bqw chat] #bqw-chat-wrap not found — template did not render. Aborting.'); } catch (e) {}
-		return;
-	}
+	if (!root) return;
 
 	var cfg       = window.BQW.config || {};
 	var i18n      = window.BQW.i18n || {};
 	var countries = window.BQW.countries || [];
 	var detected  = window.BQW.detectedCountry || 'ES';
 
-	var hero        = document.getElementById('bqw-chat-hero');
-	var stream      = document.getElementById('bqw-chat-stream');
-	var optionsWrap = document.getElementById('bqw-chat-options');
-	var chatForm    = document.getElementById('bqw-chat-form');
-	var textInput   = document.getElementById('bqw-chat-text');
-	var skipBtn     = document.getElementById('bqw-skip-to-send');
-	var contactPanel = document.getElementById('bqw-contact-panel');
-	var contactHint  = document.getElementById('bqw-contact-hint');
-	var backToChat   = document.getElementById('bqw-back-to-chat');
-	var form         = document.getElementById('bqw-form');
-	var thanksBox    = document.getElementById('bqw-thanks');
-	var recPanel     = document.getElementById('bqw-rec-panel');
-	var recPanelBody = document.getElementById('bqw-rec-panel-body');
-	var recPanelFoot = document.getElementById('bqw-rec-panel-foot');
-	var recCounter   = document.getElementById('bqw-rec-counter');
-	var recCta       = document.getElementById('bqw-rec-cta');
-	var recPanelClose = document.getElementById('bqw-rec-panel-close');
-	var recFab       = document.getElementById('bqw-rec-fab');
-	var recFabCount  = document.getElementById('bqw-rec-fab-count');
-	var redirectURL  = root.dataset.redirect || '';
-	var lang         = root.dataset.language || 'en';
+	var screen     = document.getElementById('bqw-wiz-screen');
+	var progress   = document.getElementById('bqw-wiz-progress');
+	var dotsEl     = document.getElementById('bqw-wiz-dots');
+	var stepLabel  = document.getElementById('bqw-wiz-step-label');
+	var backBtn    = document.getElementById('bqw-wiz-back');
+	var tray       = document.getElementById('bqw-wiz-tray');
+	var trayLabel  = document.getElementById('bqw-wiz-tray-label');
+	var trayPills  = document.getElementById('bqw-wiz-tray-pills');
+	var trayCta    = document.getElementById('bqw-wiz-tray-cta');
+	var form       = document.getElementById('bqw-form');
+	var thanksBox  = document.getElementById('bqw-thanks');
+	var redirectURL = root.dataset.redirect || '';
+	var lang       = root.dataset.language || 'en';
+
+	// Question steps (matches Chat::script() ids for progress numbering).
+	var QUESTION_STEPS = ['task_type', 'application', 'materials', 'volume', 'format', 'budget'];
 
 	var state = {
 		session_id: ensureSessionId(),
-		current_step: null,        // server-side step id of the question on screen.
-		current_step_meta: null,   // { allow_free_text, allow_skip, multi_select, type, cta_to }
-		selection: [],             // recommendation picks (catalog products).
-		pending_buttons: [],       // currently-toggled chip labels (multi-select).
-		flow_origin: 'chat',
+		contact_partial: { name: '', email: '' },
+		selection: [],
+		stack: [],          // [{kind: 'server'|'intro', step: {...}, picks: [labels]}]
+		current: null,      // current frame
+		flow_origin: 'wizard',
+		question_steps_seen: [],
 	};
 	document.getElementById('bqw-session-id').value = state.session_id;
 
+	backBtn.addEventListener('click', goBack);
+	trayCta.addEventListener('click', goToFinalForm);
+
 	/* =========================================================
-	 * Session ID
+	 * Session
 	 * ========================================================= */
 	function ensureSessionId() {
 		try {
@@ -77,501 +72,59 @@
 	}
 
 	/* =========================================================
-	 * Bubbles + UI helpers
+	 * Helpers
 	 * ========================================================= */
-	function appendBubble(role, text, opts) {
-		opts = opts || {};
-		var b = document.createElement('div');
-		b.className = 'bqw-bubble bqw-bubble-' + role;
-		if (role === 'assistant') {
-			var av = document.createElement('span');
-			av.className = 'bqw-bubble-avatar'; av.textContent = 'B'; av.setAttribute('aria-hidden', 'true');
-			b.appendChild(av);
-		}
-		var body = document.createElement('div');
-		body.className = 'bqw-bubble-body';
-		if (opts.chips && opts.chips.length) {
-			var chips = document.createElement('div');
-			chips.className = 'bqw-bubble-chips';
-			opts.chips.forEach(function (c) {
-				var chip = document.createElement('span');
-				chip.className = 'bqw-bubble-chip';
-				chip.textContent = c;
-				chips.appendChild(chip);
-			});
-			body.appendChild(chips);
-		}
-		if (text) {
-			var p = document.createElement('p');
-			p.className = 'bqw-bubble-text';
-			p.textContent = text;
-			body.appendChild(p);
-		}
-		b.appendChild(body);
-		stream.appendChild(b);
-		stream.scrollTo({ top: stream.scrollHeight, behavior: 'smooth' });
+	function el(tag, cls, html) {
+		var e = document.createElement(tag);
+		if (cls) e.className = cls;
+		if (html != null) e.innerHTML = html;
+		return e;
 	}
-
-	function appendTyping() {
-		var b = document.createElement('div');
-		b.className = 'bqw-bubble bqw-bubble-assistant bqw-typing';
-		b.id = 'bqw-typing';
-		b.innerHTML = '<span class="bqw-bubble-avatar" aria-hidden="true">B</span><div class="bqw-bubble-body"><span class="bqw-typing-dots"><span></span><span></span><span></span></span></div>';
-		stream.appendChild(b);
-		stream.scrollTo({ top: stream.scrollHeight, behavior: 'smooth' });
+	function escapeHtml(s) {
+		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+		});
 	}
-	function removeTyping() {
-		var t = document.getElementById('bqw-typing');
-		if (t) t.parentNode.removeChild(t);
+	function clearScreen() {
+		screen.innerHTML = '';
+		root.classList.add('is-flow-active');
 	}
-
-	function renderOptions(step) {
-		optionsWrap.innerHTML = '';
-		optionsWrap.classList.add('bqw-opt-cards');
-		state.pending_buttons = [];
-
-		// Free text input is no longer accepted on option steps (v1.7.6 — closed dialog).
-		if (textInput) textInput.disabled = true;
-
-		var allow_skip = !!step.allow_skip;
-
-		(step.options || []).forEach(function (opt) {
-			var btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'bqw-chip';
-			btn.dataset.label = opt.label;
-			btn.innerHTML = (opt.icon ? iconForHint(opt.icon) : '') + '<span class="bqw-chip-label">' + escapeHtml(opt.label) + '</span>';
-			btn.addEventListener('click', function () {
-				if (step.multi_select) {
-					var idx = state.pending_buttons.indexOf(opt.label);
-					if (idx >= 0) {
-						state.pending_buttons.splice(idx, 1);
-						btn.classList.remove('is-selected');
-					} else {
-						state.pending_buttons.push(opt.label);
-						btn.classList.add('is-selected');
+	function setProgress(curIdx, total) {
+		if (total <= 0) { progress.hidden = true; return; }
+		progress.hidden = false;
+		dotsEl.innerHTML = '';
+		for (var i = 0; i < total; i++) {
+			var d = el('span', 'bqw-wiz-dot' + (i < curIdx ? ' is-done' : i === curIdx ? ' is-active' : ''));
+			dotsEl.appendChild(d);
+		}
+		stepLabel.textContent = (i18n.stepCounter || 'Step %1$d of %2$d').replace('%1$d', curIdx + 1).replace('%2$d', total);
+	}
+	function showBack(show) { backBtn.hidden = !show; }
+	function showTray(show) { tray.hidden = !show; if (show) updateTray(); }
+	function updateTray() {
+		var n = state.selection.length;
+		trayLabel.textContent = n === 0
+			? (i18n.trayEmpty || 'Add machines to request a quote')
+			: (n === 1 ? (i18n.tray1 || '1 machine in your request:') : (i18n.trayN || '%d machines in your request:').replace('%d', n));
+		trayCta.disabled = n === 0;
+		trayPills.innerHTML = '';
+		state.selection.forEach(function (p) {
+			var pill = el('button', 'bqw-wiz-pill');
+			pill.type = 'button';
+			pill.innerHTML = escapeHtml(p.name) + ' <span aria-hidden="true">×</span>';
+			pill.addEventListener('click', function () {
+				removeSelection(p.id);
+				updateTray();
+				// Re-render any selection-aware screen
+				if (state.current && state.current.kind === 'server') {
+					var t = state.current.step.type;
+					if (t === 'site_catalog' || t === 'bomedia_catalog' || t === 'recommendations') {
+						applyStep(state.current.step, /*replay*/ true);
 					}
-				} else {
-					optionsWrap.querySelectorAll('.is-selected').forEach(function (e) { e.classList.remove('is-selected'); });
-					btn.classList.add('is-selected');
-					state.pending_buttons = [opt.label];
-					sendAdvance();
 				}
 			});
-			optionsWrap.appendChild(btn);
+			trayPills.appendChild(pill);
 		});
-
-		if (step.multi_select && (step.options || []).length > 0) {
-			var ok = document.createElement('button');
-			ok.type = 'button';
-			ok.className = 'bqw-btn bqw-btn-primary bqw-chip-send';
-			ok.textContent = i18n.send || 'Send';
-			ok.addEventListener('click', function () { sendAdvance(); });
-			optionsWrap.appendChild(ok);
-		}
-		if (allow_skip) {
-			var sk = document.createElement('button');
-			sk.type = 'button';
-			sk.className = 'bqw-chip bqw-chip-skip';
-			sk.textContent = i18n.skipQuestion || 'Skip this question';
-			sk.addEventListener('click', function () { sendAdvance({ skip: true }); });
-			optionsWrap.appendChild(sk);
-		}
-	}
-
-	function renderWelcomeCards(step) {
-		optionsWrap.innerHTML = '';
-		optionsWrap.classList.remove('bqw-opt-cards');
-		var grid = document.createElement('div');
-		grid.className = 'bqw-welcome-grid';
-		(step.options || []).forEach(function (opt) {
-			var card = document.createElement('button');
-			card.type = 'button';
-			card.className = 'bqw-welcome-card';
-			card.innerHTML =
-				'<span class="bqw-welcome-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>' +
-				'<strong>' + escapeHtml(opt.label) + '</strong>' +
-				(opt.subtitle ? '<span class="bqw-welcome-sub">' + escapeHtml(opt.subtitle) + '</span>' : '');
-			card.addEventListener('click', function () {
-				state.pending_buttons = [opt.label];
-				sendAdvance();
-			});
-			grid.appendChild(card);
-		});
-		optionsWrap.appendChild(grid);
-	}
-
-	function buildChipFilter(opts) {
-		// opts: { label, items: [{value, label}], active: Set, onChange, collapseAfter (default 8) }
-		var wrap = document.createElement('div');
-		wrap.className = 'bqw-chip-row';
-
-		var lbl = document.createElement('span');
-		lbl.className = 'bqw-chip-label';
-		lbl.textContent = opts.label;
-		wrap.appendChild(lbl);
-
-		var collapseAfter = opts.collapseAfter || 8;
-		var visibleCount  = opts.items.length > collapseAfter ? 6 : opts.items.length;
-		var collapsed     = opts.items.length > collapseAfter;
-
-		function renderChips() {
-			wrap.querySelectorAll('.bqw-chip-filter, .bqw-chip-more').forEach(function (n) { n.remove(); });
-			var limit = collapsed ? visibleCount : opts.items.length;
-			for (var i = 0; i < limit; i++) {
-				(function (it) {
-					var c = document.createElement('button');
-					c.type = 'button';
-					c.className = 'bqw-chip bqw-chip-filter';
-					c.dataset.value = it.value;
-					c.textContent = (opts.active.has(it.value) ? '× ' : '') + it.label;
-					if (opts.active.has(it.value)) c.classList.add('bqw-chip--active');
-					c.addEventListener('click', function () {
-						if (opts.active.has(it.value)) opts.active.delete(it.value);
-						else opts.active.add(it.value);
-						renderChips();
-						opts.onChange();
-					});
-					wrap.appendChild(c);
-				})(opts.items[i]);
-			}
-			if (collapsed && opts.items.length > visibleCount) {
-				var more = document.createElement('button');
-				more.type = 'button';
-				more.className = 'bqw-chip bqw-chip-more';
-				more.textContent = '+ ' + (opts.items.length - visibleCount) + ' ' + (i18n.moreSuffix || 'more');
-				more.addEventListener('click', function () {
-					collapsed = false;
-					renderChips();
-				});
-				wrap.appendChild(more);
-			}
-		}
-		renderChips();
-		return wrap;
-	}
-
-	function renderBomediaCatalog(step) {
-		optionsWrap.innerHTML = '';
-		optionsWrap.classList.remove('bqw-opt-cards');
-		var view = document.getElementById('bqw-browse-view');
-		var grid = document.getElementById('bqw-browse-grid');
-		var search = document.getElementById('bqw-browse-search');
-		var chipBox = document.getElementById('bqw-browse-chip-filters');
-		var counter = document.getElementById('bqw-browse-counter');
-		var cta = document.getElementById('bqw-browse-cta');
-		view.hidden = false;
-		chipBox.innerHTML = '';
-
-		var products = (step.products || []).slice();
-		var brands   = step.brands || [];
-		var tasks    = step.tasks  || [];
-
-		var activeBrands = new Set();
-		var activeTasks  = new Set();
-
-		function paint() {
-			var q = (search.value || '').toLowerCase().trim();
-			var taskBrands = new Set();
-			if (activeTasks.size) {
-				tasks.forEach(function (t) {
-					if (activeTasks.has(t.value)) (t.brands || []).forEach(function (b) { taskBrands.add(b); });
-				});
-			}
-			grid.innerHTML = '';
-			products.forEach(function (p) {
-				var brandLow = (p.brand || '').toLowerCase();
-				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
-				if (activeBrands.size && !activeBrands.has(p.brand)) return;
-				if (activeTasks.size && !taskBrands.has(brandLow)) return;
-				grid.appendChild(buildBrowseCard(p));
-			});
-		}
-
-		var taskItems = (tasks || []).filter(function (t) { return t.brands && t.brands.length; })
-			.map(function (t) { return { value: t.value, label: t.label }; });
-		if (taskItems.length) {
-			chipBox.appendChild(buildChipFilter({
-				label: (i18n.typeLabel || 'Type') + ':',
-				items: taskItems,
-				active: activeTasks,
-				onChange: paint,
-			}));
-		}
-
-		var brandItems = (brands || []).filter(function (b) { return b.id; })
-			.map(function (b) { return { value: b.id, label: b.label || b.id }; });
-		if (brandItems.length) {
-			chipBox.appendChild(buildChipFilter({
-				label: (i18n.brandLabel || 'Brand') + ':',
-				items: brandItems,
-				active: activeBrands,
-				onChange: paint,
-			}));
-		}
-
-		function buildBrowseCard(p) {
-			var card = document.createElement('div');
-			card.className = 'bqw-browse-card';
-			card.dataset.productId = p.id;
-			if (state.selection.some(function (s) { return s.id === p.id; })) card.classList.add('is-selected');
-
-			var feats = [];
-			if (p.area)  feats.push('<span>' + escapeHtml(p.area) + '</span>');
-			if (p.feat1) feats.push('<span>' + escapeHtml(p.feat1) + '</span>');
-			if (p.feat2) feats.push('<span>' + escapeHtml(p.feat2) + '</span>');
-
-			var siteHost = (window.location && window.location.hostname) || '';
-			var linkHost = '';
-			try { linkHost = new URL(p.link).hostname; } catch (e) {}
-			var offsiteLink = '';
-			if (p.link && linkHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, '')) {
-				offsiteLink = '<a href="' + p.link + '" target="_blank" rel="noopener">' + escapeHtml((i18n.viewOn || 'View on') + ' ' + linkHost) + ' ↗</a>';
-			} else if (p.link) {
-				offsiteLink = '<a href="' + p.link + '" target="_blank" rel="noopener">' + escapeHtml(i18n.viewProduct || 'View product →') + '</a>';
-			}
-
-			card.innerHTML =
-				(p.img ? '<img class="bqw-browse-card-img" src="' + p.img + '" alt="" loading="lazy">' : '<div class="bqw-browse-card-img"></div>') +
-				'<div class="bqw-browse-card-body">' +
-					'<span class="bqw-browse-card-brand">' + escapeHtml(p.brand || '') + '</span>' +
-					'<span class="bqw-browse-card-name">' + escapeHtml(p.name || '') + '</span>' +
-					(feats.length ? '<div class="bqw-browse-card-feats">' + feats.join('') + '</div>' : '') +
-				'</div>' +
-				'<div class="bqw-browse-card-actions">' +
-					'<button type="button" class="bqw-btn bqw-btn-primary bqw-browse-pick">' + escapeHtml(i18n.requestQuote || 'Request quote') + '</button>' +
-					offsiteLink +
-				'</div>';
-
-			card.querySelector('.bqw-browse-pick').addEventListener('click', function () {
-				var picked = !card.classList.contains('is-selected');
-				if (picked) {
-					card.classList.add('is-selected');
-					addSelection({
-						id: p.id, name: p.name, image: p.img || '', sku: '',
-						brand: p.brand || '', price: '', area: p.area || '', link: p.link || '',
-						source: 'catalog', categoryId: 0, categorySlug: p.brand || '', categoryName: p.brand || '',
-					});
-				} else {
-					card.classList.remove('is-selected');
-					removeSelection(p.id);
-				}
-				updateBrowseCounter();
-			});
-			return card;
-		}
-
-		function updateBrowseCounter() {
-			counter.textContent = state.selection.length + (i18n.selectedSuffix ? ' ' + i18n.selectedSuffix : '');
-			cta.disabled = state.selection.length === 0;
-		}
-
-		search.oninput = paint;
-		cta.onclick = function () {
-			view.hidden = true;
-			revealContactForm({ withHint: false });
-			document.getElementById('bqw-flow').value = 'direct-catalog';
-			state.flow_origin = 'direct-catalog';
-		};
-
-		paint();
-		updateBrowseCounter();
-	}
-
-	function renderSiteCatalog(step) {
-		// Camino B — WooCommerce browser using selected_categories.
-		optionsWrap.innerHTML = '';
-		optionsWrap.classList.remove('bqw-opt-cards');
-		var view = document.getElementById('bqw-browse-view');
-		var grid = document.getElementById('bqw-browse-grid');
-		var search = document.getElementById('bqw-browse-search');
-		var chipBox = document.getElementById('bqw-browse-chip-filters');
-		var counter = document.getElementById('bqw-browse-counter');
-		var cta = document.getElementById('bqw-browse-cta');
-		view.hidden = false;
-		chipBox.innerHTML = '';
-
-		var products = (step.products || []).slice();
-		var cats     = step.categories || [];
-
-		var activeCats = new Set();
-
-		function paint() {
-			var q = (search.value || '').toLowerCase().trim();
-			grid.innerHTML = '';
-			products.forEach(function (p) {
-				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
-				if (activeCats.size) {
-					var slugs = p.category_slugs && p.category_slugs.length ? p.category_slugs : [p.category_slug];
-					var hit = false;
-					for (var i = 0; i < slugs.length; i++) { if (activeCats.has(slugs[i])) { hit = true; break; } }
-					if (!hit) return;
-				}
-				grid.appendChild(buildWooCard(p));
-			});
-		}
-
-		var catItems = (cats || []).map(function (c) {
-			return { value: c.slug, label: c.name + ' (' + c.count + ')' };
-		});
-		if (catItems.length) {
-			chipBox.appendChild(buildChipFilter({
-				label: (i18n.categoryLabel || 'Category') + ':',
-				items: catItems,
-				active: activeCats,
-				onChange: paint,
-			}));
-		}
-
-		function buildWooCard(p) {
-			var card = document.createElement('div');
-			card.className = 'bqw-browse-card';
-			card.dataset.productId = p.id;
-			if (state.selection.some(function (s) { return s.id === p.id; })) card.classList.add('is-selected');
-			var siteHost = (window.location && window.location.hostname) || '';
-			var linkHost = '';
-			try { linkHost = new URL(p.permalink).hostname; } catch (e) {}
-			var linkLabel = (linkHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, ''))
-				? (i18n.viewOn || 'View on') + ' ' + linkHost + ' ↗'
-				: (i18n.viewProduct || 'View product →');
-			var permalink = p.permalink ? '<a href="' + p.permalink + '" target="_blank" rel="noopener">' + escapeHtml(linkLabel) + '</a>' : '';
-
-			card.innerHTML =
-				(p.image ? '<img class="bqw-browse-card-img" src="' + p.image + '" alt="" loading="lazy">' : '<div class="bqw-browse-card-img"></div>') +
-				'<div class="bqw-browse-card-body">' +
-					'<span class="bqw-browse-card-brand">' + escapeHtml(p.category_name || '') + '</span>' +
-					'<span class="bqw-browse-card-name">' + escapeHtml(p.name || '') + '</span>' +
-				'</div>' +
-				'<div class="bqw-browse-card-actions">' +
-					'<button type="button" class="bqw-btn bqw-btn-primary bqw-browse-pick">' + escapeHtml(i18n.requestQuote || 'Request quote') + '</button>' +
-					permalink +
-				'</div>';
-
-			card.querySelector('.bqw-browse-pick').addEventListener('click', function () {
-				var picked = !card.classList.contains('is-selected');
-				if (picked) {
-					card.classList.add('is-selected');
-					addSelection({
-						id: p.id, name: p.name, image: p.image || '', sku: '',
-						brand: '', price: '', area: '', link: p.permalink || '',
-						source: 'woo', categoryId: 0, categorySlug: p.category_slug || '', categoryName: p.category_name || '',
-					});
-				} else {
-					card.classList.remove('is-selected');
-					removeSelection(p.id);
-				}
-				updateBrowseCounter();
-			});
-			return card;
-		}
-
-		function updateBrowseCounter() {
-			counter.textContent = state.selection.length + (i18n.selectedSuffix ? ' ' + i18n.selectedSuffix : '');
-			cta.disabled = state.selection.length === 0;
-		}
-
-		search.oninput = paint;
-		cta.onclick = function () {
-			view.hidden = true;
-			revealContactForm({ withHint: false });
-			document.getElementById('bqw-flow').value = 'direct-catalog';
-			state.flow_origin = 'direct-catalog';
-		};
-
-		paint();
-		updateBrowseCounter();
-	}
-
-	function renderRecommendations(recs) {
-		if (!recPanel || !recPanelBody) return;
-		recPanelBody.innerHTML = '';
-		recPanelBody.classList.remove('bqw-rec-mosaic');
-		if (!recs || !recs.length) {
-			var p = document.createElement('p');
-			p.className = 'bqw-rec-placeholder';
-			p.textContent = i18n.noMatches || "Your case is specific. Let's talk directly.";
-			recPanelBody.appendChild(p);
-			recPanelFoot.hidden = true;
-			return;
-		}
-		recPanelBody.classList.add('bqw-rec-mosaic');
-		recs.forEach(function (r) { recPanelBody.appendChild(buildRecCard(r)); });
-		recPanelFoot.hidden = false;
-		updateRecCounter();
-		// Mobile: open panel + show FAB.
-		if (window.innerWidth < 900) {
-			recPanel.classList.add('is-open');
-			if (recFab) recFab.classList.add('is-shown');
-		}
-	}
-
-	function updateRecCounter() {
-		if (!recCounter || !recCta) return;
-		var picked = state.selection.length;
-		var total  = recPanelBody ? recPanelBody.querySelectorAll('.bqw-rec-card-compact').length : 0;
-		recCounter.textContent = picked + ' / ' + total;
-		recCta.disabled = picked === 0;
-		if (recFabCount) {
-			recFabCount.textContent = picked > 0 ? String(picked) : '';
-			recFabCount.style.display = picked > 0 ? '' : 'none';
-		}
-	}
-
-	function buildRecCard(r) {
-		var card = document.createElement('div');
-		card.className = 'bqw-rec-card-compact';
-		card.dataset.productId = String(r.id);
-		var image    = r.img || r.image || '';
-		var imgHtml  = image
-			? '<img class="bqw-rec-thumb" src="' + image + '" alt="" loading="lazy">'
-			: '<span class="bqw-rec-thumb bqw-rec-thumb-fallback">★</span>';
-		var taskBadge = r.task_label
-			? '<span class="bqw-rec-task" data-task="' + escapeHtml(r.task_type || '') + '">' + escapeHtml(r.task_label) + '</span>'
-			: '';
-		var brandHtml = r.brand ? '<span class="bqw-rec-brand">' + escapeHtml(r.brand) + '</span>' : '';
-		var scoreHtml = r.score
-			? '<span class="bqw-rec-score">' + escapeHtml(i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>'
-			: '';
-
-		card.innerHTML =
-			'<div class="bqw-rec-thumbwrap">' + imgHtml + (taskBadge ? '<span class="bqw-rec-thumb-badge">' + taskBadge + '</span>' : '') + '</div>' +
-			'<div class="bqw-rec-compact-body">' +
-				'<strong class="bqw-rec-title">' + escapeHtml(r.name) + '</strong>' +
-				brandHtml +
-				scoreHtml +
-			'</div>' +
-			'<button type="button" class="bqw-rec-pick-compact" aria-pressed="false">' +
-				'<span class="bqw-rec-pick-icon" aria-hidden="true">+</span>' +
-				'<span class="bqw-rec-pick-label">' + escapeHtml(i18n.pickThis || 'Pick') + '</span>' +
-			'</button>';
-
-		function toggle(e) {
-			if (e && e.target && e.target.tagName === 'A') return;
-			var pick = !card.classList.contains('selected');
-			if (pick) {
-				card.classList.add('selected');
-				pickBtn.setAttribute('aria-pressed', 'true');
-				pickBtn.querySelector('.bqw-rec-pick-icon').textContent = '✓';
-				pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.picked || 'Selected';
-				addSelection({
-					id: r.id, name: r.name, image: image, sku: r.sku || '',
-					brand: r.brand || '', price: r.price || '', area: r.area || '', link: r.link || '',
-					source: 'catalog',
-					categoryId: 0, categorySlug: r.brand || '', categoryName: r.brand || '',
-				});
-			} else {
-				card.classList.remove('selected');
-				pickBtn.setAttribute('aria-pressed', 'false');
-				pickBtn.querySelector('.bqw-rec-pick-icon').textContent = '+';
-				pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.pickThis || 'Pick';
-				removeSelection(r.id);
-			}
-			updateRecCounter();
-		}
-
-		var pickBtn = card.querySelector('.bqw-rec-pick-compact');
-		card.addEventListener('click', toggle);
-		return card;
 	}
 
 	function addSelection(p) {
@@ -584,327 +137,18 @@
 		document.getElementById('bqw-selected-products-json').value = JSON.stringify(state.selection);
 	}
 
-	function renderCtaToContact(label) {
-		var cta = document.createElement('button');
-		cta.type = 'button';
-		cta.className = 'bqw-btn bqw-btn-primary bqw-rec-continue';
-		cta.textContent = label || (i18n.continueToQuote || 'Continue and request quote →');
-		cta.addEventListener('click', function () { revealContactForm({ withHint: false }); });
-		optionsWrap.appendChild(cta);
+	function questionProgress(stepId) {
+		// Compute index of this step in the enabled chain so the dots reflect
+		// the ACTUAL questions the user will see. We learn the chain on the fly.
+		if (state.question_steps_seen.indexOf(stepId) === -1) state.question_steps_seen.push(stepId);
+		var idx = state.question_steps_seen.indexOf(stepId);
+		// Total = max(seen so far, default 6 if before we know).
+		var total = Math.max(state.question_steps_seen.length, 4);
+		// Cap to QUESTION_STEPS length.
+		total = Math.min(total, QUESTION_STEPS.length);
+		return { idx: idx, total: total };
 	}
 
-	/* =========================================================
-	 * Server protocol
-	 * ========================================================= */
-	function callInit() {
-		// eslint-disable-next-line no-console
-		try { console.log('[bqw chat] init request'); } catch (e) {}
-		var fd = new FormData();
-		fd.append('action', 'bqw_chat_init');
-		fd.append('nonce', window.BQW.nonce);
-		fd.append('session_id', state.session_id);
-		fd.append('language', lang);
-		appendTyping();
-		fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
-			.then(function (r) { return r.json(); })
-			.then(function (json) {
-				removeTyping();
-				try { console.log('[bqw chat] first response received', json); } catch (e) {}
-				if (!json || !json.success) {
-					appendBubble('assistant', i18n.genericError || 'Something went wrong starting the chat.');
-					return;
-				}
-				applyStep(json.data.step);
-			})
-			.catch(function (err) {
-				removeTyping();
-				try { console.log('[bqw chat] init failed', err); } catch (e) {}
-				appendBubble('assistant', i18n.genericError || 'Something went wrong starting the chat.');
-			});
-	}
-
-	function sendAdvance(opts) {
-		opts = opts || {};
-		if (!state.current_step) return;
-		var clicks = state.pending_buttons.slice();
-		var text   = textInput && textInput.value ? textInput.value.trim() : '';
-		if (opts.skip) { clicks = []; text = ''; }
-		if (!opts.skip && !clicks.length && !text) return;
-
-		appendBubble('user', text, { chips: clicks });
-		if (textInput) textInput.value = '';
-		state.pending_buttons = [];
-		optionsWrap.innerHTML = '';
-		appendTyping();
-
-		var fd = new FormData();
-		fd.append('action', 'bqw_chat_advance');
-		fd.append('nonce', window.BQW.nonce);
-		fd.append('session_id', state.session_id);
-		fd.append('step_id', state.current_step);
-		fd.append('language', lang);
-		clicks.forEach(function (c) { fd.append('selected[]', c); });
-		if (text) fd.append('free_text', text);
-		if (opts.skip) fd.append('skip', '1');
-
-		fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
-			.then(function (r) { return r.json(); })
-			.then(function (json) {
-				removeTyping();
-				if (!json || !json.success) {
-					appendBubble('assistant', (json && json.data && json.data.message) || i18n.genericError || 'Something went wrong.');
-					return;
-				}
-				applyStep(json.data.step);
-			})
-			.catch(function () {
-				removeTyping();
-				appendBubble('assistant', i18n.genericError || 'Something went wrong.');
-			});
-	}
-
-	function applyActions(actions) {
-		actions.forEach(function (a) {
-			if (!a || !a.type) return;
-			if (a.type === 'update_recommendations' && Array.isArray(a.products)) {
-				renderRecommendations(a.products);
-			} else if (a.type === 'select_product' && a.product) {
-				// Add to selection if not already; toggle the matching card on if visible.
-				addSelection({
-					id: a.product.id, name: a.product.name, image: a.product.img || a.product.image || '',
-					sku: a.product.sku || '', brand: a.product.brand || '', price: a.product.price || '',
-					area: a.product.area || '', link: a.product.link || '', source: 'catalog',
-					categoryId: 0, categorySlug: a.product.brand || '', categoryName: a.product.brand || '',
-				});
-				var card = recPanelBody && recPanelBody.querySelector('.bqw-rec-card-compact[data-product-id="' + a.product.id + '"]');
-				if (card) {
-					card.classList.add('selected');
-					var btn = card.querySelector('.bqw-rec-pick-compact');
-					if (btn) btn.setAttribute('aria-pressed', 'true');
-				}
-				updateRecCounter();
-			} else if (a.type === 'go_to_contact') {
-				if (recPanel) recPanel.classList.remove('is-open');
-				revealContactForm({ withHint: false });
-			}
-		});
-	}
-
-	function applyStep(step) {
-		if (!step) return;
-		root.classList.add('is-flow-active');
-
-		state.current_step = step.id;
-		state.current_step_meta = step;
-
-		// Always render the assistant bubble first, then any add-ons.
-		if (step.message) appendBubble('assistant', step.message);
-
-		switch (step.type) {
-			case 'welcome_cards':
-				renderWelcomeCards(step);
-				break;
-
-			case 'options':
-			case 'multi_options':
-			case 'single_option':
-				renderOptions(step);
-				break;
-
-			case 'site_catalog':
-				renderSiteCatalog(step);
-				break;
-
-			case 'bomedia_catalog':
-				renderBomediaCatalog(step);
-				break;
-
-			case 'recommendations':
-				renderRecommendations(step.recommendations || []);
-				optionsWrap.innerHTML = '';
-				renderPostRecActions(step);
-				break;
-
-			case 'form':
-				revealContactForm({ withHint: false });
-				break;
-
-			case 'end':
-			default:
-				optionsWrap.innerHTML = '';
-				break;
-		}
-	}
-
-	function renderPostRecActions(step) {
-		// Three buttons under the chat: primary "Request quote",
-		// secondary "Start over", subtle "Not convinced — contact me".
-		var bar = document.createElement('div');
-		bar.className = 'bqw-post-recs';
-
-		var primary = document.createElement('button');
-		primary.type = 'button';
-		primary.className = 'bqw-btn bqw-btn-primary';
-		primary.textContent = step.cta || (i18n.requestQuote || 'Request quote') + ' →';
-		primary.addEventListener('click', function () {
-			if (recPanel) recPanel.classList.remove('is-open');
-			revealContactForm({ withHint: false });
-		});
-		bar.appendChild(primary);
-
-		var restart = document.createElement('button');
-		restart.type = 'button';
-		restart.className = 'bqw-link-btn';
-		restart.textContent = i18n.startOver || '↺ Start over';
-		restart.addEventListener('click', function () {
-			try { sessionStorage.removeItem('bqw_session_id'); } catch (e) {}
-			window.location.reload();
-		});
-		bar.appendChild(restart);
-
-		var nope = document.createElement('button');
-		nope.type = 'button';
-		nope.className = 'bqw-link-btn';
-		nope.textContent = i18n.notConvinced || 'Not convinced — contact me';
-		nope.addEventListener('click', function () {
-			document.getElementById('bqw-flow').value = 'not-convinced';
-			state.flow_origin = 'not-convinced';
-			revealContactForm({ withHint: false });
-		});
-		bar.appendChild(nope);
-
-		optionsWrap.appendChild(bar);
-	}
-
-	/* =========================================================
-	 * Contact panel
-	 * ========================================================= */
-	function revealContactForm(opts) {
-		opts = opts || {};
-		contactPanel.hidden = false;
-		contactHint.hidden = !opts.withHint;
-		if (opts.withHint) {
-			document.getElementById('bqw-flow').value = 'skip';
-			state.flow_origin = 'skip';
-			document.getElementById('bqw-chat').hidden = true;
-		}
-		contactPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	}
-
-	function hideContactForm() {
-		contactPanel.hidden = true;
-		document.getElementById('bqw-chat').hidden = false;
-	}
-
-	/* =========================================================
-	 * Country select + dial code
-	 * ========================================================= */
-	function buildCountries() {
-		var sel    = document.getElementById('bqw-country');
-		var prefix = document.getElementById('bqw-dial-prefix');
-		var dial   = document.getElementById('bqw-dial');
-
-		(countries || []).forEach(function (c) {
-			var opt = document.createElement('option');
-			opt.value = c.code; opt.textContent = c.name; opt.dataset.dial = c.dial;
-			if (c.code === detected) opt.selected = true;
-			sel.appendChild(opt);
-
-			if (prefix) {
-				var p = document.createElement('option');
-				p.value = c.dial;
-				p.dataset.code = c.code;
-				p.textContent = c.dial + ' — ' + c.name;
-				if (c.code === detected) p.selected = true;
-				prefix.appendChild(p);
-			}
-		});
-		var match = (countries || []).find(function (c) { return c.code === detected; });
-		if (match && dial) dial.value = match.dial;
-
-		sel.addEventListener('change', function () {
-			var opt = sel.options[sel.selectedIndex];
-			var d = opt ? (opt.dataset.dial || '+') : '+';
-			if (dial) dial.value = d;
-			// Keep the prefix dropdown synced when the user picks a country.
-			if (prefix) {
-				for (var i = 0; i < prefix.options.length; i++) {
-					if (prefix.options[i].value === d) { prefix.selectedIndex = i; break; }
-				}
-			}
-		});
-		if (prefix) {
-			prefix.addEventListener('change', function () {
-				var v = prefix.value;
-				if (dial) dial.value = v;
-			});
-		}
-	}
-
-	/* =========================================================
-	 * Submit (final form)
-	 * ========================================================= */
-	function ensureCaptchaToken() {
-		var captcha = document.getElementById('bqw-captcha');
-		if (!captcha) return Promise.resolve();
-		var provider = captcha.dataset.provider;
-		if (provider === 'recaptcha_v3' && cfg.captcha && cfg.captcha.site_key && window.grecaptcha) {
-			return new Promise(function (resolve) {
-				window.grecaptcha.ready(function () {
-					window.grecaptcha.execute(cfg.captcha.site_key, { action: cfg.captcha.action || 'boprint_quote' })
-						.then(function (token) { var t = document.getElementById('bqw-recaptcha-v3'); if (t) t.value = token; resolve(); })
-						.catch(function () { resolve(); });
-				});
-			});
-		}
-		return Promise.resolve();
-	}
-
-	function submitForm(e) {
-		e.preventDefault();
-		var btn = document.getElementById('bqw-submit');
-		var spinner = btn.querySelector('.bqw-spinner');
-		var errorBox = document.getElementById('bqw-error');
-		errorBox.hidden = true;
-		btn.disabled = true;
-		if (spinner) spinner.hidden = false;
-
-		ensureCaptchaToken().then(function () {
-			var fd = new FormData(form);
-			var dialEl = document.getElementById('bqw-dial');
-			var dial   = dialEl ? (dialEl.value || dialEl.textContent || '').trim() : '';
-			fd.set('phone', (dial || '') + ' ' + (fd.get('phone') || ''));
-
-			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
-				.then(function (r) { return r.json(); })
-				.then(function (json) {
-					if (json && json.success) {
-						if (json.data.redirect) { window.location.href = json.data.redirect; return; }
-						root.querySelector('.bqw-chat').hidden = true;
-						contactPanel.hidden = true;
-						thanksBox.hidden = false;
-						thanksBox.innerHTML = json.data.html || '';
-						thanksBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-					} else {
-						var msg = (json && json.data && json.data.message) || i18n.genericError || 'Error';
-						errorBox.textContent = msg; errorBox.hidden = false;
-					}
-				})
-				.catch(function () {
-					errorBox.textContent = i18n.genericError || 'Error'; errorBox.hidden = false;
-				})
-				.finally(function () { btn.disabled = false; if (spinner) spinner.hidden = true; });
-		});
-	}
-
-	/* =========================================================
-	 * Helpers
-	 * ========================================================= */
-	function escapeHtml(s) {
-		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-		});
-	}
 	function iconForHint(hint) {
 		var map = {
 			'tshirt': '<path d="M16 4l4 3-2 4-2-1v10H8V10L6 11 4 7l4-3a4 4 0 008 0z"/>',
@@ -933,64 +177,769 @@
 		};
 		var body = map[hint];
 		if (!body) return '';
-		return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
+		return '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
+	}
+
+	/* =========================================================
+	 * Screen 1 — Contact intro (early lead capture)
+	 * ========================================================= */
+	function renderContactIntro() {
+		clearScreen();
+		showBack(false);
+		showTray(false);
+		progress.hidden = true;
+
+		var wrap = el('div', 'bqw-wiz-card bqw-wiz-intro');
+		wrap.innerHTML =
+			'<h2 class="bqw-wiz-h">' + escapeHtml(i18n.introTitle || 'Before we start, what should we call you?') + '</h2>' +
+			'<p class="bqw-wiz-sub">' + escapeHtml(i18n.introSub || 'It takes 2 minutes. No spam — we only reply to your enquiry.') + '</p>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.firstName || 'First name') + ' *</span>' +
+				'<input type="text" id="bqw-intro-name" autocomplete="given-name" value="' + escapeHtml(state.contact_partial.name) + '" required></label>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.email || 'Email') + ' *</span>' +
+				'<input type="email" id="bqw-intro-email" autocomplete="email" value="' + escapeHtml(state.contact_partial.email) + '" required></label>' +
+			'<p class="bqw-wiz-error" id="bqw-intro-error" hidden></p>' +
+			'<div class="bqw-wiz-actions"><button type="button" class="bqw-btn bqw-btn-primary" id="bqw-intro-continue">' + escapeHtml(i18n.continue || 'Continue') + ' →</button></div>';
+		screen.appendChild(wrap);
+
+		var nameEl = wrap.querySelector('#bqw-intro-name');
+		var mailEl = wrap.querySelector('#bqw-intro-email');
+		var errEl  = wrap.querySelector('#bqw-intro-error');
+		var btn    = wrap.querySelector('#bqw-intro-continue');
+		nameEl.focus();
+
+		btn.addEventListener('click', function () {
+			var name  = nameEl.value.trim();
+			var email = mailEl.value.trim();
+			if (!name) { errEl.hidden = false; errEl.textContent = i18n.errName || 'First name is required.'; return; }
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.hidden = false; errEl.textContent = i18n.errEmail || 'Please enter a valid email.'; return; }
+			errEl.hidden = true;
+			state.contact_partial.name  = name;
+			state.contact_partial.email = email;
+			document.getElementById('bqw-first-name').value = name;
+			document.getElementById('bqw-email').value = email;
+			btn.disabled = true;
+			savePartial(name, email).then(function () {
+				state.stack.push({ kind: 'intro', payload: null, picks: [] });
+				callInit();
+			}).catch(function () {
+				// Even if save fails we proceed; the lead is captured at submit anyway.
+				state.stack.push({ kind: 'intro', payload: null, picks: [] });
+				callInit();
+			});
+		});
+		[nameEl, mailEl].forEach(function (n) {
+			n.addEventListener('keydown', function (e) { if (e.key === 'Enter') btn.click(); });
+		});
+	}
+
+	function savePartial(name, email) {
+		var fd = new FormData();
+		fd.append('action', 'bqw_partial_save');
+		fd.append('nonce', window.BQW.nonce);
+		fd.append('session_id', state.session_id);
+		fd.append('name', name);
+		fd.append('email', email);
+		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
+	}
+	function logPartialStep(stepId) {
+		try {
+			var fd = new FormData();
+			fd.append('action', 'bqw_partial_step');
+			fd.append('nonce', window.BQW.nonce);
+			fd.append('session_id', state.session_id);
+			fd.append('step', stepId);
+			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd, keepalive: true });
+		} catch (e) {}
+	}
+
+	/* =========================================================
+	 * Server protocol
+	 * ========================================================= */
+	function callInit() {
+		var fd = new FormData();
+		fd.append('action', 'bqw_chat_init');
+		fd.append('nonce', window.BQW.nonce);
+		fd.append('session_id', state.session_id);
+		fd.append('language', lang);
+		fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+			.then(function (r) { return r.json(); })
+			.then(function (json) {
+				if (!json || !json.success) { renderError(); return; }
+				applyStep(json.data.step);
+			})
+			.catch(renderError);
+	}
+
+	function callAdvance(currentStep, picks, freeText, skip) {
+		var fd = new FormData();
+		fd.append('action', 'bqw_chat_advance');
+		fd.append('nonce', window.BQW.nonce);
+		fd.append('session_id', state.session_id);
+		fd.append('step_id', currentStep);
+		fd.append('language', lang);
+		picks.forEach(function (p) { fd.append('selected[]', p); });
+		if (freeText) fd.append('free_text', freeText);
+		if (skip) fd.append('skip', '1');
+		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
+	}
+
+	function applyStep(step, replay) {
+		if (!step) { renderError(); return; }
+		if (!replay) {
+			state.current = { kind: 'server', step: step, picks: [] };
+		} else {
+			// Replaying same screen (e.g. tray pill removal). Keep frame, re-render.
+		}
+		logPartialStep(step.id);
+
+		switch (step.type) {
+			case 'welcome_cards':       return renderWelcome(step);
+			case 'options':
+			case 'multi_options':
+			case 'single_option':       return renderQuestion(step);
+			case 'recommendations':     return renderRecommendationsScreen(step);
+			case 'site_catalog':        return renderSiteCatalog(step);
+			case 'bomedia_catalog':     return renderBomediaCatalog(step);
+			case 'form':                return renderFinalForm(step);
+			case 'end':
+			default:                    return renderError();
+		}
+	}
+
+	function pushAndAdvance(currentStep, picks, freeText, skip) {
+		// Snapshot current frame onto the stack before transitioning.
+		if (state.current) state.stack.push(state.current);
+		callAdvance(currentStep, picks, freeText, skip).then(function (json) {
+			if (!json || !json.success) {
+				// Roll back stack push.
+				state.stack.pop();
+				renderError(json && json.data && json.data.message);
+				return;
+			}
+			applyStep(json.data.step);
+		}).catch(function () {
+			state.stack.pop();
+			renderError();
+		});
+	}
+
+	function goBack() {
+		var prev = state.stack.pop();
+		if (!prev) { renderContactIntro(); return; }
+		if (prev.kind === 'intro') { renderContactIntro(); return; }
+		if (prev.kind === 'server') {
+			state.current = prev;
+			applyStep(prev.step, /*replay*/ true);
+		}
+	}
+
+	function renderError(msg) {
+		clearScreen();
+		showBack(state.stack.length > 0);
+		showTray(false);
+		progress.hidden = true;
+		screen.appendChild(el('div', 'bqw-wiz-card', '<p class="bqw-wiz-error">' + escapeHtml(msg || i18n.genericError || 'Something went wrong.') + '</p>'));
+	}
+
+	/* =========================================================
+	 * Screen — Welcome (3 cards)
+	 * ========================================================= */
+	function renderWelcome(step) {
+		clearScreen();
+		showBack(true);
+		showTray(false);
+		progress.hidden = true;
+
+		var card = el('div', 'bqw-wiz-card');
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		var grid = el('div', 'bqw-welcome-grid');
+		(step.options || []).forEach(function (opt) {
+			var c = el('button', 'bqw-welcome-card');
+			c.type = 'button';
+			c.innerHTML = '<span class="bqw-welcome-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>'
+				+ '<strong>' + escapeHtml(opt.label) + '</strong>'
+				+ (opt.subtitle ? '<span class="bqw-welcome-sub">' + escapeHtml(opt.subtitle) + '</span>' : '');
+			c.addEventListener('click', function () { pushAndAdvance(step.id, [opt.label]); });
+			grid.appendChild(c);
+		});
+		card.appendChild(grid);
+		screen.appendChild(card);
+	}
+
+	/* =========================================================
+	 * Screen — Question (multi/single options)
+	 * ========================================================= */
+	function renderQuestion(step) {
+		clearScreen();
+		showBack(true);
+		showTray(false);
+		var pg = questionProgress(step.id);
+		setProgress(pg.idx, pg.total);
+
+		var card = el('div', 'bqw-wiz-card');
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		var grid = el('div', 'bqw-q-grid');
+		var multi = !!step.multi_select;
+		var picks = (state.current.picks || []).slice();
+
+		(step.options || []).forEach(function (opt) {
+			var c = el('button', 'bqw-q-card');
+			c.type = 'button';
+			c.innerHTML = '<span class="bqw-q-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>'
+				+ '<span class="bqw-q-label">' + escapeHtml(opt.label) + '</span>';
+			if (picks.indexOf(opt.label) >= 0) c.classList.add('is-selected');
+			c.addEventListener('click', function () {
+				if (multi) {
+					var idx = picks.indexOf(opt.label);
+					if (idx >= 0) { picks.splice(idx, 1); c.classList.remove('is-selected'); }
+					else { picks.push(opt.label); c.classList.add('is-selected'); }
+				} else {
+					grid.querySelectorAll('.bqw-q-card.is-selected').forEach(function (x) { x.classList.remove('is-selected'); });
+					c.classList.add('is-selected');
+					picks = [opt.label];
+				}
+				state.current.picks = picks;
+				nextBtn.disabled = picks.length === 0;
+			});
+			grid.appendChild(c);
+		});
+		card.appendChild(grid);
+
+		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
+		if (step.allow_skip) {
+			var skipBtn = el('button', 'bqw-link-btn');
+			skipBtn.type = 'button';
+			skipBtn.textContent = i18n.skipQuestion || 'Skip this question';
+			skipBtn.addEventListener('click', function () { pushAndAdvance(step.id, [], '', true); });
+			actions.appendChild(skipBtn);
+		}
+		var nextBtn = el('button', 'bqw-btn bqw-btn-primary');
+		nextBtn.type = 'button';
+		nextBtn.textContent = (i18n.next || 'Next') + ' →';
+		nextBtn.disabled = picks.length === 0;
+		nextBtn.addEventListener('click', function () { pushAndAdvance(step.id, picks); });
+		actions.appendChild(nextBtn);
+		card.appendChild(actions);
+		screen.appendChild(card);
+	}
+
+	/* =========================================================
+	 * Screen — Recommendations (top 6, mosaic 3x2)
+	 * ========================================================= */
+	function renderRecommendationsScreen(step) {
+		clearScreen();
+		showBack(true);
+		showTray(true);
+		progress.hidden = true;
+
+		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide');
+		var recs = step.recommendations || [];
+		var heading = recs.length
+			? (i18n.recsTitle || 'Your top matches')
+			: (i18n.noMatches || "Your case is specific. Let's talk directly.");
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(heading)));
+		if (recs.length) {
+			card.appendChild(el('p', 'bqw-wiz-sub', escapeHtml((i18n.recsSub || 'We found %d machines for you').replace('%d', recs.length))));
+		}
+
+		if (!recs.length) {
+			var msg = el('p', 'bqw-wiz-sub', escapeHtml(step.message || ''));
+			card.appendChild(msg);
+		} else {
+			var grid = el('div', 'bqw-rec-mosaic');
+			recs.forEach(function (r) { grid.appendChild(buildRecCard(r)); });
+			card.appendChild(grid);
+		}
+
+		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
+		var restart = el('button', 'bqw-link-btn');
+		restart.type = 'button';
+		restart.textContent = i18n.startOver || '↺ Start over';
+		restart.addEventListener('click', function () {
+			try { sessionStorage.removeItem('bqw_session_id'); } catch (e) {}
+			window.location.reload();
+		});
+		actions.appendChild(restart);
+
+		var nope = el('button', 'bqw-link-btn');
+		nope.type = 'button';
+		nope.textContent = i18n.notConvinced || 'Not convinced — contact me';
+		nope.addEventListener('click', function () {
+			document.getElementById('bqw-flow').value = 'not-convinced';
+			state.flow_origin = 'not-convinced';
+			pushAndAdvance(step.id, [], '', true);
+		});
+		actions.appendChild(nope);
+
+		var primary = el('button', 'bqw-btn bqw-btn-primary');
+		primary.type = 'button';
+		primary.textContent = (i18n.continueWith || 'Continue with selected') + ' →';
+		primary.addEventListener('click', goToFinalForm);
+		actions.appendChild(primary);
+		card.appendChild(actions);
+
+		screen.appendChild(card);
+	}
+
+	function buildRecCard(r) {
+		var card = el('div', 'bqw-rec-card-compact');
+		card.dataset.productId = String(r.id);
+		var image    = r.img || r.image || '';
+		var imgHtml  = image
+			? '<img class="bqw-rec-thumb" src="' + image + '" alt="" loading="lazy">'
+			: '<span class="bqw-rec-thumb bqw-rec-thumb-fallback">★</span>';
+		var taskBadge = r.task_label
+			? '<span class="bqw-rec-thumb-badge"><span class="bqw-rec-task" data-task="' + escapeHtml(r.task_type || '') + '">' + escapeHtml(r.task_label) + '</span></span>'
+			: '';
+		var brandHtml = r.brand ? '<span class="bqw-rec-brand">' + escapeHtml(r.brand) + '</span>' : '';
+		var scoreHtml = r.score
+			? '<span class="bqw-rec-score">' + escapeHtml(i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>'
+			: '';
+		card.innerHTML =
+			'<div class="bqw-rec-thumbwrap">' + imgHtml + taskBadge + '</div>' +
+			'<div class="bqw-rec-compact-body">' +
+				'<strong class="bqw-rec-title">' + escapeHtml(r.name) + '</strong>' +
+				brandHtml +
+				scoreHtml +
+			'</div>' +
+			'<button type="button" class="bqw-rec-pick-compact" aria-pressed="false">' +
+				'<span class="bqw-rec-pick-icon" aria-hidden="true">+</span>' +
+				'<span class="bqw-rec-pick-label">' + escapeHtml(i18n.addToRequest || 'Add to request') + '</span>' +
+			'</button>';
+
+		var pickBtn = card.querySelector('.bqw-rec-pick-compact');
+		var isPicked = state.selection.some(function (s) { return s.id === r.id; });
+		if (isPicked) {
+			card.classList.add('selected');
+			pickBtn.setAttribute('aria-pressed', 'true');
+			pickBtn.querySelector('.bqw-rec-pick-icon').textContent = '✓';
+			pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.added || 'Added';
+		}
+		card.addEventListener('click', function () {
+			var pick = !card.classList.contains('selected');
+			if (pick) {
+				card.classList.add('selected');
+				pickBtn.setAttribute('aria-pressed', 'true');
+				pickBtn.querySelector('.bqw-rec-pick-icon').textContent = '✓';
+				pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.added || 'Added';
+				addSelection({
+					id: r.id, name: r.name, image: image, sku: r.sku || '',
+					brand: r.brand || '', price: r.price || '', area: r.area || '', link: r.link || '',
+					source: 'catalog',
+					categoryId: 0, categorySlug: r.brand || '', categoryName: r.brand || '',
+				});
+			} else {
+				card.classList.remove('selected');
+				pickBtn.setAttribute('aria-pressed', 'false');
+				pickBtn.querySelector('.bqw-rec-pick-icon').textContent = '+';
+				pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.addToRequest || 'Add to request';
+				removeSelection(r.id);
+			}
+			updateTray();
+		});
+		return card;
+	}
+
+	/* =========================================================
+	 * Chips multi-select filter (catalog screens)
+	 * ========================================================= */
+	function buildChipFilter(opts) {
+		var wrap = el('div', 'bqw-chip-row');
+		wrap.appendChild(el('span', 'bqw-chip-label', escapeHtml(opts.label)));
+		var collapseAfter = opts.collapseAfter || 8;
+		var visibleCount  = opts.items.length > collapseAfter ? 6 : opts.items.length;
+		var collapsed     = opts.items.length > collapseAfter;
+		function paint() {
+			wrap.querySelectorAll('.bqw-chip-filter, .bqw-chip-more').forEach(function (n) { n.remove(); });
+			var limit = collapsed ? visibleCount : opts.items.length;
+			for (var i = 0; i < limit; i++) (function (it) {
+				var c = el('button', 'bqw-chip bqw-chip-filter');
+				c.type = 'button';
+				c.dataset.value = it.value;
+				c.textContent = (opts.active.has(it.value) ? '× ' : '') + it.label;
+				if (opts.active.has(it.value)) c.classList.add('bqw-chip--active');
+				c.addEventListener('click', function () {
+					if (opts.active.has(it.value)) opts.active.delete(it.value);
+					else opts.active.add(it.value);
+					paint();
+					opts.onChange();
+				});
+				wrap.appendChild(c);
+			})(opts.items[i]);
+			if (collapsed && opts.items.length > visibleCount) {
+				var more = el('button', 'bqw-chip bqw-chip-more');
+				more.type = 'button';
+				more.textContent = '+ ' + (opts.items.length - visibleCount) + ' ' + (i18n.moreSuffix || 'more');
+				more.addEventListener('click', function () { collapsed = false; paint(); });
+				wrap.appendChild(more);
+			}
+		}
+		paint();
+		return wrap;
+	}
+
+	/* =========================================================
+	 * Screen — Site catalog (Woo full screen)
+	 * ========================================================= */
+	function renderSiteCatalog(step) {
+		clearScreen();
+		showBack(true);
+		showTray(true);
+		progress.hidden = true;
+
+		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+
+		var filters = el('div', 'bqw-browse-filters');
+		var search  = el('input', null);
+		search.type = 'search';
+		search.id   = 'bqw-browse-search';
+		search.placeholder = i18n.searchMachines || 'Search machines…';
+		filters.appendChild(search);
+		var chipBox = el('div', 'bqw-chip-filters');
+		filters.appendChild(chipBox);
+		card.appendChild(filters);
+
+		var grid = el('div', 'bqw-browse-grid');
+		card.appendChild(grid);
+		screen.appendChild(card);
+
+		var products = (step.products || []).slice();
+		var cats     = step.categories || [];
+		var activeCats = new Set();
+
+		function paint() {
+			var q = (search.value || '').toLowerCase().trim();
+			grid.innerHTML = '';
+			products.forEach(function (p) {
+				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
+				if (activeCats.size) {
+					var slugs = p.category_slugs && p.category_slugs.length ? p.category_slugs : [p.category_slug];
+					var hit = false;
+					for (var i = 0; i < slugs.length; i++) { if (activeCats.has(slugs[i])) { hit = true; break; } }
+					if (!hit) return;
+				}
+				grid.appendChild(buildBrowseCard(p, /*woo*/true));
+			});
+		}
+		var catItems = cats.map(function (c) { return { value: c.slug, label: c.name + ' (' + c.count + ')' }; });
+		if (catItems.length) {
+			chipBox.appendChild(buildChipFilter({
+				label: (i18n.categoryLabel || 'Category') + ':',
+				items: catItems, active: activeCats, onChange: paint,
+			}));
+		}
+		search.oninput = paint;
+		paint();
+	}
+
+	/* =========================================================
+	 * Screen — Bomedia catalog (Supabase full screen)
+	 * ========================================================= */
+	function renderBomediaCatalog(step) {
+		clearScreen();
+		showBack(true);
+		showTray(true);
+		progress.hidden = true;
+
+		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+
+		var filters = el('div', 'bqw-browse-filters');
+		var search  = el('input', null);
+		search.type = 'search';
+		search.placeholder = i18n.searchMachines || 'Search machines…';
+		filters.appendChild(search);
+		var chipBox = el('div', 'bqw-chip-filters');
+		filters.appendChild(chipBox);
+		card.appendChild(filters);
+
+		var grid = el('div', 'bqw-browse-grid');
+		card.appendChild(grid);
+		screen.appendChild(card);
+
+		var products = (step.products || []).slice();
+		var brands   = step.brands || [];
+		var tasks    = step.tasks  || [];
+		var activeBrands = new Set();
+		var activeTasks  = new Set();
+
+		function paint() {
+			var q = (search.value || '').toLowerCase().trim();
+			var taskBrands = new Set();
+			if (activeTasks.size) tasks.forEach(function (t) {
+				if (activeTasks.has(t.value)) (t.brands || []).forEach(function (b) { taskBrands.add(b); });
+			});
+			grid.innerHTML = '';
+			products.forEach(function (p) {
+				var bl = (p.brand || '').toLowerCase();
+				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
+				if (activeBrands.size && !activeBrands.has(p.brand)) return;
+				if (activeTasks.size && !taskBrands.has(bl)) return;
+				grid.appendChild(buildBrowseCard(p, /*woo*/false));
+			});
+		}
+		var taskItems = (tasks || []).filter(function (t) { return t.brands && t.brands.length; })
+			.map(function (t) { return { value: t.value, label: t.label }; });
+		if (taskItems.length) {
+			chipBox.appendChild(buildChipFilter({
+				label: (i18n.typeLabel || 'Type') + ':',
+				items: taskItems, active: activeTasks, onChange: paint,
+			}));
+		}
+		var brandItems = (brands || []).filter(function (b) { return b.id; })
+			.map(function (b) { return { value: b.id, label: b.label || b.id }; });
+		if (brandItems.length) {
+			chipBox.appendChild(buildChipFilter({
+				label: (i18n.brandLabel || 'Brand') + ':',
+				items: brandItems, active: activeBrands, onChange: paint,
+			}));
+		}
+		search.oninput = paint;
+		paint();
+	}
+
+	function buildBrowseCard(p, isWoo) {
+		var card = el('div', 'bqw-browse-card');
+		card.dataset.productId = p.id;
+		if (state.selection.some(function (s) { return s.id === p.id; })) card.classList.add('is-selected');
+
+		var img      = isWoo ? p.image : p.img;
+		var brandTxt = isWoo ? (p.category_name || '') : (p.brand || '');
+		var siteHost = (window.location && window.location.hostname) || '';
+		var permalink = isWoo ? p.permalink : p.link;
+		var linkHost = '';
+		try { linkHost = new URL(permalink).hostname; } catch (e) {}
+		var linkLabel = (linkHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, ''))
+			? (i18n.viewOn || 'View on') + ' ' + linkHost + ' ↗'
+			: (i18n.viewProduct || 'View product →');
+		var linkHtml = permalink ? '<a href="' + permalink + '" target="_blank" rel="noopener">' + escapeHtml(linkLabel) + '</a>' : '';
+
+		card.innerHTML =
+			(img ? '<img class="bqw-browse-card-img" src="' + img + '" alt="" loading="lazy">' : '<div class="bqw-browse-card-img"></div>') +
+			'<div class="bqw-browse-card-body">' +
+				'<span class="bqw-browse-card-brand">' + escapeHtml(brandTxt) + '</span>' +
+				'<span class="bqw-browse-card-name">' + escapeHtml(p.name || '') + '</span>' +
+			'</div>' +
+			'<div class="bqw-browse-card-actions">' +
+				'<button type="button" class="bqw-btn bqw-btn-primary bqw-browse-pick">' + escapeHtml(i18n.addToRequest || 'Add to request') + '</button>' +
+				linkHtml +
+			'</div>';
+
+		card.querySelector('.bqw-browse-pick').addEventListener('click', function (e) {
+			e.stopPropagation();
+			var picked = !card.classList.contains('is-selected');
+			if (picked) {
+				card.classList.add('is-selected');
+				addSelection({
+					id: p.id, name: p.name, image: img || '', sku: '',
+					brand: isWoo ? '' : (p.brand || ''), price: '',
+					area: isWoo ? '' : (p.area || ''),
+					link: permalink || '',
+					source: isWoo ? 'woo' : 'catalog',
+					categoryId: 0,
+					categorySlug: isWoo ? (p.category_slug || '') : (p.brand || ''),
+					categoryName: isWoo ? (p.category_name || '') : (p.brand || ''),
+				});
+			} else {
+				card.classList.remove('is-selected');
+				removeSelection(p.id);
+			}
+			updateTray();
+			// Update button label.
+			var btn = card.querySelector('.bqw-browse-pick');
+			btn.textContent = card.classList.contains('is-selected')
+				? '✓ ' + (i18n.added || 'Added')
+				: (i18n.addToRequest || 'Add to request');
+		});
+		// Initial label state.
+		if (card.classList.contains('is-selected')) {
+			card.querySelector('.bqw-browse-pick').textContent = '✓ ' + (i18n.added || 'Added');
+		}
+		return card;
+	}
+
+	/* =========================================================
+	 * Final form
+	 * ========================================================= */
+	function goToFinalForm() {
+		// Move directly to the contact form (skip server "form" round-trip — same outcome).
+		clearScreen();
+		showBack(true);
+		showTray(false);
+		progress.hidden = true;
+
+		if (state.current) state.stack.push(state.current);
+		state.current = { kind: 'form', step: { id: 'contact' }, picks: [] };
+
+		var card = el('div', 'bqw-wiz-card');
+		var name = state.contact_partial.name || '';
+		card.innerHTML =
+			'<h2 class="bqw-wiz-h">' + escapeHtml(i18n.almostDone || 'Almost done') + '</h2>' +
+			'<p class="bqw-wiz-sub">' + escapeHtml(i18n.justTwoMore || 'We just need two more details.') + '</p>';
+
+		if (state.selection.length) {
+			var summary = el('div', 'bqw-wiz-summary');
+			summary.innerHTML = '<strong>' + escapeHtml(i18n.yourRequest || 'Your request:') + '</strong>';
+			var ul = el('ul', null);
+			state.selection.forEach(function (p) {
+				var li = el('li', null, escapeHtml(p.name) + (p.brand ? ' <span class="bqw-wiz-summary-brand">(' + escapeHtml(p.brand) + ')</span>' : ''));
+				ul.appendChild(li);
+			});
+			summary.appendChild(ul);
+			card.appendChild(summary);
+		}
+
+		if (name) {
+			var greet = el('p', 'bqw-wiz-greet', escapeHtml((i18n.greetingTpl || 'Hi %s, thanks for your interest.').replace('%s', name)));
+			card.appendChild(greet);
+		}
+
+		var fields = el('div', 'bqw-wiz-fields');
+		fields.innerHTML =
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.phone || 'Phone') + ' *</span>' +
+				'<div class="bqw-phone-wrap"><select id="bqw-dial-prefix" class="bqw-dial-select" aria-label="' + escapeHtml(i18n.countryCode || 'Country code') + '"></select>' +
+				'<input type="tel" id="bqw-phone-input" autocomplete="tel" required></div></label>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.country || 'Country') + ' *</span>' +
+				'<select id="bqw-country-input" required></select></label>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.message || 'Message (optional)') + '</span>' +
+				'<textarea id="bqw-message-input" rows="3" placeholder="' + escapeHtml(i18n.tellUs || 'Tell us what you need…') + '"></textarea></label>';
+		card.appendChild(fields);
+
+		var legal = el('div', 'bqw-wiz-legal');
+		var privacyUrl = cfg.privacy_url || '';
+		var privacyHtml = privacyUrl
+			? '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + escapeHtml(i18n.privacyPolicy || 'privacy policy') + '</a>'
+			: escapeHtml(i18n.privacyPolicy || 'privacy policy');
+		legal.innerHTML =
+			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-privacy-input" required>' +
+				'<span>' + escapeHtml(i18n.acceptPrivacyPrefix || 'I accept the ') + privacyHtml + escapeHtml(i18n.acceptPrivacySuffix || ' and the processing of my data to receive a quote.') + ' *</span></label>';
+		if (cfg.enable_email_optin) {
+			legal.innerHTML +=
+				'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-optin-input">' +
+					'<span>' + escapeHtml(cfg.email_optin_label || i18n.optinDefault || 'I want to receive product updates from Bomedia.') + '</span></label>';
+		}
+		card.appendChild(legal);
+
+		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
+		var submitBtn = el('button', 'bqw-btn bqw-btn-primary');
+		submitBtn.type = 'button';
+		submitBtn.id   = 'bqw-final-submit';
+		submitBtn.innerHTML = '<span class="bqw-submit-label">' + escapeHtml(i18n.send || 'Send') + ' →</span><span class="bqw-spinner" hidden></span>';
+		actions.appendChild(submitBtn);
+		card.appendChild(actions);
+
+		var errBox = el('p', 'bqw-wiz-error', '');
+		errBox.id = 'bqw-final-error';
+		errBox.hidden = true;
+		card.appendChild(errBox);
+
+		screen.appendChild(card);
+		buildCountriesInto(document.getElementById('bqw-country-input'), document.getElementById('bqw-dial-prefix'));
+
+		submitBtn.addEventListener('click', submitFinalForm);
+	}
+
+	function buildCountriesInto(countrySel, prefixSel) {
+		countrySel.innerHTML = '';
+		prefixSel.innerHTML = '';
+		(countries || []).forEach(function (c) {
+			var o = el('option');
+			o.value = c.code; o.textContent = c.name; o.dataset.dial = c.dial;
+			if (c.code === detected) o.selected = true;
+			countrySel.appendChild(o);
+
+			var p = el('option');
+			p.value = c.dial;
+			p.dataset.code = c.code;
+			p.textContent = c.dial + ' — ' + c.name;
+			if (c.code === detected) p.selected = true;
+			prefixSel.appendChild(p);
+		});
+		countrySel.addEventListener('change', function () {
+			var opt = countrySel.options[countrySel.selectedIndex];
+			var d = opt ? (opt.dataset.dial || '+') : '+';
+			for (var i = 0; i < prefixSel.options.length; i++) {
+				if (prefixSel.options[i].value === d) { prefixSel.selectedIndex = i; break; }
+			}
+		});
+	}
+
+	function ensureCaptchaToken() {
+		var c = document.getElementById('bqw-captcha');
+		if (!c) return Promise.resolve();
+		var prov = c.dataset.provider;
+		if (prov === 'recaptcha_v3' && cfg.captcha && cfg.captcha.site_key && window.grecaptcha) {
+			return new Promise(function (resolve) {
+				window.grecaptcha.ready(function () {
+					window.grecaptcha.execute(cfg.captcha.site_key, { action: cfg.captcha.action || 'boprint_quote' })
+						.then(function (token) { var t = document.getElementById('bqw-recaptcha-v3'); if (t) t.value = token; resolve(); })
+						.catch(function () { resolve(); });
+				});
+			});
+		}
+		return Promise.resolve();
+	}
+
+	function submitFinalForm() {
+		var phone   = document.getElementById('bqw-phone-input').value.trim();
+		var country = document.getElementById('bqw-country-input').value;
+		var message = document.getElementById('bqw-message-input').value.trim();
+		var privacy = document.getElementById('bqw-privacy-input').checked;
+		var optin   = document.getElementById('bqw-optin-input');
+		var optinV  = optin ? optin.checked : false;
+		var dial    = document.getElementById('bqw-dial-prefix').value || '';
+		var errBox  = document.getElementById('bqw-final-error');
+		errBox.hidden = true;
+
+		if (!phone) { errBox.hidden = false; errBox.textContent = i18n.errPhone || 'Phone is required.'; return; }
+		if (!country) { errBox.hidden = false; errBox.textContent = i18n.errCountry || 'Country is required.'; return; }
+		if (!privacy) { errBox.hidden = false; errBox.textContent = i18n.errPrivacy || 'Please accept the privacy policy.'; return; }
+
+		var btn = document.getElementById('bqw-final-submit');
+		var spinner = btn.querySelector('.bqw-spinner');
+		btn.disabled = true; if (spinner) spinner.hidden = false;
+
+		ensureCaptchaToken().then(function () {
+			var fd = new FormData(form);
+			// Append the form values from the wizard screen (form fields are hidden; we still have to write the data).
+			fd.set('first_name', state.contact_partial.name || '');
+			fd.set('email', state.contact_partial.email || '');
+			fd.set('last_name', '');
+			fd.set('company', '');
+			fd.set('phone', (dial || '') + ' ' + phone);
+			fd.set('country', country);
+			fd.set('message', message);
+			fd.set('privacy', privacy ? '1' : '');
+			if (optin) fd.set('email_optin', optinV ? '1' : '');
+
+			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+				.then(function (r) { return r.json(); })
+				.then(function (json) {
+					if (json && json.success) {
+						if (json.data.redirect) { window.location.href = json.data.redirect; return; }
+						root.querySelector('.bqw-wiz-screen').hidden = true;
+						progress.hidden = true;
+						tray.hidden = true;
+						thanksBox.hidden = false;
+						thanksBox.innerHTML = json.data.html || '';
+						thanksBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					} else {
+						errBox.hidden = false;
+						errBox.textContent = (json && json.data && json.data.message) || i18n.genericError || 'Error';
+					}
+				})
+				.catch(function () { errBox.hidden = false; errBox.textContent = i18n.genericError || 'Error'; })
+				.finally(function () { btn.disabled = false; if (spinner) spinner.hidden = true; });
+		});
 	}
 
 	/* =========================================================
 	 * Init
 	 * ========================================================= */
-	function resetRecPanel() {
-		// Hard reset — clear any stale cards from a previous session.
-		if (recPanelBody) {
-			recPanelBody.innerHTML = '';
-			var p = document.createElement('p');
-			p.className = 'bqw-rec-placeholder';
-			p.textContent = i18n.recPlaceholder || 'Your recommended machines will appear here as we chat.';
-			recPanelBody.appendChild(p);
-		}
-		if (recPanelFoot) recPanelFoot.hidden = true;
-		if (recFab) {
-			recFab.classList.remove('is-shown');
-			if (recFabCount) {
-				recFabCount.textContent = '';
-				recFabCount.style.display = 'none';
-			}
-		}
-		if (recPanel) recPanel.classList.remove('is-open');
-	}
-
 	function init() {
-		buildCountries();
-		resetRecPanel();
-
-		// v1.7.6 — chat input form was removed; nothing to wire here.
-		skipBtn.addEventListener('click', function () { revealContactForm({ withHint: true }); });
-		backToChat.addEventListener('click', function (e) { e.preventDefault(); hideContactForm(); });
-
-		// Side-panel controls.
-		if (recPanelClose) {
-			recPanelClose.addEventListener('click', function () {
-				if (recPanel) recPanel.classList.remove('is-open');
-			});
-		}
-		if (recCta) {
-			recCta.addEventListener('click', function () {
-				if (recPanel) recPanel.classList.remove('is-open');
-				revealContactForm({ withHint: false });
-			});
-		}
-		if (recFab) {
-			recFab.addEventListener('click', function () {
-				if (recPanel) recPanel.classList.add('is-open');
-			});
-		}
-
-		form.addEventListener('submit', submitForm);
-
-		// Auto-start the conversation. The server picks the first scripted step.
-		callInit();
+		renderContactIntro();
 	}
-
 	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 	else init();
 })();

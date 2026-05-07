@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.8\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.9\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -10,8 +10,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: bomedia-quote-wizard\n"
 
+msgid " and the processing of my data to receive a quote."
+msgstr " y el tratamiento de mis datos para recibir presupuesto."
+
 msgid "%1$s ago · %2$d products cached"
 msgstr "Hace %1$s · %2$d productos cacheados"
+
+msgid "%d machines in your request:"
+msgstr "%d máquinas en tu consulta:"
 
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
@@ -21,6 +27,9 @@ msgstr "(sin entradas todavía — ejecuta el chatbot una vez)"
 
 msgid "(skipped)"
 msgstr "(saltada)"
+
+msgid "1 machine in your request:"
+msgstr "1 máquina en tu consulta:"
 
 msgid "A valid email is required."
 msgstr "Se requiere un correo electrónico válido."
@@ -40,6 +49,9 @@ msgstr "La IA te recomienda la ideal en 5 preguntas"
 msgid "Abandoned"
 msgstr "Abandonadas"
 
+msgid "Abandoned at step"
+msgstr "Paso abandonado"
+
 msgid "Abandoned conversations"
 msgstr "Conversaciones abandonadas"
 
@@ -58,8 +70,14 @@ msgstr "Añade categorías desde la lista de la izquierda."
 msgid "Add machines from another category"
 msgstr "Añadir máquinas de otra categoría"
 
+msgid "Add machines to request a quote"
+msgstr "Añade máquinas para pedir presupuesto"
+
+msgid "Add to request"
+msgstr "Añadir a la consulta"
+
 msgid "Added"
-msgstr "Añadido"
+msgstr "Añadida"
 
 msgid "AgileCRM"
 msgstr "AgileCRM"
@@ -84,6 +102,9 @@ msgstr "Todos los estados"
 
 msgid "All types"
 msgstr "Todos los tipos"
+
+msgid "Almost done"
+msgstr "Casi terminamos"
 
 msgid "Any rough budget? Optional."
 msgstr "¿Tienes presupuesto orientativo? Es opcional."
@@ -133,6 +154,9 @@ msgstr "Imagen de fondo"
 msgid "Based on what you told me, here are the machines I'd recommend:"
 msgstr "Por lo que me cuentas, te recomendaría estas máquinas:"
 
+msgid "Before we start, what should we call you?"
+msgstr "Antes de empezar, ¿cómo te llamamos?"
+
 msgid "Best matches for you"
 msgstr "Las mejores opciones para ti"
 
@@ -141,9 +165,6 @@ msgstr "Bomedia Quote Wizard"
 
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. El plugin se ha desactivado."
-
-msgid "Bomedia assistant"
-msgstr "Asistente de Bomedia"
 
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
@@ -232,6 +253,9 @@ msgstr "Continuar"
 msgid "Continue and request quote →"
 msgstr "Continuar y pedir presupuesto →"
 
+msgid "Continue with selected"
+msgstr "Continuar con seleccionadas"
+
 msgid "Could not parse the JSON file."
 msgstr "No se pudo procesar el archivo JSON."
 
@@ -243,6 +267,12 @@ msgstr "País"
 
 msgid "Country code"
 msgstr "Prefijo internacional"
+
+msgid "Country is required."
+msgstr ""
+
+msgid "Created"
+msgstr "Creado"
 
 msgid "Customer is not sure, asks for help."
 msgstr "El cliente no está seguro, pide ayuda."
@@ -267,6 +297,9 @@ msgstr ""
 
 msgid "Delete this conversation?"
 msgstr "¿Eliminar esta conversación?"
+
+msgid "Delete this partial lead?"
+msgstr "¿Borrar este lead parcial?"
 
 msgid "Domain"
 msgstr "Dominio"
@@ -373,11 +406,17 @@ msgstr "Este es el catálogo Bomedia completo. Elige las máquinas para las que 
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
 
+msgid "Hi %s, thanks for your interest."
+msgstr "Hola %s, gracias por tu interés."
+
 msgid "Hi! How would you like to choose your machine?"
 msgstr "Hola, ¿cómo quieres elegir tu máquina?"
 
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
+
+msgid "I accept the "
+msgstr "Acepto la "
 
 msgid "I have enough info — request quote →"
 msgstr "Tengo bastante info — pedir presupuesto →"
@@ -391,6 +430,9 @@ msgstr "He leído y acepto la política de privacidad"
 msgid "I know which machine I want"
 msgstr "Sé qué máquina quiero"
 
+msgid "I want to receive product updates from Bomedia."
+msgstr "Quiero recibir información sobre productos y novedades de Bomedia."
+
 msgid "I'm not sure"
 msgstr "No estoy seguro"
 
@@ -402,6 +444,9 @@ msgstr "IP"
 
 msgid "Import JSON"
 msgstr "Importar JSON"
+
+msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
+msgstr "Te ayudamos en 2 minutos. No te enviamos spam, solo respondemos a tu consulta."
 
 msgid "Labels / packaging"
 msgstr "Etiquetas / packaging"
@@ -538,6 +583,9 @@ msgstr "No hay máquinas disponibles en esta categoría. Contáctanos directamen
 msgid "No machines selected."
 msgstr "Ninguna máquina seleccionada."
 
+msgid "No partial leads yet."
+msgstr "Aún no hay leads parciales."
+
 msgid "No product categories found."
 msgstr "No se encontraron categorías de producto."
 
@@ -568,9 +616,6 @@ msgstr "Una opción por línea. El chat también muestra un chip \"Saltar\"."
 msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
 msgstr "Una por línea, formato: valor_estable|Etiqueta visible. El valor_estable es el que usa el mapping de marcas."
 
-msgid "Open chat again →"
-msgstr "Abrir el chat otra vez →"
-
 msgid "OpenAI API key"
 msgstr "API key de OpenAI"
 
@@ -598,6 +643,12 @@ msgstr "O escribe tu respuesta libremente…"
 msgid "Packaging"
 msgstr "Packaging"
 
+msgid "Partial leads"
+msgstr "Leads parciales"
+
+msgid "Partials"
+msgstr "Parciales"
+
 msgid "Perfect. To send your personalised quote, I just need your details."
 msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos."
 
@@ -622,8 +673,14 @@ msgstr "Elegir imagen"
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
 msgstr "Placeholders: {nombre}, {empresa}, {producto}"
 
+msgid "Please accept the privacy policy."
+msgstr ""
+
 msgid "Please enter a valid email."
 msgstr "Introduce un email válido."
+
+msgid "Please enter a valid name and email."
+msgstr "Introduce un nombre y un email válidos."
 
 msgid "Please pick at least one application."
 msgstr "Selecciona al menos una aplicación."
@@ -673,20 +730,17 @@ msgstr "Lead de presupuesto"
 msgid "Quote Leads"
 msgstr "Leads de presupuesto"
 
-msgid "Quote chatbot"
-msgstr "Asistente de presupuesto"
-
 msgid "Quote request wizard"
 msgstr "Asistente de solicitud de presupuesto"
+
+msgid "Quote wizard"
+msgstr ""
 
 msgid "REST API Key"
 msgstr "Clave REST API"
 
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
-
-msgid "Recommended machines"
-msgstr "Máquinas recomendadas"
 
 msgid "Refresh interval"
 msgstr "Intervalo de refresco"
@@ -702,9 +756,6 @@ msgstr "Renderiza una pantalla de bienvenida antes del paso 1."
 
 msgid "Request quote"
 msgstr "Pedir presupuesto"
-
-msgid "Request quote →"
-msgstr "Pedir presupuesto →"
 
 msgid "Requested model:"
 msgstr "Modelo solicitado:"
@@ -763,9 +814,6 @@ msgstr "Enviar"
 msgid "Send my details →"
 msgstr "Enviar mis datos →"
 
-msgid "Send my request"
-msgstr "Enviar mi solicitud"
-
 msgid "Send request"
 msgstr "Enviar solicitud"
 
@@ -793,9 +841,6 @@ msgstr "Mostrar vacías"
 msgid "Show hero"
 msgstr "Mostrar hero"
 
-msgid "Show recommended machines"
-msgstr "Ver máquinas recomendadas"
-
 msgid "Show the first \"What do you want to do?\" question."
 msgstr "Mostrar la primera pregunta \"¿Qué te interesa hacer?\"."
 
@@ -805,14 +850,8 @@ msgstr "Nombre del sitio"
 msgid "Site key"
 msgstr "Site key"
 
-msgid "Skip the conversation and just send your details"
-msgstr "Saltar la conversación y enviar tus datos directamente"
-
 msgid "Skip this question"
 msgstr "Saltar esta pregunta"
-
-msgid "Skip to send"
-msgstr "Saltar al envío"
 
 msgid "Solicitud presupuesto web"
 msgstr "Solicitud presupuesto web"
@@ -831,6 +870,9 @@ msgstr "Empezar"
 
 msgid "Status"
 msgstr "Estado"
+
+msgid "Step %1$d of %2$d"
+msgstr "Paso %1$d de %2$d"
 
 msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
 msgstr "Almacenada cifrada con AUTH_KEY. Déjalo vacío para usar la publishable key por defecto."
@@ -916,6 +958,9 @@ msgstr "UV-LED"
 msgid "Unknown step."
 msgstr "Paso desconocido."
 
+msgid "Updated"
+msgstr "Actualizado"
+
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
 msgstr "Sube un archivo JSON con { products: [...], brands: [...] } para sobrescribir el cache cuando el endpoint remoto no esté disponible."
 
@@ -940,8 +985,17 @@ msgstr "Ver en"
 msgid "View product →"
 msgstr "Ver producto →"
 
+msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
+msgstr "Visitantes que dejaron nombre y email pero no terminaron. Útiles para seguimiento. Los registros se borran automáticamente cuando el visitante completa el formulario."
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
+
+msgid "We found %d machines for you"
+msgstr "Hemos encontrado %d máquinas para ti"
+
+msgid "We just need a couple more details."
+msgstr "Solo necesitamos un par de datos más."
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
@@ -973,9 +1027,6 @@ msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
 msgid "Write log file in uploads/bqw-logs/"
 msgstr "Escribir archivo de log en uploads/bqw-logs/"
 
-msgid "You chose to skip the conversation. Want to use the assistant instead?"
-msgstr "Has decidido saltarte la conversación. ¿Quieres volver al asistente?"
-
 msgid "You must accept the privacy policy."
 msgstr "Debes aceptar la política de privacidad."
 
@@ -997,17 +1048,20 @@ msgstr "Tu caso es específico. Hablemos directamente."
 msgid "Your details"
 msgstr "Tus datos"
 
-msgid "Your recommendations"
-msgstr "Tus recomendaciones"
-
 msgid "Your recommended machines will appear here as we chat."
 msgstr "Aquí aparecerán tus máquinas recomendadas según vayamos hablando."
+
+msgid "Your request:"
+msgstr "Tu consulta:"
 
 msgid "Your selected machines"
 msgstr "Máquinas seleccionadas"
 
 msgid "Your submission looks suspicious. Try again."
 msgstr "Tu envío parece sospechoso. Inténtalo de nuevo."
+
+msgid "Your top matches"
+msgstr "Tus mejores opciones"
 
 msgid "all brands (no filter)"
 msgstr "todas las marcas (sin filtro)"
@@ -1035,6 +1089,9 @@ msgstr "La verificación de hCaptcha falló."
 
 msgid "more"
 msgstr "más"
+
+msgid "privacy policy"
+msgstr "política de privacidad"
 
 msgid "reCAPTCHA could not verify your submission."
 msgstr "reCAPTCHA no pudo verificar tu envío."
