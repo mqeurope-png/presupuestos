@@ -211,6 +211,10 @@ final class Shortcode {
 	}
 
 	private function i18n_strings(): array {
+		$site = (string) Settings::get( 'site_display_name', 'this site' );
+		$cp   = static function ( string $key ) use ( $site ): string {
+			return str_replace( '{site_display_name}', $site, Settings::copy( $key ) );
+		};
 		return [
 			'step1Title'    => __( 'Product of interest', 'bomedia-quote-wizard' ),
 			'step2Title'    => __( 'Your application', 'bomedia-quote-wizard' ),
@@ -315,6 +319,28 @@ final class Shortcode {
 			'optinDefault'  => __( 'I want to receive product updates from Bomedia.', 'bomedia-quote-wizard' ),
 			'searchMachines' => __( 'Search machines…', 'bomedia-quote-wizard' ),
 			'countryCode'   => __( 'Country code', 'bomedia-quote-wizard' ),
+
+			// v1.7.10 — admin-editable copy overrides (last wins). {nombre}/{n}
+			// substitution happens in JS at render time.
+			'introTitle'         => $cp( 'intro_helper' ),
+			'introSub'           => $cp( 'intro_below' ),
+			'welcomeGreetingTpl' => $cp( 'welcome_title' ),
+			'recsTitle'          => $cp( 'recs_title' ),
+			'recsSub'            => $cp( 'recs_sub' ),
+			'addToRequest'       => $cp( 'add_btn' ),
+			'added'              => $cp( 'added_state' ),
+			'trayN'              => $cp( 'tray_label' ),
+			'requestQuote'       => $cp( 'request_quote_btn' ),
+			'finalTitleTpl'      => $cp( 'final_title' ),
+			'justTwoMore'        => $cp( 'final_sub' ),
+			'sectionData'        => $cp( 'section_data' ),
+			'sectionRequest'     => $cp( 'section_request' ),
+			'emptyRequest'       => $cp( 'empty_request' ),
+			'optinDefault'       => $cp( 'optin_label' ),
+			'send'               => $cp( 'send_btn' ),
+			'searchMachinesCopy' => $cp( 'search_placeholder' ),
+			'noResults'          => $cp( 'no_results' ),
+			'removeHint'         => $cp( 'remove_hint' ),
 		];
 	}
 

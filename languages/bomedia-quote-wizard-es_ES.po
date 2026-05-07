@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.9\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.10\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -43,9 +43,6 @@ msgstr "Recomendaciones con IA (OpenAI)"
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr "Importación de notas IA: %1$d productos actualizados, %2$d slugs no encontrados."
 
-msgid "AI recommends the ideal machine in 5 questions"
-msgstr "La IA te recomienda la ideal en 5 preguntas"
-
 msgid "Abandoned"
 msgstr "Abandonadas"
 
@@ -76,8 +73,14 @@ msgstr "Añade máquinas para pedir presupuesto"
 msgid "Add to request"
 msgstr "Añadir a la consulta"
 
+msgid "Add to request button"
+msgstr ""
+
 msgid "Added"
 msgstr "Añadida"
+
+msgid "Added state label"
+msgstr ""
 
 msgid "AgileCRM"
 msgstr "AgileCRM"
@@ -93,9 +96,6 @@ msgstr "Las credenciales de AgileCRM están incompletas."
 
 msgid "AgileCRM is not configured."
 msgstr "AgileCRM no está configurado."
-
-msgid "All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)"
-msgstr "Todas las máquinas del grupo (artisJet, MBO, Flux, PimPam, SmartJet)"
 
 msgid "All statuses"
 msgstr "Todos los estados"
@@ -166,6 +166,9 @@ msgstr "Bomedia Quote Wizard"
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. El plugin se ha desactivado."
 
+msgid "Bomedia catalog title"
+msgstr ""
+
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
 
@@ -174,12 +177,6 @@ msgstr "Marca"
 
 msgid "Brands in catalog:"
 msgstr "Marcas en catálogo:"
-
-msgid "Browse %s catalog"
-msgstr "Ver catálogo de %s"
-
-msgid "Browse the full Bomedia catalog"
-msgstr "Ver catálogo Bomedia completo"
 
 msgid "Budget"
 msgstr "Presupuesto"
@@ -196,11 +193,32 @@ msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: {
 msgid "Captcha provider"
 msgstr "Proveedor de captcha"
 
+msgid "Card 1 — subtitle"
+msgstr ""
+
+msgid "Card 1 — title"
+msgstr ""
+
+msgid "Card 2 — subtitle"
+msgstr ""
+
+msgid "Card 2 — title (supports {site_display_name})"
+msgstr ""
+
+msgid "Card 3 — subtitle"
+msgstr ""
+
+msgid "Card 3 — title"
+msgstr ""
+
 msgid "Catalog API key"
 msgstr "API key del catálogo"
 
 msgid "Catalog URL"
 msgstr "URL del catálogo"
+
+msgid "Catalog screens"
+msgstr ""
 
 msgid "Catalog uploaded: %d products cached."
 msgstr "Catálogo subido: %d productos cacheados."
@@ -280,6 +298,9 @@ msgstr "El cliente no está seguro, pide ayuda."
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
 
+msgid "Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default."
+msgstr ""
+
 msgid "Cut/engrave with laser"
 msgstr "Cortar y grabar con láser"
 
@@ -319,6 +340,12 @@ msgstr "Email"
 msgid "Email subject"
 msgstr "Asunto del email"
 
+msgid "Empty request message"
+msgstr ""
+
+msgid "Empty state for filtered grid"
+msgstr ""
+
 msgid "Enable"
 msgstr "Activar"
 
@@ -354,6 +381,9 @@ msgstr "Registro a archivo"
 
 msgid "Filter diagnostic"
 msgstr "Diagnóstico del filtro"
+
+msgid "Final screen"
+msgstr ""
 
 msgid "First message"
 msgstr "Primer mensaje"
@@ -394,14 +424,11 @@ msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UT
 msgid "Help me choose"
 msgstr "Ayúdame a elegir"
 
+msgid "Helper text above the inputs"
+msgstr ""
+
 msgid "Helps us avoid spam."
 msgstr "Nos ayuda a evitar spam."
-
-msgid "Here's our store catalog. Pick the machines you're interested in."
-msgstr "Este es nuestro catálogo. Elige las máquinas que te interesan."
-
-msgid "Here's the full Bomedia catalog. Pick the machines you'd like a quote for."
-msgstr "Este es el catálogo Bomedia completo. Elige las máquinas para las que quieres presupuesto."
 
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
@@ -409,11 +436,11 @@ msgstr "Hero (pantalla de bienvenida)"
 msgid "Hi %s, thanks for your interest."
 msgstr "Hola %s, gracias por tu interés."
 
-msgid "Hi! How would you like to choose your machine?"
-msgstr "Hola, ¿cómo quieres elegir tu máquina?"
-
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
+
+msgid "Hint shown next to the request list"
+msgstr ""
 
 msgid "I accept the "
 msgstr "Acepto la "
@@ -478,6 +505,9 @@ msgstr "Faltan datos del lead o están corruptos."
 msgid "Leave empty to use the default Bomedia Composer endpoint."
 msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
 
+msgid "Left column heading"
+msgstr ""
+
 msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
 msgstr "Snapshot en vivo del script. Cada paso muestra el estado de activación, tipo, opciones servidas al visitante y el siguiente paso."
 
@@ -495,6 +525,9 @@ msgstr "Subida manual de catálogo"
 
 msgid "Marketing opt-in"
 msgstr "Opt-in de marketing"
+
+msgid "Marketing opt-in label"
+msgstr ""
 
 msgid "Matches at"
 msgstr "Encaja al"
@@ -700,6 +733,9 @@ msgstr "Imprimir sobre objetos (UV-LED)"
 msgid "Print on textile"
 msgstr "Imprimir textil"
 
+msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
+msgstr ""
+
 msgid "Privacy policy URL"
 msgstr "URL política de privacidad"
 
@@ -711,9 +747,6 @@ msgstr "Categorías de producto"
 
 msgid "Product of interest"
 msgstr "Producto de interés"
-
-msgid "Products available on this store"
-msgstr "Productos disponibles en esta tienda"
 
 msgid "Products of interest"
 msgstr "Productos de interés"
@@ -739,8 +772,14 @@ msgstr ""
 msgid "REST API Key"
 msgstr "Clave REST API"
 
+msgid "Reassurance text below the button"
+msgstr ""
+
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
+
+msgid "Recommendations"
+msgstr ""
 
 msgid "Refresh interval"
 msgstr "Intervalo de refresco"
@@ -763,6 +802,9 @@ msgstr "Modelo solicitado:"
 msgid "Retry send"
 msgstr "Reintentar envío"
 
+msgid "Right column heading"
+msgstr ""
+
 msgid "Roughly, what monthly volume do you plan to produce?"
 msgstr "¿Qué volumen mensual estimas producir, aproximadamente?"
 
@@ -775,11 +817,20 @@ msgstr "Guarda los cambios antes de probar."
 msgid "Saved mapping:"
 msgstr "Mapping guardado:"
 
+msgid "Screen 1 — Intro"
+msgstr ""
+
+msgid "Screen 2 — Path picker"
+msgstr ""
+
 msgid "Script diagnostic"
 msgstr "Diagnóstico del script"
 
 msgid "Search categories"
 msgstr "Buscar categorías"
+
+msgid "Search input placeholder"
+msgstr ""
 
 msgid "Search machines…"
 msgstr "Buscar máquinas…"
@@ -810,6 +861,9 @@ msgstr "Seleccionadas (arrastra para reordenar)"
 
 msgid "Send"
 msgstr "Enviar"
+
+msgid "Send button"
+msgstr ""
 
 msgid "Send my details →"
 msgstr "Enviar mis datos →"
@@ -843,6 +897,9 @@ msgstr "Mostrar hero"
 
 msgid "Show the first \"What do you want to do?\" question."
 msgstr "Mostrar la primera pregunta \"¿Qué te interesa hacer?\"."
+
+msgid "Site catalog title (supports {site_display_name})"
+msgstr ""
 
 msgid "Site display name"
 msgstr "Nombre del sitio"
@@ -885,6 +942,9 @@ msgstr "Almacenada cifrada con AUTH_KEY. ¿No tienes API key? Créala en <a href
 
 msgid "Subtitle"
 msgstr "Subtítulo"
+
+msgid "Subtitle (supports {n})"
+msgstr ""
 
 msgid "Summary"
 msgstr "Resumen"
@@ -937,8 +997,17 @@ msgstr "Pista: una línea [NO MATCH] significa que el filtro descartó todos los
 msgid "Title"
 msgstr "Titular"
 
+msgid "Title (supports {nombre})"
+msgstr ""
+
 msgid "Toggle children"
 msgstr "Mostrar/ocultar hijos"
+
+msgid "Tray label (supports {n})"
+msgstr ""
+
+msgid "Tray quote button"
+msgstr ""
 
 msgid "Turnstile could not verify your submission."
 msgstr "Turnstile no pudo verificar tu envío."
@@ -1017,6 +1086,9 @@ msgstr "¿Sobre qué materiales imprimirás más?"
 
 msgid "Wizard"
 msgstr "Wizard"
+
+msgid "Wizard copy"
+msgstr ""
 
 msgid "Wizard language"
 msgstr "Idioma del wizard"

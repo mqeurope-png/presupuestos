@@ -20,10 +20,8 @@
 	var dotsEl     = document.getElementById('bqw-wiz-dots');
 	var stepLabel  = document.getElementById('bqw-wiz-step-label');
 	var backBtn    = document.getElementById('bqw-wiz-back');
-	var tray       = document.getElementById('bqw-wiz-tray');
-	var trayLabel  = document.getElementById('bqw-wiz-tray-label');
-	var trayPills  = document.getElementById('bqw-wiz-tray-pills');
-	var trayCta    = document.getElementById('bqw-wiz-tray-cta');
+	// v1.7.10 — tray is rendered inline inside the active screen.
+	var tray = null, trayLabel = null, trayPills = null, trayCta = null;
 	var form       = document.getElementById('bqw-form');
 	var thanksBox  = document.getElementById('bqw-thanks');
 	var redirectURL = root.dataset.redirect || '';
@@ -44,7 +42,6 @@
 	document.getElementById('bqw-session-id').value = state.session_id;
 
 	backBtn.addEventListener('click', goBack);
-	trayCta.addEventListener('click', goToFinalForm);
 
 	/* =========================================================
 	 * Session
@@ -86,8 +83,17 @@
 		});
 	}
 	function clearScreen() {
+		// Quick flash transition (~200ms total). Replaces innerHTML synchronously;
+		// the entering frame fades in via CSS .is-entering -> active.
+		screen.classList.remove('is-leaving');
+		screen.classList.remove('is-entering');
 		screen.innerHTML = '';
 		root.classList.add('is-flow-active');
+		// Reflow + entering class to trigger the 150ms fade-in.
+		// eslint-disable-next-line no-unused-expressions
+		screen.offsetWidth;
+		screen.classList.add('is-entering');
+		requestAnimationFrame(function () { screen.classList.remove('is-entering'); });
 	}
 	function setProgress(curIdx, total) {
 		if (total <= 0) { progress.hidden = true; return; }
@@ -100,31 +106,49 @@
 		stepLabel.textContent = (i18n.stepCounter || 'Step %1$d of %2$d').replace('%1$d', curIdx + 1).replace('%2$d', total);
 	}
 	function showBack(show) { backBtn.hidden = !show; }
-	function showTray(show) { tray.hidden = !show; if (show) updateTray(); }
-	function updateTray() {
+
+	// Inline tray (rendered inside the active screen, between filters and grid
+	// on catalog screens; before the action row on recommendations).
+	// Returns a DOM node or null when there is no selection.
+	function buildInlineTray() {
 		var n = state.selection.length;
-		trayLabel.textContent = n === 0
-			? (i18n.trayEmpty || 'Add machines to request a quote')
-			: (n === 1 ? (i18n.tray1 || '1 machine in your request:') : (i18n.trayN || '%d machines in your request:').replace('%d', n));
-		trayCta.disabled = n === 0;
-		trayPills.innerHTML = '';
+		if (n === 0) return null;
+		var box = el('div', 'bqw-tray-inline');
+		var head = el('div', 'bqw-tray-inline-head');
+		head.innerHTML = '<span class="bqw-tray-inline-label">' +
+			escapeHtml((i18n.trayN || 'Your request (%d):').replace('%d', n)) + '</span>';
+		var cta = el('button', 'bqw-btn bqw-btn-primary bqw-tray-inline-cta');
+		cta.type = 'button';
+		cta.textContent = (i18n.requestQuote || 'Request quote') + ' →';
+		cta.addEventListener('click', goToFinalForm);
+		head.appendChild(cta);
+		box.appendChild(head);
+
+		var pillsRow = el('div', 'bqw-tray-inline-pills');
 		state.selection.forEach(function (p) {
 			var pill = el('button', 'bqw-wiz-pill');
 			pill.type = 'button';
 			pill.innerHTML = escapeHtml(p.name) + ' <span aria-hidden="true">×</span>';
 			pill.addEventListener('click', function () {
 				removeSelection(p.id);
-				updateTray();
-				// Re-render any selection-aware screen
 				if (state.current && state.current.kind === 'server') {
-					var t = state.current.step.type;
-					if (t === 'site_catalog' || t === 'bomedia_catalog' || t === 'recommendations') {
-						applyStep(state.current.step, /*replay*/ true);
-					}
+					applyStep(state.current.step, /*replay*/ true);
+				} else if (state.current && state.current.kind === 'form') {
+					goToFinalForm(/*replay*/ true);
 				}
 			});
-			trayPills.appendChild(pill);
+			pillsRow.appendChild(pill);
 		});
+		box.appendChild(pillsRow);
+		return box;
+	}
+
+	function repaintCurrentInlineTray() {
+		var anchor = screen.querySelector('.bqw-tray-anchor');
+		if (!anchor) return;
+		anchor.innerHTML = '';
+		var t = buildInlineTray();
+		if (t) anchor.appendChild(t);
 	}
 
 	function addSelection(p) {
@@ -186,7 +210,7 @@
 	function renderContactIntro() {
 		clearScreen();
 		showBack(false);
-		showTray(false);
+		// tray inline only when needed
 		progress.hidden = true;
 
 		var wrap = el('div', 'bqw-wiz-card bqw-wiz-intro');
@@ -336,7 +360,7 @@
 	function renderError(msg) {
 		clearScreen();
 		showBack(state.stack.length > 0);
-		showTray(false);
+		// tray inline only when needed
 		progress.hidden = true;
 		screen.appendChild(el('div', 'bqw-wiz-card', '<p class="bqw-wiz-error">' + escapeHtml(msg || i18n.genericError || 'Something went wrong.') + '</p>'));
 	}
@@ -347,16 +371,21 @@
 	function renderWelcome(step) {
 		clearScreen();
 		showBack(true);
-		showTray(false);
+		// tray inline only when needed
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card');
-		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		var greet = state.contact_partial.name
+			? (i18n.welcomeGreetingTpl || 'Hi %s, how would you like to choose?').replace('%s', state.contact_partial.name)
+			: (step.message || '');
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(greet)));
 		var grid = el('div', 'bqw-welcome-grid');
 		(step.options || []).forEach(function (opt) {
 			var c = el('button', 'bqw-welcome-card');
 			c.type = 'button';
-			c.innerHTML = '<span class="bqw-welcome-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>'
+			var accent = opt.value || '';
+			if (accent) c.classList.add('bqw-welcome-card--' + accent.replace(/_/g, '-'));
+			c.innerHTML = '<span class="bqw-welcome-icon">' + welcomeIcon(opt.value, opt.icon) + '</span>'
 				+ '<strong>' + escapeHtml(opt.label) + '</strong>'
 				+ (opt.subtitle ? '<span class="bqw-welcome-sub">' + escapeHtml(opt.subtitle) + '</span>' : '');
 			c.addEventListener('click', function () { pushAndAdvance(step.id, [opt.label]); });
@@ -366,13 +395,31 @@
 		screen.appendChild(card);
 	}
 
+	function welcomeIcon(value, fallbackHint) {
+		// Distinct silhouettes per welcome card so the 3 options read differently.
+		var shape = '';
+		if (value === 'guided') {
+			// Magic wand + sparkles.
+			shape = '<path d="M5 19l9-9"/><path d="M14 5l5 5"/><path d="M14 5l-1.5-2 2 .5L16 2l.5 2 2-.5L17 5l1.5 2-2-.5L16 8l-.5-2-2 .5L14 5z" fill="currentColor" stroke="none"/><circle cx="20" cy="14" r="1" fill="currentColor"/><circle cx="3" cy="9" r="1" fill="currentColor"/>';
+		} else if (value === 'site_catalog') {
+			// Storefront + awning.
+			shape = '<path d="M3 9h18l-1 11H4z"/><path d="M3 9l2-5h14l2 5"/><path d="M9 14h6v6H9z"/>';
+		} else if (value === 'bomedia_catalog') {
+			// Globe with meridians.
+			shape = '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3 3 15 0 18"/><path d="M12 3c-3 3-3 15 0 18"/>';
+		} else {
+			return fallbackHint ? iconForHint(fallbackHint) : '★';
+		}
+		return '<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + shape + '</svg>';
+	}
+
 	/* =========================================================
 	 * Screen — Question (multi/single options)
 	 * ========================================================= */
 	function renderQuestion(step) {
 		clearScreen();
 		showBack(true);
-		showTray(false);
+		// tray inline only when needed
 		var pg = questionProgress(step.id);
 		setProgress(pg.idx, pg.total);
 
@@ -429,7 +476,7 @@
 	function renderRecommendationsScreen(step) {
 		clearScreen();
 		showBack(true);
-		showTray(true);
+		// tray rendered inline in this screen
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide');
@@ -450,6 +497,10 @@
 			recs.forEach(function (r) { grid.appendChild(buildRecCard(r)); });
 			card.appendChild(grid);
 		}
+
+		var trayAnchor = el('div', 'bqw-tray-anchor');
+		var t = buildInlineTray(); if (t) trayAnchor.appendChild(t);
+		card.appendChild(trayAnchor);
 
 		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
 		var restart = el('button', 'bqw-link-btn');
@@ -535,7 +586,7 @@
 				pickBtn.querySelector('.bqw-rec-pick-label').textContent = i18n.addToRequest || 'Add to request';
 				removeSelection(r.id);
 			}
-			updateTray();
+		repaintCurrentInlineTray();
 		});
 		return card;
 	}
@@ -584,7 +635,7 @@
 	function renderSiteCatalog(step) {
 		clearScreen();
 		showBack(true);
-		showTray(true);
+		// tray rendered inline in this screen
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
@@ -599,6 +650,10 @@
 		var chipBox = el('div', 'bqw-chip-filters');
 		filters.appendChild(chipBox);
 		card.appendChild(filters);
+
+		var trayAnchor = el('div', 'bqw-tray-anchor');
+		var t0 = buildInlineTray(); if (t0) trayAnchor.appendChild(t0);
+		card.appendChild(trayAnchor);
 
 		var grid = el('div', 'bqw-browse-grid');
 		card.appendChild(grid);
@@ -639,7 +694,7 @@
 	function renderBomediaCatalog(step) {
 		clearScreen();
 		showBack(true);
-		showTray(true);
+		// tray rendered inline in this screen
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
@@ -653,6 +708,10 @@
 		var chipBox = el('div', 'bqw-chip-filters');
 		filters.appendChild(chipBox);
 		card.appendChild(filters);
+
+		var trayAnchor = el('div', 'bqw-tray-anchor');
+		var t0 = buildInlineTray(); if (t0) trayAnchor.appendChild(t0);
+		card.appendChild(trayAnchor);
 
 		var grid = el('div', 'bqw-browse-grid');
 		card.appendChild(grid);
@@ -745,7 +804,7 @@
 				card.classList.remove('is-selected');
 				removeSelection(p.id);
 			}
-			updateTray();
+		repaintCurrentInlineTray();
 			// Update button label.
 			var btn = card.querySelector('.bqw-browse-pick');
 			btn.textContent = card.classList.contains('is-selected')
@@ -762,39 +821,31 @@
 	/* =========================================================
 	 * Final form
 	 * ========================================================= */
-	function goToFinalForm() {
+	function goToFinalForm(replay) {
 		// Move directly to the contact form (skip server "form" round-trip — same outcome).
 		clearScreen();
 		showBack(true);
-		showTray(false);
 		progress.hidden = true;
 
-		if (state.current) state.stack.push(state.current);
-		state.current = { kind: 'form', step: { id: 'contact' }, picks: [] };
+		if (!replay) {
+			if (state.current) state.stack.push(state.current);
+			state.current = { kind: 'form', step: { id: 'contact' }, picks: [] };
+		}
 
-		var card = el('div', 'bqw-wiz-card');
 		var name = state.contact_partial.name || '';
-		card.innerHTML =
-			'<h2 class="bqw-wiz-h">' + escapeHtml(i18n.almostDone || 'Almost done') + '</h2>' +
-			'<p class="bqw-wiz-sub">' + escapeHtml(i18n.justTwoMore || 'We just need two more details.') + '</p>';
+		var wrap = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-final-wrap');
 
-		if (state.selection.length) {
-			var summary = el('div', 'bqw-wiz-summary');
-			summary.innerHTML = '<strong>' + escapeHtml(i18n.yourRequest || 'Your request:') + '</strong>';
-			var ul = el('ul', null);
-			state.selection.forEach(function (p) {
-				var li = el('li', null, escapeHtml(p.name) + (p.brand ? ' <span class="bqw-wiz-summary-brand">(' + escapeHtml(p.brand) + ')</span>' : ''));
-				ul.appendChild(li);
-			});
-			summary.appendChild(ul);
-			card.appendChild(summary);
-		}
+		var heading = name
+			? (i18n.finalTitleTpl || 'Almost done, %s').replace('%s', name)
+			: (i18n.almostDone || 'Almost done');
+		wrap.appendChild(el('h2', 'bqw-wiz-h bqw-final-h', escapeHtml(heading)));
+		wrap.appendChild(el('p', 'bqw-wiz-sub bqw-final-sub', escapeHtml(i18n.justTwoMore || 'We just need a couple more details.')));
 
-		if (name) {
-			var greet = el('p', 'bqw-wiz-greet', escapeHtml((i18n.greetingTpl || 'Hi %s, thanks for your interest.').replace('%s', name)));
-			card.appendChild(greet);
-		}
+		var grid = el('div', 'bqw-final-grid');
 
+		// LEFT — TUS DATOS.
+		var left = el('section', 'bqw-final-col bqw-final-col-data');
+		left.appendChild(el('h3', 'bqw-final-section-h', escapeHtml(i18n.sectionData || 'Your details')));
 		var fields = el('div', 'bqw-wiz-fields');
 		fields.innerHTML =
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.phone || 'Phone') + ' *</span>' +
@@ -804,7 +855,7 @@
 				'<select id="bqw-country-input" required></select></label>' +
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.message || 'Message (optional)') + '</span>' +
 				'<textarea id="bqw-message-input" rows="3" placeholder="' + escapeHtml(i18n.tellUs || 'Tell us what you need…') + '"></textarea></label>';
-		card.appendChild(fields);
+		left.appendChild(fields);
 
 		var legal = el('div', 'bqw-wiz-legal');
 		var privacyUrl = cfg.privacy_url || '';
@@ -819,24 +870,50 @@
 				'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-optin-input">' +
 					'<span>' + escapeHtml(cfg.email_optin_label || i18n.optinDefault || 'I want to receive product updates from Bomedia.') + '</span></label>';
 		}
-		card.appendChild(legal);
+		left.appendChild(legal);
 
-		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
+		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row bqw-final-actions');
 		var submitBtn = el('button', 'bqw-btn bqw-btn-primary');
 		submitBtn.type = 'button';
 		submitBtn.id   = 'bqw-final-submit';
 		submitBtn.innerHTML = '<span class="bqw-submit-label">' + escapeHtml(i18n.send || 'Send') + ' →</span><span class="bqw-spinner" hidden></span>';
 		actions.appendChild(submitBtn);
-		card.appendChild(actions);
+		left.appendChild(actions);
 
 		var errBox = el('p', 'bqw-wiz-error', '');
 		errBox.id = 'bqw-final-error';
 		errBox.hidden = true;
-		card.appendChild(errBox);
+		left.appendChild(errBox);
+		grid.appendChild(left);
 
-		screen.appendChild(card);
+		// RIGHT — TU CONSULTA.
+		var right = el('section', 'bqw-final-col bqw-final-col-request');
+		right.appendChild(el('h3', 'bqw-final-section-h', escapeHtml(i18n.sectionRequest || 'Your request')));
+		if (state.selection.length === 0) {
+			right.appendChild(el('p', 'bqw-final-empty', escapeHtml(i18n.emptyRequest || "You haven't added any machines yet. Go back to choose.")));
+		} else {
+			var list = el('div', 'bqw-final-machines');
+			state.selection.forEach(function (p) {
+				var row = el('div', 'bqw-final-machine');
+				var img = p.image
+					? '<img class="bqw-final-machine-thumb" src="' + p.image + '" alt="" loading="lazy">'
+					: '<span class="bqw-final-machine-thumb bqw-final-machine-thumb-fallback">★</span>';
+				row.innerHTML = img +
+					'<div class="bqw-final-machine-meta">' +
+						'<strong>' + escapeHtml(p.name) + '</strong>' +
+						(p.brand ? '<span>' + escapeHtml(p.brand) + '</span>' : '') +
+					'</div>';
+				list.appendChild(row);
+			});
+			right.appendChild(list);
+			right.appendChild(el('p', 'bqw-final-hint', escapeHtml(i18n.removeHint || 'Want to remove one? Go back.')));
+		}
+		grid.appendChild(right);
+
+		wrap.appendChild(grid);
+		screen.appendChild(wrap);
+
 		buildCountriesInto(document.getElementById('bqw-country-input'), document.getElementById('bqw-dial-prefix'));
-
 		submitBtn.addEventListener('click', submitFinalForm);
 	}
 

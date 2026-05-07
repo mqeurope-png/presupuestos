@@ -89,6 +89,7 @@ final class Settings {
 			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
 			'hero_image_id'         => 0,
 			'site_display_name'     => 'boprint.net',
+			'copy'                  => self::default_copy(),
 			// Microcopy retired in v1.7.0 (chatbot replaces step-based flow).
 			'enable_matchmaker'     => 1,
 			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
@@ -132,7 +133,60 @@ final class Settings {
 	}
 
 	public static function get_wizard(): array {
-		return wp_parse_args( (array) get_option( self::OPT_WIZARD, [] ), self::default_wizard() );
+		$out = wp_parse_args( (array) get_option( self::OPT_WIZARD, [] ), self::default_wizard() );
+		// Always merge over defaults so newly added copy keys are not blanked out.
+		$out['copy'] = wp_parse_args( (array) ( $out['copy'] ?? [] ), self::default_copy() );
+		return $out;
+	}
+
+	/**
+	 * Default copy strings shown across the wizard. Each key is an editable
+	 * field in Settings → Wizard → Copy del wizard. Variables {nombre},
+	 * {site_display_name} and {n} are replaced at render time.
+	 */
+	/**
+	 * Returns the editable copy value for $key, falling back to the default
+	 * when the saved value is blank.
+	 */
+	public static function copy( string $key ): string {
+		$wiz = self::get_wizard();
+		$val = (string) ( $wiz['copy'][ $key ] ?? '' );
+		if ( '' !== trim( $val ) ) return $val;
+		$defaults = self::default_copy();
+		return (string) ( $defaults[ $key ] ?? '' );
+	}
+
+	public static function default_copy(): array {
+		return [
+			'intro_helper'      => 'Antes de empezar, ¿cómo te llamamos?',
+			'intro_below'       => 'Te ayudamos en 2 minutos. No te enviamos spam, solo respondemos a tu consulta.',
+			'welcome_title'     => 'Hola {nombre}, ¿cómo quieres elegir tu máquina?',
+			'card_guided_title'    => 'Ayúdame a elegir',
+			'card_guided_sub'      => 'La IA te recomienda lo ideal en 5 preguntas',
+			'card_site_title'      => 'Ver catálogo de {site_display_name}',
+			'card_site_sub'        => 'Productos disponibles en esta tienda',
+			'card_bomedia_title'   => 'Ver catálogo Bomedia completo',
+			'card_bomedia_sub'     => 'Todas las máquinas del grupo (artisJet, MBO, Flux, PimPam, SmartJet)',
+			'recs_title'           => 'Tus mejores opciones',
+			'recs_sub'             => 'Hemos encontrado {n} máquinas para ti',
+			'site_catalog_title'   => 'Catálogo de {site_display_name}',
+			'bomedia_catalog_title'=> 'Catálogo completo Bomedia',
+			'search_placeholder'   => 'Buscar máquinas…',
+			'no_results'           => 'Sin resultados con esos filtros',
+			'add_btn'              => 'Añadir a la consulta',
+			'added_state'          => '✓ Añadida',
+			'tray_label'           => 'Tu consulta ({n})',
+			'request_quote_btn'    => 'Pedir presupuesto →',
+			'final_title'          => 'Casi terminamos, {nombre}',
+			'final_sub'            => 'Solo necesitamos un par de datos más',
+			'section_data'         => 'Tus datos',
+			'section_request'      => 'Tu consulta',
+			'empty_request'        => 'Aún no has añadido máquinas. Vuelve atrás para elegir.',
+			'privacy_label'        => 'Acepto la política de privacidad y el tratamiento de mis datos para recibir presupuesto',
+			'optin_label'          => 'Quiero recibir información sobre productos y novedades de Bomedia',
+			'send_btn'             => 'Enviar →',
+			'remove_hint'          => '¿Quitar alguna? Vuelve atrás.',
+		];
 	}
 
 	public static function get_notifications(): array {
@@ -322,6 +376,14 @@ final class Settings {
 		$out['hero_subtitle']    = sanitize_text_field( $input['hero_subtitle'] ?? '' );
 		$out['hero_image_id']    = absint( $input['hero_image_id'] ?? 0 );
 		$out['site_display_name']= sanitize_text_field( $input['site_display_name'] ?? '' );
+
+		// Editable copy. Allow blanks (fall back to defaults at render time).
+		$copy_in  = (array) ( $input['copy'] ?? [] );
+		$copy_out = [];
+		foreach ( self::default_copy() as $k => $default_val ) {
+			$copy_out[ $k ] = isset( $copy_in[ $k ] ) ? sanitize_text_field( wp_unslash( (string) $copy_in[ $k ] ) ) : '';
+		}
+		$out['copy'] = $copy_out;
 		// v1.6.1 — trust signals dropped; clean up legacy value if it was saved.
 		unset( $out['hero_trust'] );
 
@@ -729,6 +791,70 @@ final class Settings {
 						<p class="description"><?php esc_html_e( 'Used in the welcome card "View {site_name} catalog". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …).', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Wizard copy', 'bomedia-quote-wizard' ); ?></h2>
+			<p class="description" style="max-width:760px"><?php
+				echo esc_html__( 'Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default.', 'bomedia-quote-wizard' );
+			?></p>
+			<table class="form-table" role="presentation">
+				<?php
+				$copy_groups = [
+					__( 'Screen 1 — Intro', 'bomedia-quote-wizard' ) => [
+						'intro_helper'      => __( 'Helper text above the inputs', 'bomedia-quote-wizard' ),
+						'intro_below'       => __( 'Reassurance text below the button', 'bomedia-quote-wizard' ),
+					],
+					__( 'Screen 2 — Path picker', 'bomedia-quote-wizard' ) => [
+						'welcome_title'     => __( 'Title (supports {nombre})', 'bomedia-quote-wizard' ),
+						'card_guided_title' => __( 'Card 1 — title', 'bomedia-quote-wizard' ),
+						'card_guided_sub'   => __( 'Card 1 — subtitle', 'bomedia-quote-wizard' ),
+						'card_site_title'   => __( 'Card 2 — title (supports {site_display_name})', 'bomedia-quote-wizard' ),
+						'card_site_sub'     => __( 'Card 2 — subtitle', 'bomedia-quote-wizard' ),
+						'card_bomedia_title'=> __( 'Card 3 — title', 'bomedia-quote-wizard' ),
+						'card_bomedia_sub'  => __( 'Card 3 — subtitle', 'bomedia-quote-wizard' ),
+					],
+					__( 'Recommendations', 'bomedia-quote-wizard' ) => [
+						'recs_title'        => __( 'Title', 'bomedia-quote-wizard' ),
+						'recs_sub'          => __( 'Subtitle (supports {n})', 'bomedia-quote-wizard' ),
+					],
+					__( 'Catalog screens', 'bomedia-quote-wizard' ) => [
+						'site_catalog_title'   => __( 'Site catalog title (supports {site_display_name})', 'bomedia-quote-wizard' ),
+						'bomedia_catalog_title'=> __( 'Bomedia catalog title', 'bomedia-quote-wizard' ),
+						'search_placeholder'   => __( 'Search input placeholder', 'bomedia-quote-wizard' ),
+						'no_results'           => __( 'Empty state for filtered grid', 'bomedia-quote-wizard' ),
+						'add_btn'              => __( 'Add to request button', 'bomedia-quote-wizard' ),
+						'added_state'          => __( 'Added state label', 'bomedia-quote-wizard' ),
+						'tray_label'           => __( 'Tray label (supports {n})', 'bomedia-quote-wizard' ),
+						'request_quote_btn'    => __( 'Tray quote button', 'bomedia-quote-wizard' ),
+					],
+					__( 'Final screen', 'bomedia-quote-wizard' ) => [
+						'final_title'   => __( 'Title (supports {nombre})', 'bomedia-quote-wizard' ),
+						'final_sub'     => __( 'Subtitle', 'bomedia-quote-wizard' ),
+						'section_data'  => __( 'Left column heading', 'bomedia-quote-wizard' ),
+						'section_request' => __( 'Right column heading', 'bomedia-quote-wizard' ),
+						'empty_request' => __( 'Empty request message', 'bomedia-quote-wizard' ),
+						'privacy_label' => __( 'Privacy checkbox label (no asterisk; the * is added automatically)', 'bomedia-quote-wizard' ),
+						'optin_label'   => __( 'Marketing opt-in label', 'bomedia-quote-wizard' ),
+						'send_btn'      => __( 'Send button', 'bomedia-quote-wizard' ),
+						'remove_hint'   => __( 'Hint shown next to the request list', 'bomedia-quote-wizard' ),
+					],
+				];
+				$copy = (array) ( $s['copy'] ?? [] );
+				$defaults = self::default_copy();
+				foreach ( $copy_groups as $group_name => $keys ) {
+					echo '<tr><th scope="row" colspan="2" style="padding-bottom:0;border:0;"><strong>' . esc_html( $group_name ) . '</strong></th></tr>';
+					foreach ( $keys as $key => $help ) {
+						$val = isset( $copy[ $key ] ) ? (string) $copy[ $key ] : '';
+						$ph  = (string) ( $defaults[ $key ] ?? '' );
+						echo '<tr>';
+						echo '<th scope="row"><label for="bqw_copy_' . esc_attr( $key ) . '">' . esc_html( $help ) . '</label></th>';
+						echo '<td>';
+						echo '<input type="text" id="bqw_copy_' . esc_attr( $key ) . '" class="large-text" name="' . esc_attr( self::OPT_WIZARD ) . '[copy][' . esc_attr( $key ) . ']" value="' . esc_attr( $val ) . '" placeholder="' . esc_attr( $ph ) . '" />';
+						echo '</td>';
+						echo '</tr>';
+					}
+				}
+				?>
 			</table>
 
 			<h2 class="title"><?php esc_html_e( 'Matchmaker mode', 'bomedia-quote-wizard' ); ?></h2>

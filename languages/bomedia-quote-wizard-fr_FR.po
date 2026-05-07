@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.9\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.10\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -43,9 +43,6 @@ msgstr ""
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr ""
 
-msgid "AI recommends the ideal machine in 5 questions"
-msgstr ""
-
 msgid "Abandoned"
 msgstr ""
 
@@ -76,7 +73,13 @@ msgstr ""
 msgid "Add to request"
 msgstr ""
 
+msgid "Add to request button"
+msgstr ""
+
 msgid "Added"
+msgstr ""
+
+msgid "Added state label"
 msgstr ""
 
 msgid "AgileCRM"
@@ -92,9 +95,6 @@ msgid "AgileCRM credentials are incomplete."
 msgstr ""
 
 msgid "AgileCRM is not configured."
-msgstr ""
-
-msgid "All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)"
 msgstr ""
 
 msgid "All statuses"
@@ -166,6 +166,9 @@ msgstr ""
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr ""
 
+msgid "Bomedia catalog title"
+msgstr ""
+
 msgid "Bot verification"
 msgstr ""
 
@@ -173,12 +176,6 @@ msgid "Brand"
 msgstr ""
 
 msgid "Brands in catalog:"
-msgstr ""
-
-msgid "Browse %s catalog"
-msgstr ""
-
-msgid "Browse the full Bomedia catalog"
 msgstr ""
 
 msgid "Budget"
@@ -196,10 +193,31 @@ msgstr ""
 msgid "Captcha provider"
 msgstr ""
 
+msgid "Card 1 — subtitle"
+msgstr ""
+
+msgid "Card 1 — title"
+msgstr ""
+
+msgid "Card 2 — subtitle"
+msgstr ""
+
+msgid "Card 2 — title (supports {site_display_name})"
+msgstr ""
+
+msgid "Card 3 — subtitle"
+msgstr ""
+
+msgid "Card 3 — title"
+msgstr ""
+
 msgid "Catalog API key"
 msgstr ""
 
 msgid "Catalog URL"
+msgstr ""
+
+msgid "Catalog screens"
 msgstr ""
 
 msgid "Catalog uploaded: %d products cached."
@@ -280,6 +298,9 @@ msgstr ""
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr ""
 
+msgid "Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default."
+msgstr ""
+
 msgid "Cut/engrave with laser"
 msgstr ""
 
@@ -319,6 +340,12 @@ msgstr "E-mail"
 msgid "Email subject"
 msgstr ""
 
+msgid "Empty request message"
+msgstr ""
+
+msgid "Empty state for filtered grid"
+msgstr ""
+
 msgid "Enable"
 msgstr ""
 
@@ -353,6 +380,9 @@ msgid "File logging"
 msgstr ""
 
 msgid "Filter diagnostic"
+msgstr ""
+
+msgid "Final screen"
 msgstr ""
 
 msgid "First message"
@@ -394,14 +424,11 @@ msgstr ""
 msgid "Help me choose"
 msgstr ""
 
+msgid "Helper text above the inputs"
+msgstr ""
+
 msgid "Helps us avoid spam."
 msgstr "Nous aide à éviter le spam."
-
-msgid "Here's our store catalog. Pick the machines you're interested in."
-msgstr ""
-
-msgid "Here's the full Bomedia catalog. Pick the machines you'd like a quote for."
-msgstr ""
 
 msgid "Hero (welcome screen)"
 msgstr ""
@@ -409,10 +436,10 @@ msgstr ""
 msgid "Hi %s, thanks for your interest."
 msgstr ""
 
-msgid "Hi! How would you like to choose your machine?"
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr ""
 
-msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgid "Hint shown next to the request list"
 msgstr ""
 
 msgid "I accept the "
@@ -478,6 +505,9 @@ msgstr ""
 msgid "Leave empty to use the default Bomedia Composer endpoint."
 msgstr ""
 
+msgid "Left column heading"
+msgstr ""
+
 msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
 msgstr ""
 
@@ -494,6 +524,9 @@ msgid "Manual catalog upload"
 msgstr ""
 
 msgid "Marketing opt-in"
+msgstr ""
+
+msgid "Marketing opt-in label"
 msgstr ""
 
 msgid "Matches at"
@@ -700,6 +733,9 @@ msgstr ""
 msgid "Print on textile"
 msgstr ""
 
+msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
+msgstr ""
+
 msgid "Privacy policy URL"
 msgstr ""
 
@@ -711,9 +747,6 @@ msgstr ""
 
 msgid "Product of interest"
 msgstr "Produit d'intérêt"
-
-msgid "Products available on this store"
-msgstr ""
 
 msgid "Products of interest"
 msgstr "Produits d'intérêt"
@@ -739,7 +772,13 @@ msgstr ""
 msgid "REST API Key"
 msgstr ""
 
+msgid "Reassurance text below the button"
+msgstr ""
+
 msgid "Recipient emails"
+msgstr ""
+
+msgid "Recommendations"
 msgstr ""
 
 msgid "Refresh interval"
@@ -763,6 +802,9 @@ msgstr "Modèle demandé :"
 msgid "Retry send"
 msgstr ""
 
+msgid "Right column heading"
+msgstr ""
+
 msgid "Roughly, what monthly volume do you plan to produce?"
 msgstr ""
 
@@ -775,10 +817,19 @@ msgstr ""
 msgid "Saved mapping:"
 msgstr ""
 
+msgid "Screen 1 — Intro"
+msgstr ""
+
+msgid "Screen 2 — Path picker"
+msgstr ""
+
 msgid "Script diagnostic"
 msgstr ""
 
 msgid "Search categories"
+msgstr ""
+
+msgid "Search input placeholder"
 msgstr ""
 
 msgid "Search machines…"
@@ -809,6 +860,9 @@ msgid "Selected (drag to reorder)"
 msgstr ""
 
 msgid "Send"
+msgstr ""
+
+msgid "Send button"
 msgstr ""
 
 msgid "Send my details →"
@@ -842,6 +896,9 @@ msgid "Show hero"
 msgstr ""
 
 msgid "Show the first \"What do you want to do?\" question."
+msgstr ""
+
+msgid "Site catalog title (supports {site_display_name})"
 msgstr ""
 
 msgid "Site display name"
@@ -884,6 +941,9 @@ msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" 
 msgstr ""
 
 msgid "Subtitle"
+msgstr ""
+
+msgid "Subtitle (supports {n})"
 msgstr ""
 
 msgid "Summary"
@@ -937,7 +997,16 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+msgid "Title (supports {nombre})"
+msgstr ""
+
 msgid "Toggle children"
+msgstr ""
+
+msgid "Tray label (supports {n})"
+msgstr ""
+
+msgid "Tray quote button"
 msgstr ""
 
 msgid "Turnstile could not verify your submission."
@@ -1016,6 +1085,9 @@ msgid "Which materials will you print on most often?"
 msgstr ""
 
 msgid "Wizard"
+msgstr ""
+
+msgid "Wizard copy"
 msgstr ""
 
 msgid "Wizard language"

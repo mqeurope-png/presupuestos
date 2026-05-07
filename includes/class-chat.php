@@ -89,32 +89,33 @@ final class Chat {
 		$format_options      = self::lines_to_options( (string) ( $w['matchmaker_format_options'] ?? '' ) );
 		$budget_options      = self::lines_to_options( (string) ( $w['matchmaker_budget_options'] ?? '' ) );
 
+		$site_display = (string) Settings::get( 'site_display_name', 'this site' );
+		$copy_replace = static function ( string $s ) use ( $site_display ): string {
+			return str_replace( '{site_display_name}', $site_display, $s );
+		};
+
 		return [
 			'welcome' => [
-				'message' => __( "Hi! How would you like to choose your machine?", 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'welcome_title' ),
 				'type'    => 'welcome_cards',
 				'options' => [
 					[
-						'label'    => __( 'Help me choose', 'bomedia-quote-wizard' ),
-						'subtitle' => __( 'AI recommends the ideal machine in 5 questions', 'bomedia-quote-wizard' ),
+						'label'    => Settings::copy( 'card_guided_title' ),
+						'subtitle' => Settings::copy( 'card_guided_sub' ),
 						'icon'     => 'help',
 						'next'     => 'task_type',
 						'value'    => 'guided',
 					],
 					[
-						'label'    => sprintf(
-							/* translators: %s: site display name */
-							__( 'Browse %s catalog', 'bomedia-quote-wizard' ),
-							(string) Settings::get( 'site_display_name', 'this site' )
-						),
-						'subtitle' => __( 'Products available on this store', 'bomedia-quote-wizard' ),
+						'label'    => $copy_replace( Settings::copy( 'card_site_title' ) ),
+						'subtitle' => Settings::copy( 'card_site_sub' ),
 						'icon'     => 'package',
 						'next'     => '__site_catalog',
 						'value'    => 'site_catalog',
 					],
 					[
-						'label'    => __( 'Browse the full Bomedia catalog', 'bomedia-quote-wizard' ),
-						'subtitle' => __( 'All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)', 'bomedia-quote-wizard' ),
+						'label'    => Settings::copy( 'card_bomedia_title' ),
+						'subtitle' => Settings::copy( 'card_bomedia_sub' ),
 						'icon'     => 'factory',
 						'next'     => '__bomedia_catalog',
 						'value'    => 'bomedia_catalog',
@@ -377,7 +378,7 @@ final class Chat {
 		// admin's selected_categories. Brand-mapping does not apply here
 		// (the user explicitly asked for the local store catalog).
 		if ( '__site_catalog' === $next_id ) {
-			$msg = __( "Here's our store catalog. Pick the machines you're interested in.", 'bomedia-quote-wizard' );
+			$msg = str_replace( '{site_display_name}', (string) Settings::get( 'site_display_name', 'this site' ), Settings::copy( 'site_catalog_title' ) );
 			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'site_catalog' ] );
 			wp_send_json_success( [ 'step' => [
 				'id'         => 'site_catalog',
@@ -391,7 +392,7 @@ final class Chat {
 		// Welcome card "Browse Bomedia catalog" → grouped view of all
 		// Supabase products, grouped by brand.
 		if ( '__bomedia_catalog' === $next_id ) {
-			$msg = __( "Here's the full Bomedia catalog. Pick the machines you'd like a quote for.", 'bomedia-quote-wizard' );
+			$msg = Settings::copy( 'bomedia_catalog_title' );
 			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'bomedia_catalog' ] );
 			wp_send_json_success( [ 'step' => [
 				'id'      => 'bomedia_catalog',
@@ -471,8 +472,10 @@ final class Chat {
 		$opts = [];
 		foreach ( (array) ( $step['options'] ?? [] ) as $o ) {
 			$opts[] = [
-				'label' => sanitize_text_field( (string) ( $o['label'] ?? '' ) ),
-				'icon'  => sanitize_text_field( (string) ( $o['icon'] ?? '' ) ),
+				'label'    => sanitize_text_field( (string) ( $o['label'] ?? '' ) ),
+				'icon'     => sanitize_text_field( (string) ( $o['icon'] ?? '' ) ),
+				'value'    => isset( $o['value'] ) ? sanitize_text_field( (string) $o['value'] ) : '',
+				'subtitle' => isset( $o['subtitle'] ) ? wp_kses_post( (string) $o['subtitle'] ) : '',
 			];
 		}
 		$type = $step['type'] ?? 'options';
@@ -605,9 +608,11 @@ final class Chat {
 			'lang'        => $lang,
 		];
 
+		$available_in_filter = count( $products );
 		$result = $client->recommend( $base_input, $products );
 
 		if ( is_wp_error( $result ) || empty( $result['recommendations'] ) ) {
+			self::log_top6( $session_id, $task_values, 6, $available_in_filter, 0, 0 );
 			return [];
 		}
 
@@ -618,7 +623,7 @@ final class Chat {
 			self::log_balance( $session_id, 1, $coverage_first, $missing );
 			if ( ! empty( $missing ) ) {
 				$followup = sprintf(
-					'Your previous reply covered task_types %s but the customer also asked for %s. Return a balanced top 3 that includes at least one product per requested task type.',
+					'Your previous reply covered task_types %s but the customer also asked for %s. Return EXACTLY 6 products with at least one per requested task type.',
 					wp_json_encode( array_keys( array_filter( $coverage_first ) ) ),
 					wp_json_encode( array_values( $missing ) )
 				);
@@ -633,6 +638,11 @@ final class Chat {
 				}
 			}
 		}
+
+		// Top-up: if the LLM returned fewer than min(6, available), pad with
+		// remaining catalog products by score-fallback so we always show 6
+		// when the filter contains 6+.
+		$ai_count = count( (array) $result['recommendations'] );
 
 		// CRITICAL: index only the filtered set so an LLM hallucination of a
 		// product slug from outside the brand whitelist gets dropped.
@@ -666,7 +676,55 @@ final class Chat {
 			] );
 		}
 		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
-		return array_slice( $cards, 0, 6 );
+
+		// If the LLM returned fewer than the desired top-N, pad from the
+		// filtered catalog (skipping already-included slugs) so the user
+		// always sees at least min(6, available).
+		$desired = min( 6, $available_in_filter );
+		if ( count( $cards ) < $desired ) {
+			$picked_ids = [];
+			foreach ( $cards as $c ) { $picked_ids[ (string) ( $c['id'] ?? '' ) ] = true; }
+			foreach ( $products as $p ) {
+				if ( count( $cards ) >= $desired ) break;
+				$slug = (string) ( $p['product_id'] ?? '' );
+				if ( '' === $slug || isset( $picked_ids[ $slug ] ) ) continue;
+				if ( ! isset( $index[ $slug ] ) ) continue;
+				$loc       = Catalog_Client::localize_product( $index[ $slug ], $lang );
+				$brand_n   = strtolower( (string) ( $loc['brand'] ?? '' ) );
+				$task_type = $brand_to_task[ $brand_n ] ?? '';
+				$cards[] = array_merge( $loc, [
+					'score'      => 50,
+					'reasons'    => [],
+					'source'     => 'catalog-fill',
+					'task_type'  => $task_type,
+					'task_label' => self::task_label_for( $task_type ),
+				] );
+				$picked_ids[ $slug ] = true;
+			}
+		}
+
+		$final = array_slice( $cards, 0, 6 );
+		self::log_top6( $session_id, $task_values, 6, $available_in_filter, $ai_count, count( $final ) );
+		return $final;
+	}
+
+	private static function log_top6( string $session_id, array $task_values, int $requested, int $available, int $ai_returned, int $final ): void {
+		$u = wp_upload_dir();
+		if ( ! empty( $u['error'] ) ) return;
+		$dir = trailingslashit( $u['basedir'] ) . 'bqw-logs';
+		if ( ! file_exists( $dir ) ) wp_mkdir_p( $dir );
+		$line = sprintf(
+			"[%s] session=%s task_types=[%s] requested=%d available_in_filter=%d ai_returned=%d final=%d\n",
+			gmdate( 'Y-m-d H:i:s' ),
+			substr( $session_id, 0, 8 ),
+			implode( ',', $task_values ),
+			$requested,
+			$available,
+			$ai_returned,
+			$final
+		);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		@file_put_contents( $dir . '/recommendations.log', $line, FILE_APPEND | LOCK_EX );
 	}
 
 	/**

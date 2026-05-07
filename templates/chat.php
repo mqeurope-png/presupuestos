@@ -43,14 +43,6 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 
 	<main class="bqw-wiz-screen" id="bqw-wiz-screen" aria-live="polite"></main>
 
-	<footer class="bqw-wiz-tray" id="bqw-wiz-tray" hidden>
-		<div class="bqw-wiz-tray-inner">
-			<span class="bqw-wiz-tray-label" id="bqw-wiz-tray-label"></span>
-			<div class="bqw-wiz-tray-pills" id="bqw-wiz-tray-pills"></div>
-			<button type="button" class="bqw-btn bqw-btn-primary" id="bqw-wiz-tray-cta" disabled><?php esc_html_e( 'Request quote', 'bomedia-quote-wizard' ); ?> →</button>
-		</div>
-	</footer>
-
 	<form class="bqw-form" id="bqw-form" novalidate hidden>
 		<input type="hidden" name="action" value="bqw_submit" />
 		<input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce( 'bqw_submit' ) ); ?>" />
