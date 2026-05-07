@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.10\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.11\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -106,9 +106,6 @@ msgstr ""
 msgid "Almost done"
 msgstr ""
 
-msgid "Any rough budget? Optional."
-msgstr ""
-
 msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
 msgstr ""
 
@@ -117,6 +114,9 @@ msgstr "Aplicação"
 
 msgid "Application (one or more)"
 msgstr "Aplicação (uma ou mais)"
+
+msgid "Application prompt"
+msgstr ""
 
 msgid "Application step"
 msgstr ""
@@ -179,6 +179,9 @@ msgid "Brands in catalog:"
 msgstr ""
 
 msgid "Budget"
+msgstr ""
+
+msgid "Budget prompt"
 msgstr ""
 
 msgid "Budget step"
@@ -403,6 +406,9 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
+msgid "Format prompt"
+msgstr ""
+
 msgid "Format step"
 msgstr ""
 
@@ -410,12 +416,6 @@ msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr ""
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
-msgstr ""
-
-msgid "Got it. What kind of products will you mostly produce?"
-msgstr ""
-
-msgid "Great. What are you interested in doing? You can pick more than one."
 msgstr ""
 
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
@@ -543,6 +543,9 @@ msgstr "Materiais"
 
 msgid "Materials (multi-select)"
 msgstr "Materiais (seleção múltipla)"
+
+msgid "Materials prompt"
+msgstr ""
 
 msgid "Materials step"
 msgstr ""
@@ -805,9 +808,6 @@ msgstr ""
 msgid "Right column heading"
 msgstr ""
 
-msgid "Roughly, what monthly volume do you plan to produce?"
-msgstr ""
-
 msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr ""
 
@@ -949,6 +949,9 @@ msgstr ""
 msgid "Summary"
 msgstr "Resumo"
 
+msgid "Task type prompt"
+msgstr ""
+
 msgid "Task type → brands mapping"
 msgstr ""
 
@@ -1057,6 +1060,9 @@ msgstr ""
 msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
 msgstr ""
 
+msgid "Volume prompt"
+msgstr ""
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr ""
 
@@ -1075,13 +1081,7 @@ msgstr ""
 msgid "What do you want to produce?"
 msgstr ""
 
-msgid "What max piece size do you need? You can skip this question."
-msgstr ""
-
 msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
-msgstr ""
-
-msgid "Which materials will you print on most often?"
 msgstr ""
 
 msgid "Wizard"
@@ -1091,6 +1091,9 @@ msgid "Wizard copy"
 msgstr ""
 
 msgid "Wizard language"
+msgstr ""
+
+msgid "Wizard questions"
 msgstr ""
 
 msgid "WooCommerce is not active. Activate it to pick categories."

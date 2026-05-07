@@ -186,6 +186,14 @@ final class Settings {
 			'optin_label'          => 'Quiero recibir información sobre productos y novedades de Bomedia',
 			'send_btn'             => 'Enviar →',
 			'remove_hint'          => '¿Quitar alguna? Vuelve atrás.',
+
+			// v1.7.11 — question prompts (each step of the guided path).
+			'q_task_type'   => '¿Qué te interesa hacer? Puedes elegir varias opciones.',
+			'q_application' => '¡Bien! ¿Qué tipo de productos vas a producir principalmente?',
+			'q_materials'   => '¿Sobre qué materiales producirás más?',
+			'q_volume'      => '¿Qué volumen mensual estimas producir?',
+			'q_format'      => '¿Tamaño máximo de pieza? Puedes saltar esta pregunta.',
+			'q_budget'      => '¿Tienes presupuesto orientativo? Es opcional.',
 		];
 	}
 
@@ -827,7 +835,15 @@ final class Settings {
 						'tray_label'           => __( 'Tray label (supports {n})', 'bomedia-quote-wizard' ),
 						'request_quote_btn'    => __( 'Tray quote button', 'bomedia-quote-wizard' ),
 					],
-					__( 'Final screen', 'bomedia-quote-wizard' ) => [
+					__( 'Wizard questions', 'bomedia-quote-wizard' ) => [
+					'q_task_type'   => __( 'Task type prompt', 'bomedia-quote-wizard' ),
+					'q_application' => __( 'Application prompt', 'bomedia-quote-wizard' ),
+					'q_materials'   => __( 'Materials prompt', 'bomedia-quote-wizard' ),
+					'q_volume'      => __( 'Volume prompt', 'bomedia-quote-wizard' ),
+					'q_format'      => __( 'Format prompt', 'bomedia-quote-wizard' ),
+					'q_budget'      => __( 'Budget prompt', 'bomedia-quote-wizard' ),
+				],
+				__( 'Final screen', 'bomedia-quote-wizard' ) => [
 						'final_title'   => __( 'Title (supports {nombre})', 'bomedia-quote-wizard' ),
 						'final_sub'     => __( 'Subtitle', 'bomedia-quote-wizard' ),
 						'section_data'  => __( 'Left column heading', 'bomedia-quote-wizard' ),

@@ -137,6 +137,9 @@ final class Shortcode {
 
 			// Redirect.
 			'redirect_url'        => $notif['redirect_url'] ?? '',
+
+			// v1.7.11 — exposed for JS interpolation.
+			'site_display_name'   => (string) Settings::get( 'site_display_name', '' ),
 		];
 
 		$this->assets_needed = true;

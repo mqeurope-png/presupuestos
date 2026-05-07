@@ -77,6 +77,17 @@
 		if (html != null) e.innerHTML = html;
 		return e;
 	}
+	function bqwInterpolate(text, vars) {
+		if (!text || typeof text !== 'string') return text || '';
+		var bag = vars || {
+			nombre: state.contact_partial.name || '',
+			site_display_name: (cfg.site_display_name || ''),
+			n: state.selection.length,
+		};
+		return text.replace(/\{(\w+)\}/g, function (m, k) {
+			return (bag[k] !== undefined && bag[k] !== null) ? String(bag[k]) : m;
+		});
+	}
 	function escapeHtml(s) {
 		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
 			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -116,7 +127,7 @@
 		var box = el('div', 'bqw-tray-inline');
 		var head = el('div', 'bqw-tray-inline-head');
 		head.innerHTML = '<span class="bqw-tray-inline-label">' +
-			escapeHtml((i18n.trayN || 'Your request (%d):').replace('%d', n)) + '</span>';
+			escapeHtml(bqwInterpolate((i18n.trayN || 'Your request ({n}):'))) + '</span>';
 		var cta = el('button', 'bqw-btn bqw-btn-primary bqw-tray-inline-cta');
 		cta.type = 'button';
 		cta.textContent = (i18n.requestQuote || 'Request quote') + ' →';
@@ -141,6 +152,22 @@
 		});
 		box.appendChild(pillsRow);
 		return box;
+	}
+
+	// v1.7.11 — soft reset: returns to the welcome step keeping the captured
+	// name + email so the user does not retype them. To change those, the
+	// user can press Back from the welcome screen.
+	function softReset() {
+		state.selection = [];
+		state.stack = [];
+		state.current = null;
+		state.question_steps_seen = [];
+		document.getElementById('bqw-selected-products-json').value = '[]';
+		document.getElementById('bqw-flow').value = 'wizard';
+		state.flow_origin = 'wizard';
+		// The intro frame represents the captured name+email screen.
+		state.stack.push({ kind: 'intro', payload: null, picks: [] });
+		callInit();
 	}
 
 	function repaintCurrentInlineTray() {
@@ -173,6 +200,53 @@
 		return { idx: idx, total: total };
 	}
 
+	function stripDiacritics(s) {
+		try { return s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { return s; }
+	}
+	// v1.7.11 — keyword → icon hint (used when the server-side option has no
+	// explicit icon). Returns null when no match so the card renders icon-less.
+	function guessIconHint(label) {
+		if (!label) return null;
+		var s = stripDiacritics(String(label).toLowerCase());
+		var rules = [
+			[/\b(personalizac|personal|custom)/, 'sparkles'],
+			[/\b(industrial|industria|fabrica|factory)/, 'factory'],
+			[/\b(senaletic|signage|sign|cartel|rotulo)/, 'sign'],
+			[/\b(decorac|decor|interior)/, 'home'],
+			[/\b(merchan|publicidad)/, 'megaphone'],
+			[/\b(gadget|regalo|gift)/, 'gift'],
+			[/\b(envase|caja|box|packag)/, 'package'],
+			[/\b(etiqueta|label|sticker)/, 'tag'],
+			[/\b(funda|case|movil|phone)/, 'phone'],
+			[/\b(joya|joyer|jewel)/, 'gem'],
+			[/\b(art|arte|creativ)/, 'palette'],
+			[/\b(moda|fashion|ropa|textil|camiseta|tshirt|t-shirt)/, 'tshirt'],
+			[/\b(precision|micro)/, 'crosshair'],
+			[/\b(rapido|fast|alta velocidad|velocidad)/, 'zap'],
+			[/\b(uv-led|uv led|uv)/, 'package'],
+			[/\b(laser|laser)/, 'metal'],
+			[/\b(madera|wood)/, 'wood'],
+			[/\b(metal|aluminio|acero)/, 'metal'],
+			[/\b(cristal|vidrio|glass)/, 'glass'],
+			[/\b(cuero|piel|leather)/, 'leather'],
+			[/\b(carton|cardboard)/, 'cardboard'],
+			[/\b(plastic|acrilico)/, 'plastic'],
+			[/\b(papel|paper)/, 'cardboard'],
+			[/\b(tela|fabric|tejido)/, 'fabric'],
+			[/\b(pequen|pequeñ|low|peque)/, 'minus-circle'],
+			[/\b(medio|mid|medium)/, 'circle'],
+			[/\b(grande|gran|big|alto|high)/, 'plus-circle'],
+			[/\b(a4|a3|formato pequeno|peq)/, 'format-small'],
+			[/\b(60|format-medium|mediano)/, 'format-medium'],
+			[/\b(grande|format-large|mayor|xl)/, 'format-large'],
+			[/\b(presupuesto|euros|€|low|hasta)/, 'budget-low'],
+		];
+		for (var i = 0; i < rules.length; i++) {
+			if (rules[i][0].test(s)) return rules[i][1];
+		}
+		return null;
+	}
+
 	function iconForHint(hint) {
 		var map = {
 			'tshirt': '<path d="M16 4l4 3-2 4-2-1v10H8V10L6 11 4 7l4-3a4 4 0 008 0z"/>',
@@ -198,6 +272,17 @@
 			'budget-mid': '<circle cx="12" cy="12" r="9"/>',
 			'budget-high': '<path d="M3 16l5-8 4 4 5-7 4 6"/>',
 			'help': '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1-1 1.5-2 2.2-.5.4-1 .9-1 1.6"/>',
+			'sparkles': '<path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/>',
+			'megaphone': '<path d="M3 11v2a3 3 0 003 3h1l4 4V4l-4 4H6a3 3 0 00-3 3z"/><path d="M14 8a4 4 0 010 8"/>',
+			'tag': '<path d="M20 12V4h-8L3 13l8 8 9-9z"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/>',
+			'phone': '<rect x="7" y="2" width="10" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/>',
+			'gem': '<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18"/><path d="M12 3l-3 6 3 12 3-12-3-6z"/>',
+			'palette': '<path d="M12 3a9 9 0 100 18c1 0 2-1 1-2-.5-.5-.5-1.5 0-2 1-1 3 0 5-1a8 8 0 00-6-13z"/><circle cx="8" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="6" r="1" fill="currentColor"/><circle cx="16" cy="10" r="1" fill="currentColor"/>',
+			'crosshair': '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>',
+			'zap': '<path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/>',
+			'minus-circle': '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+			'circle': '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
+			'plus-circle': '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
 		};
 		var body = map[hint];
 		if (!body) return '';
@@ -307,6 +392,36 @@
 		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
 	}
 
+	// v1.7.11 — fire OpenAI in background as soon as the user enters the
+	// last question step so the recommendations land instantly when they
+	// click Next. The server caches the result by session_id (10 min TTL).
+	var prefetchTriggered = {};
+	function maybePrefetchRecs(currentStepId) {
+		var lastQuestions = ['budget', 'format', 'volume'];
+		if (lastQuestions.indexOf(currentStepId) === -1) return;
+		if (prefetchTriggered[state.session_id]) return;
+		prefetchTriggered[state.session_id] = true;
+		try {
+			var fd = new FormData();
+			fd.append('action', 'bqw_prefetch_recs');
+			fd.append('nonce', window.BQW.nonce);
+			fd.append('session_id', state.session_id);
+			fd.append('language', lang);
+			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd, keepalive: true });
+		} catch (e) {}
+	}
+	function invalidatePrefetch() { prefetchTriggered[state.session_id] = false; }
+
+	function fetchMoreRecs(excludeIds) {
+		var fd = new FormData();
+		fd.append('action', 'bqw_more_recs');
+		fd.append('nonce', window.BQW.nonce);
+		fd.append('session_id', state.session_id);
+		fd.append('language', lang);
+		excludeIds.forEach(function (id) { fd.append('exclude_ids[]', String(id)); });
+		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
+	}
+
 	function applyStep(step, replay) {
 		if (!step) { renderError(); return; }
 		if (!replay) {
@@ -315,6 +430,12 @@
 			// Replaying same screen (e.g. tray pill removal). Keep frame, re-render.
 		}
 		logPartialStep(step.id);
+
+		// Pre-launch the OpenAI call when the user lands on the last enabled
+		// question step (we can't know in advance which step is "last", so we
+		// trigger on any of the late steps; the server transient is keyed by
+		// session_id and TTLs out in 10 minutes).
+		maybePrefetchRecs(step.id);
 
 		switch (step.type) {
 			case 'welcome_cards':       return renderWelcome(step);
@@ -348,6 +469,11 @@
 	}
 
 	function goBack() {
+		// Going back may invalidate the in-flight OpenAI prefetch (answers
+		// could change). The server transient still expires; this only
+		// resets the client trigger so we re-fire when the user reaches the
+		// late question again.
+		invalidatePrefetch();
 		var prev = state.stack.pop();
 		if (!prev) { renderContactIntro(); return; }
 		if (prev.kind === 'intro') { renderContactIntro(); return; }
@@ -375,9 +501,9 @@
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card');
-		var greet = state.contact_partial.name
-			? (i18n.welcomeGreetingTpl || 'Hi %s, how would you like to choose?').replace('%s', state.contact_partial.name)
-			: (step.message || '');
+		// Server already produced step.message from the editable copy; we still
+		// run it through bqwInterpolate so {nombre}/{n} variables resolve.
+		var greet = bqwInterpolate(step.message || i18n.welcomeGreetingTpl || 'Hi {nombre}, how would you like to choose?');
 		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(greet)));
 		var grid = el('div', 'bqw-welcome-grid');
 		(step.options || []).forEach(function (opt) {
@@ -424,7 +550,7 @@
 		setProgress(pg.idx, pg.total);
 
 		var card = el('div', 'bqw-wiz-card');
-		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(bqwInterpolate(step.message || ''))));
 		var grid = el('div', 'bqw-q-grid');
 		var multi = !!step.multi_select;
 		var picks = (state.current.picks || []).slice();
@@ -432,8 +558,11 @@
 		(step.options || []).forEach(function (opt) {
 			var c = el('button', 'bqw-q-card');
 			c.type = 'button';
-			c.innerHTML = '<span class="bqw-q-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>'
+			var hint = opt.icon || guessIconHint(opt.label);
+			var iconHtml = hint ? iconForHint(hint) : '';
+			c.innerHTML = (iconHtml ? '<span class="bqw-q-icon">' + iconHtml + '</span>' : '')
 				+ '<span class="bqw-q-label">' + escapeHtml(opt.label) + '</span>';
+			if (!iconHtml) c.classList.add('bqw-q-card--noicon');
 			if (picks.indexOf(opt.label) >= 0) c.classList.add('is-selected');
 			c.addEventListener('click', function () {
 				if (multi) {
@@ -486,17 +615,45 @@
 			: (i18n.noMatches || "Your case is specific. Let's talk directly.");
 		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(heading)));
 		if (recs.length) {
-			card.appendChild(el('p', 'bqw-wiz-sub', escapeHtml((i18n.recsSub || 'We found %d machines for you').replace('%d', recs.length))));
+			card.appendChild(el('p', 'bqw-wiz-sub', escapeHtml(bqwInterpolate((i18n.recsSub || 'We found {n} machines for you'), { n: recs.length, nombre: state.contact_partial.name || '', site_display_name: cfg.site_display_name || '' }))));
 		}
 
+		var grid = el('div', 'bqw-rec-mosaic');
+		var moreBtn = el('button', 'bqw-link-btn bqw-rec-more');
+		moreBtn.type = 'button';
+		var moreUsed = 0;
+		var shownIds = recs.map(function (r) { return String(r.id); });
+		moreBtn.textContent = '↻ ' + (i18n.viewMoreRecs || 'View other options');
+
 		if (!recs.length) {
-			var msg = el('p', 'bqw-wiz-sub', escapeHtml(step.message || ''));
+			var msg = el('p', 'bqw-wiz-sub', escapeHtml(bqwInterpolate(step.message || '')));
 			card.appendChild(msg);
 		} else {
-			var grid = el('div', 'bqw-rec-mosaic');
 			recs.forEach(function (r) { grid.appendChild(buildRecCard(r)); });
 			card.appendChild(grid);
 		}
+
+		function loadMore() {
+			moreBtn.disabled = true;
+			moreBtn.textContent = '…';
+			fetchMoreRecs(shownIds).then(function (json) {
+				var more = (json && json.success && json.data && json.data.recommendations) || [];
+				if (!more.length) {
+					moreBtn.replaceWith(el('p', 'bqw-wiz-sub bqw-rec-no-more', escapeHtml(i18n.noMoreRecs || "You've seen all the available options.")));
+					return;
+				}
+				grid.innerHTML = '';
+				more.forEach(function (r) { grid.appendChild(buildRecCard(r)); shownIds.push(String(r.id)); });
+				moreUsed++;
+				moreBtn.disabled = false;
+				moreBtn.textContent = '↻ ' + (i18n.anotherSpin || 'Another spin');
+			}).catch(function () {
+				moreBtn.disabled = false;
+				moreBtn.textContent = '↻ ' + (i18n.viewMoreRecs || 'View other options');
+			});
+		}
+		moreBtn.addEventListener('click', loadMore);
+		if (recs.length) card.appendChild(moreBtn);
 
 		var trayAnchor = el('div', 'bqw-tray-anchor');
 		var t = buildInlineTray(); if (t) trayAnchor.appendChild(t);
@@ -506,10 +663,7 @@
 		var restart = el('button', 'bqw-link-btn');
 		restart.type = 'button';
 		restart.textContent = i18n.startOver || '↺ Start over';
-		restart.addEventListener('click', function () {
-			try { sessionStorage.removeItem('bqw_session_id'); } catch (e) {}
-			window.location.reload();
-		});
+		restart.addEventListener('click', softReset);
 		actions.appendChild(restart);
 
 		var nope = el('button', 'bqw-link-btn');
@@ -639,7 +793,7 @@
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
-		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(bqwInterpolate(step.message || ''))));
 
 		var filters = el('div', 'bqw-browse-filters');
 		var search  = el('input', null);
@@ -698,7 +852,7 @@
 		progress.hidden = true;
 
 		var card = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-wiz-card-tall');
-		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(step.message || '')));
+		card.appendChild(el('h2', 'bqw-wiz-h', escapeHtml(bqwInterpolate(step.message || ''))));
 
 		var filters = el('div', 'bqw-browse-filters');
 		var search  = el('input', null);
@@ -835,9 +989,9 @@
 		var name = state.contact_partial.name || '';
 		var wrap = el('div', 'bqw-wiz-card bqw-wiz-card-wide bqw-final-wrap');
 
-		var heading = name
-			? (i18n.finalTitleTpl || 'Almost done, %s').replace('%s', name)
-			: (i18n.almostDone || 'Almost done');
+		var heading = bqwInterpolate(i18n.finalTitleTpl || 'Almost done, {nombre}')
+			.replace('%s', name);
+		if (!name) heading = i18n.almostDone || 'Almost done';
 		wrap.appendChild(el('h2', 'bqw-wiz-h bqw-final-h', escapeHtml(heading)));
 		wrap.appendChild(el('p', 'bqw-wiz-sub bqw-final-sub', escapeHtml(i18n.justTwoMore || 'We just need a couple more details.')));
 

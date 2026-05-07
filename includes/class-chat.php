@@ -25,6 +25,30 @@ final class Chat {
 		add_action( 'wp_ajax_nopriv_bqw_partial_save',  [ self::class, 'handle_partial_save' ] );
 		add_action( 'wp_ajax_bqw_partial_step',         [ self::class, 'handle_partial_step' ] );
 		add_action( 'wp_ajax_nopriv_bqw_partial_step',  [ self::class, 'handle_partial_step' ] );
+		add_action( 'wp_ajax_bqw_prefetch_recs',        [ self::class, 'handle_prefetch_recs' ] );
+		add_action( 'wp_ajax_nopriv_bqw_prefetch_recs', [ self::class, 'handle_prefetch_recs' ] );
+		add_action( 'wp_ajax_bqw_more_recs',            [ self::class, 'handle_more_recs' ] );
+		add_action( 'wp_ajax_nopriv_bqw_more_recs',     [ self::class, 'handle_more_recs' ] );
+	}
+
+	public static function handle_prefetch_recs(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) wp_send_json_error( [], 400 );
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		$lang       = sanitize_text_field( (string) ( $_POST['language'] ?? '' ) ) ?: substr( get_locale(), 0, 2 );
+		if ( '' === $session_id ) wp_send_json_error( [], 400 );
+		$recs = self::generate_recommendations( $session_id, $lang );
+		set_transient( 'bqw_prefetched_' . $session_id, $recs, 10 * MINUTE_IN_SECONDS );
+		wp_send_json_success( [ 'count' => count( $recs ) ] );
+	}
+
+	public static function handle_more_recs(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) wp_send_json_error( [], 400 );
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		$lang       = sanitize_text_field( (string) ( $_POST['language'] ?? '' ) ) ?: substr( get_locale(), 0, 2 );
+		$exclude    = array_values( array_filter( array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['exclude_ids'] ?? [] ) ), 'strlen' ) );
+		if ( '' === $session_id ) wp_send_json_error( [], 400 );
+		$recs = self::generate_recommendations( $session_id, $lang, $exclude );
+		wp_send_json_success( [ 'recommendations' => $recs ] );
 	}
 
 	public static function handle_partial_save(): void {
@@ -124,7 +148,7 @@ final class Chat {
 			],
 			'task_type' => [
 				'enabled' => ! empty( $w['enable_task_type'] ),
-				'message' => __( 'Great. What are you interested in doing? You can pick more than one.', 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_task_type' ),
 				'type'    => 'multi_options',
 				'options' => $task_options,
 				'allow_free_text' => false,
@@ -133,7 +157,7 @@ final class Chat {
 			],
 			'application' => [
 				'enabled' => ! empty( $w['enable_application'] ),
-				'message' => __( "Got it. What kind of products will you mostly produce?", 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_application' ),
 				'type'    => 'multi_options',
 				'options' => $application_options,
 				'allow_free_text' => false,
@@ -142,7 +166,7 @@ final class Chat {
 			],
 			'materials' => [
 				'enabled' => ! empty( $w['enable_materials'] ),
-				'message' => __( 'Which materials will you print on most often?', 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_materials' ),
 				'type'    => 'multi_options',
 				'options' => $materials_options,
 				'allow_free_text' => false,
@@ -151,7 +175,7 @@ final class Chat {
 			],
 			'volume' => [
 				'enabled' => ! empty( $w['enable_volume'] ),
-				'message' => __( 'Roughly, what monthly volume do you plan to produce?', 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_volume' ),
 				'type'    => 'single_option',
 				'options' => $volume_options,
 				'allow_free_text' => false,
@@ -160,7 +184,7 @@ final class Chat {
 			],
 			'format' => [
 				'enabled' => ! empty( $w['enable_format'] ),
-				'message' => __( 'What max piece size do you need? You can skip this question.', 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_format' ),
 				'type'    => 'multi_options',
 				'options' => $format_options,
 				'allow_free_text' => false,
@@ -170,7 +194,7 @@ final class Chat {
 			],
 			'budget' => [
 				'enabled' => ! empty( $w['enable_budget'] ),
-				'message' => __( 'Any rough budget? Optional.', 'bomedia-quote-wizard' ),
+				'message' => Settings::copy( 'q_budget' ),
 				'type'    => 'single_option',
 				'options' => $budget_options,
 				'allow_free_text' => false,
@@ -539,7 +563,16 @@ final class Chat {
 		return $out;
 	}
 
-	private static function generate_recommendations( string $session_id, string $lang ): array {
+	private static function generate_recommendations( string $session_id, string $lang, array $exclude_ids = [] ): array {
+		// Reuse cached prefetch (only when no exclusions are requested).
+		if ( empty( $exclude_ids ) ) {
+			$cached = get_transient( 'bqw_prefetched_' . $session_id );
+			if ( is_array( $cached ) && ! empty( $cached ) ) {
+				delete_transient( 'bqw_prefetched_' . $session_id );
+				return $cached;
+			}
+		}
+
 		$answers = self::collect_answers( $session_id );
 
 		$enc = (string) Settings::get( 'openai_api_key', '' );
@@ -553,6 +586,13 @@ final class Chat {
 
 		// Filter catalog by task_type → brand mapping (configurable from admin).
 		$products    = self::catalog_for_prompt( $lang );
+		// v1.7.11 — exclude already-shown product IDs (Ver más recomendaciones).
+		if ( ! empty( $exclude_ids ) ) {
+			$exclude_set = array_flip( array_map( 'strval', $exclude_ids ) );
+			$products    = array_values( array_filter( $products, static function ( $p ) use ( $exclude_set ) {
+				return ! isset( $exclude_set[ (string) ( $p['product_id'] ?? '' ) ] );
+			} ) );
+		}
 		$task_values = (array) ( $answers['task_types_values'] ?? [] );
 		$mapping     = (array) Settings::get( 'task_brand_map', [] );
 		$allowed_raw = [];
@@ -607,6 +647,9 @@ final class Chat {
 			'budget'      => $answers['budget'],
 			'lang'        => $lang,
 		];
+		if ( ! empty( $exclude_ids ) ) {
+			$base_input['_followup'] = 'Customer wants ALTERNATIVE recommendations. The products previously shown have been removed from the catalog below. Return up to 6 NEW recommendations from the remaining candidates only — no overlap with prior choices.';
+		}
 
 		$available_in_filter = count( $products );
 		$result = $client->recommend( $base_input, $products );

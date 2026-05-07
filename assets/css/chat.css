@@ -289,6 +289,8 @@
 	border-color: var(--bqw-primary, #0066cc);
 	color: var(--bqw-primary, #0066cc);
 }
+.bqw-q-card--noicon { gap: 0; padding: 26px 14px; justify-content: center; }
+.bqw-q-card--noicon .bqw-q-label { font-size: 0.95rem; }
 .bqw-q-card.is-selected::after {
 	content: "✓";
 	position: absolute;
@@ -338,9 +340,11 @@
 	display: block;
 	width: 100%;
 	height: 110px;
-	object-fit: cover;
+	object-fit: contain;
+	padding: 6px;
+	box-sizing: border-box;
 	border-radius: 6px;
-	background: var(--bqw-bg-soft, #f8fafc);
+	background: #f8f9fa;
 }
 .bqw-rec-thumb-fallback {
 	display: flex; align-items: center; justify-content: center;
@@ -476,8 +480,10 @@
 }
 .bqw-browse-card.is-selected { border-color: var(--bqw-primary, #0066cc); background: var(--bqw-primary-soft, rgba(0,102,204,0.06)); }
 .bqw-browse-card-img {
-	width: 100%; height: 130px; object-fit: cover;
-	background: var(--bqw-bg-soft, #f8fafc);
+	width: 100%; height: 140px; object-fit: contain;
+	padding: 8px;
+	box-sizing: border-box;
+	background: #f8f9fa;
 }
 .bqw-browse-card-body { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .bqw-browse-card-name { font-weight: 700; }
@@ -626,9 +632,11 @@
 }
 .bqw-final-machine-thumb {
 	width: 60px; height: 60px;
-	object-fit: cover;
+	object-fit: contain;
+	padding: 4px;
+	box-sizing: border-box;
 	border-radius: 6px;
-	background: var(--bqw-bg-soft, #f8fafc);
+	background: #f8f9fa;
 	flex: 0 0 60px;
 }
 .bqw-final-machine-thumb-fallback {
@@ -670,16 +678,37 @@
 	font-style: italic;
 }
 
-/* v1.7.10 — fast screen transitions (~200ms total). */
+/* v1.7.11 — even faster screen transitions (~140ms total). */
 .bqw-wiz-screen.is-leaving {
 	opacity: 0;
-	transition: opacity 100ms ease-in;
+	transition: opacity 60ms ease-in;
 	pointer-events: none;
 }
 .bqw-wiz-screen.is-entering {
 	opacity: 0;
-	transform: translateY(8px);
+	transform: translateY(4px);
 }
 .bqw-wiz-screen {
-	transition: opacity 150ms ease-out, transform 150ms ease-out;
+	transition: opacity 80ms ease-out, transform 80ms ease-out;
 }
+
+/* v1.7.11 — skeleton loader for recommendation cards. */
+.bqw-rec-card-compact.skeleton {
+	background: linear-gradient(90deg, #f0f0f0 0%, #f8f8f8 50%, #f0f0f0 100%);
+	background-size: 200% 100%;
+	animation: bqw-shimmer 1.4s ease-in-out infinite;
+	pointer-events: none;
+	min-height: 230px;
+}
+.bqw-rec-card-compact.skeleton > * { visibility: hidden; }
+@keyframes bqw-shimmer {
+	0%   { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+.bqw-rec-more {
+	align-self: center;
+	margin-top: 6px;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+.bqw-rec-no-more { text-align: center; font-style: italic; }

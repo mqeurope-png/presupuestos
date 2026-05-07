@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.10\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.11\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -106,9 +106,6 @@ msgstr "Todos los tipos"
 msgid "Almost done"
 msgstr "Casi terminamos"
 
-msgid "Any rough budget? Optional."
-msgstr "¿Tienes presupuesto orientativo? Es opcional."
-
 msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
 msgstr "¿Quieres preguntarme algo sobre estas máquinas? O salta directo al envío."
 
@@ -117,6 +114,9 @@ msgstr "Aplicación"
 
 msgid "Application (one or more)"
 msgstr "Aplicación (una o varias)"
+
+msgid "Application prompt"
+msgstr ""
 
 msgid "Application step"
 msgstr "Paso de aplicación"
@@ -180,6 +180,9 @@ msgstr "Marcas en catálogo:"
 
 msgid "Budget"
 msgstr "Presupuesto"
+
+msgid "Budget prompt"
+msgstr ""
 
 msgid "Budget step"
 msgstr "Paso de presupuesto"
@@ -403,6 +406,9 @@ msgstr "Prohibido"
 msgid "Format"
 msgstr "Formato"
 
+msgid "Format prompt"
+msgstr ""
+
 msgid "Format step"
 msgstr "Paso de formato"
 
@@ -411,12 +417,6 @@ msgstr "Google reCAPTCHA v2 (checkbox)"
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr "Google reCAPTCHA v3 (invisible, score)"
-
-msgid "Got it. What kind of products will you mostly produce?"
-msgstr "¡Bien! ¿Qué tipo de productos vas a producir principalmente?"
-
-msgid "Great. What are you interested in doing? You can pick more than one."
-msgstr "Genial. ¿Qué te interesa hacer? Puedes elegir varias opciones."
 
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
 msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UTC."
@@ -543,6 +543,9 @@ msgstr "Materiales"
 
 msgid "Materials (multi-select)"
 msgstr "Materiales (selección múltiple)"
+
+msgid "Materials prompt"
+msgstr ""
 
 msgid "Materials step"
 msgstr "Paso de materiales"
@@ -805,9 +808,6 @@ msgstr "Reintentar envío"
 msgid "Right column heading"
 msgstr ""
 
-msgid "Roughly, what monthly volume do you plan to produce?"
-msgstr "¿Qué volumen mensual estimas producir, aproximadamente?"
-
 msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
 
@@ -949,6 +949,9 @@ msgstr ""
 msgid "Summary"
 msgstr "Resumen"
 
+msgid "Task type prompt"
+msgstr ""
+
 msgid "Task type → brands mapping"
 msgstr "Mapeo tipo de tarea → marcas"
 
@@ -1057,6 +1060,9 @@ msgstr "Ver producto →"
 msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
 msgstr "Visitantes que dejaron nombre y email pero no terminaron. Útiles para seguimiento. Los registros se borran automáticamente cuando el visitante completa el formulario."
 
+msgid "Volume prompt"
+msgstr ""
+
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
 
@@ -1075,14 +1081,8 @@ msgstr "Semanal"
 msgid "What do you want to produce?"
 msgstr "¿Qué quieres producir?"
 
-msgid "What max piece size do you need? You can skip this question."
-msgstr "¿Tamaño máximo de pieza? Puedes saltar esta pregunta."
-
 msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
 msgstr "Si se rellena, tras un envío exitoso se redirige al usuario aquí con ?lead_id={id}. Útil para tracking de conversiones. Déjalo vacío para mostrar la pantalla de gracias del plugin."
-
-msgid "Which materials will you print on most often?"
-msgstr "¿Sobre qué materiales imprimirás más?"
 
 msgid "Wizard"
 msgstr "Wizard"
@@ -1092,6 +1092,9 @@ msgstr ""
 
 msgid "Wizard language"
 msgstr "Idioma del wizard"
+
+msgid "Wizard questions"
+msgstr ""
 
 msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
