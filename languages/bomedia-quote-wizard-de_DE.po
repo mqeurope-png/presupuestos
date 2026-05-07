@@ -1,0 +1,1239 @@
+# Bomedia Quote Wizard translation
+msgid ""
+msgstr ""
+"Project-Id-Version: Bomedia Quote Wizard 1.7.13\n"
+"PO-Revision-Date: 2026-05-06 00:00+0000\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: bomedia-quote-wizard\n"
+
+msgid " and the processing of my data to receive a quote."
+msgstr ""
+
+msgid "%1$s ago · %2$d products cached"
+msgstr ""
+
+msgid "%d machines in your request:"
+msgstr ""
+
+msgid "%s, our team will contact you shortly with a personalized quote."
+msgstr ""
+
+msgid "(no entries yet — run the chatbot once)"
+msgstr ""
+
+msgid "(skipped)"
+msgstr ""
+
+msgid "1 machine in your request:"
+msgstr ""
+
+msgid "A valid email is required."
+msgstr ""
+
+msgid "AI Catalog source"
+msgstr ""
+
+msgid "AI Recommendations (OpenAI)"
+msgstr ""
+
+msgid "AI notes import: %1$d products updated, %2$d slugs not found."
+msgstr ""
+
+msgid "Abandoned"
+msgstr ""
+
+msgid "Abandoned at step"
+msgstr ""
+
+msgid "Abandoned conversations"
+msgstr ""
+
+msgid "Account email"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Add categories from the list on the left."
+msgstr ""
+
+msgid "Add machines from another category"
+msgstr "Maschinen aus einer anderen Kategorie hinzufügen"
+
+msgid "Add machines to request a quote"
+msgstr ""
+
+msgid "Add to request"
+msgstr ""
+
+msgid "Add to request button"
+msgstr ""
+
+msgid "Added"
+msgstr ""
+
+msgid "Added state label"
+msgstr ""
+
+msgid "AgileCRM"
+msgstr ""
+
+msgid "AgileCRM ID"
+msgstr ""
+
+msgid "AgileCRM contact"
+msgstr ""
+
+msgid "AgileCRM credentials are incomplete."
+msgstr ""
+
+msgid "AgileCRM is not configured."
+msgstr ""
+
+msgid "All statuses"
+msgstr ""
+
+msgid "All types"
+msgstr ""
+
+msgid "Almost done"
+msgstr ""
+
+msgid "Another spin"
+msgstr ""
+
+msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
+msgstr ""
+
+msgid "Application"
+msgstr "Anwendung"
+
+msgid "Application (one or more)"
+msgstr "Anwendung (eine oder mehrere)"
+
+msgid "Application prompt"
+msgstr ""
+
+msgid "Application step"
+msgstr ""
+
+msgid "Approximate budget? (optional)"
+msgstr ""
+
+msgid "Ask anything about these machines…"
+msgstr ""
+
+msgid "Ask me anything about these machines, or skip to send."
+msgstr ""
+
+msgid "Auto (site language)"
+msgstr ""
+
+msgid "Available as the {bot_name} variable in Wizard copy. Examples: \"Asistente de artisJet\", \"FLUX Assistant\", \"Asesor PimPam\"."
+msgstr ""
+
+msgid "Available categories"
+msgstr ""
+
+msgid "Available on %s"
+msgstr ""
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Back to home"
+msgstr "Zurück zur Startseite"
+
+msgid "Back to list"
+msgstr ""
+
+msgid "Background image"
+msgstr ""
+
+msgid "Based on what you told me, here are the machines I'd recommend:"
+msgstr ""
+
+msgid "Before we start, what should we call you?"
+msgstr ""
+
+msgid "Best matches for you"
+msgstr ""
+
+msgid "Bomedia Quote Wizard"
+msgstr ""
+
+msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
+msgstr ""
+
+msgid "Bomedia catalog title"
+msgstr ""
+
+msgid "Bot avatar"
+msgstr ""
+
+msgid "Bot avatar background"
+msgstr ""
+
+msgid "Bot branding"
+msgstr ""
+
+msgid "Bot display name"
+msgstr ""
+
+msgid "Bot initial letter"
+msgstr ""
+
+msgid "Bot verification"
+msgstr ""
+
+msgid "Brand"
+msgstr ""
+
+msgid "Brands in catalog:"
+msgstr ""
+
+msgid "Budget"
+msgstr ""
+
+msgid "Budget prompt"
+msgstr ""
+
+msgid "Budget step"
+msgstr ""
+
+msgid "Bulk AI notes"
+msgstr ""
+
+msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
+msgstr ""
+
+msgid "Captcha provider"
+msgstr ""
+
+msgid "Card 1 — subtitle"
+msgstr ""
+
+msgid "Card 1 — title"
+msgstr ""
+
+msgid "Card 2 — subtitle"
+msgstr ""
+
+msgid "Card 2 — title (supports {site_display_name})"
+msgstr ""
+
+msgid "Card 3 — subtitle"
+msgstr ""
+
+msgid "Card 3 — title"
+msgstr ""
+
+msgid "Catalog API key"
+msgstr ""
+
+msgid "Catalog URL"
+msgstr ""
+
+msgid "Catalog screens"
+msgstr ""
+
+msgid "Catalog uploaded: %d products cached."
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Checkbox label"
+msgstr ""
+
+msgid "Choose a category"
+msgstr "Kategorie wählen"
+
+msgid "Choose a model"
+msgstr "Modell wählen"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Cloudflare Turnstile"
+msgstr ""
+
+msgid "Comma separated, e.g. web-lead, boprint"
+msgstr ""
+
+msgid "Comma separated."
+msgstr ""
+
+msgid "Company"
+msgstr "Firma"
+
+msgid "Configure how the in-page assistant identifies itself per installation. Defaults are kept across older sites that have not been edited yet."
+msgstr ""
+
+msgid "Confirmation"
+msgstr "Bestätigung"
+
+msgid "Connection OK"
+msgstr ""
+
+msgid "Connection failed: "
+msgstr ""
+
+msgid "Contact us"
+msgstr "Kontaktieren Sie uns"
+
+msgid "Continue"
+msgstr ""
+
+msgid "Continue and request quote →"
+msgstr ""
+
+msgid "Continue with selected"
+msgstr ""
+
+msgid "Could not parse the JSON file."
+msgstr ""
+
+msgid "Could not parse the catalog JSON."
+msgstr ""
+
+msgid "Country"
+msgstr "Land"
+
+msgid "Country code"
+msgstr ""
+
+msgid "Country is required."
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Customer is not sure, asks for help."
+msgstr ""
+
+msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
+msgstr ""
+
+msgid "Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default."
+msgstr ""
+
+msgid "Cut/engrave with laser"
+msgstr ""
+
+msgid "Daily"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Default tags"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete this conversation?"
+msgstr ""
+
+msgid "Delete this partial lead?"
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Edit selection"
+msgstr "Auswahl bearbeiten"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Email subject"
+msgstr ""
+
+msgid "Empty request message"
+msgstr ""
+
+msgid "Empty state for filtered grid"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Enable captcha challenge before submit."
+msgstr ""
+
+msgid "Enable matchmaker"
+msgstr ""
+
+msgid "Estimated cost this month:"
+msgstr ""
+
+msgid "Estimated monthly volume"
+msgstr "Geschätztes monatliches Volumen"
+
+msgid "Estimated monthly volume?"
+msgstr ""
+
+msgid "Every 6 hours"
+msgstr ""
+
+msgid "Every hour"
+msgstr ""
+
+msgid "Expand"
+msgstr ""
+
+msgid "Export JSON"
+msgstr ""
+
+msgid "File logging"
+msgstr ""
+
+msgid "Filter diagnostic"
+msgstr ""
+
+msgid "Final screen"
+msgstr ""
+
+msgid "First message"
+msgstr ""
+
+msgid "First name"
+msgstr "Vorname"
+
+msgid "First name is required."
+msgstr ""
+
+msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
+msgstr ""
+
+msgid "Forbidden"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Format prompt"
+msgstr ""
+
+msgid "Format step"
+msgstr ""
+
+msgid "Google reCAPTCHA v2 (checkbox)"
+msgstr ""
+
+msgid "Google reCAPTCHA v3 (invisible, score)"
+msgstr ""
+
+msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
+msgstr ""
+
+msgid "Help me choose"
+msgstr ""
+
+msgid "Helper text above the inputs"
+msgstr ""
+
+msgid "Helps us avoid spam."
+msgstr "Hilft uns, Spam zu vermeiden."
+
+msgid "Hero (welcome screen)"
+msgstr ""
+
+msgid "Hex color for the initial badge. Ignored when an avatar image is set."
+msgstr ""
+
+msgid "Hi %s, thanks for your interest."
+msgstr ""
+
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgstr ""
+
+msgid "Hint shown next to the request list"
+msgstr ""
+
+msgid "I accept the "
+msgstr ""
+
+msgid "I have enough info — request quote →"
+msgstr ""
+
+msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
+msgstr "Ich habe die <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Datenschutzerklärung</a> gelesen und akzeptiere sie"
+
+msgid "I have read and accept the privacy policy"
+msgstr "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie"
+
+msgid "I know which machine I want"
+msgstr ""
+
+msgid "I want to receive product updates from Bomedia."
+msgstr ""
+
+msgid "I'm not sure"
+msgstr "Ich bin nicht sicher"
+
+msgid "I'm not sure, help me choose"
+msgstr "Ich bin nicht sicher, hilf mir zu wählen"
+
+msgid "IP"
+msgstr ""
+
+msgid "Import JSON"
+msgstr ""
+
+msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
+msgstr ""
+
+msgid "Labels / packaging"
+msgstr ""
+
+msgid "Laser"
+msgstr ""
+
+msgid "Last call:"
+msgstr ""
+
+msgid "Last fetch"
+msgstr ""
+
+msgid "Last message"
+msgstr ""
+
+msgid "Last name"
+msgstr "Nachname"
+
+msgid "Last recommendation calls:"
+msgstr ""
+
+msgid "Lead"
+msgstr ""
+
+msgid "Lead data missing or corrupt."
+msgstr ""
+
+msgid "Leave empty to use the default Bomedia Composer endpoint."
+msgstr ""
+
+msgid "Left column heading"
+msgstr ""
+
+msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
+msgstr ""
+
+msgid "Loading models…"
+msgstr "Modelle werden geladen…"
+
+msgid "Machines of interest"
+msgstr "Maschinen von Interesse"
+
+msgid "Machines of interest:"
+msgstr ""
+
+msgid "Manual catalog upload"
+msgstr ""
+
+msgid "Marketing opt-in"
+msgstr ""
+
+msgid "Marketing opt-in label"
+msgstr ""
+
+msgid "Matches at"
+msgstr ""
+
+msgid "Matchmaker AI internal notes"
+msgstr ""
+
+msgid "Matchmaker mode"
+msgstr ""
+
+msgid "Materials"
+msgstr "Materialien"
+
+msgid "Materials (multi-select)"
+msgstr "Materialien (Mehrfachauswahl)"
+
+msgid "Materials prompt"
+msgstr ""
+
+msgid "Materials step"
+msgstr ""
+
+msgid "Math (no setup)"
+msgstr ""
+
+msgid "Max calls per day"
+msgstr ""
+
+msgid "Maximum piece size?"
+msgstr ""
+
+msgid "Message (optional)"
+msgstr "Nachricht (optional)"
+
+msgid "Message:"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Missing category."
+msgstr ""
+
+msgid "Missing context."
+msgstr ""
+
+msgid "Missing session."
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Model of"
+msgstr "Modell von"
+
+msgid "Monthly volume"
+msgstr "Monatsvolumen"
+
+msgid "Monthly volume step"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
+msgstr ""
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
+msgstr ""
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "No abandoned conversations with 3+ messages."
+msgstr ""
+
+msgid "No brands cached yet. Click \"Refresh now\" in the AI Catalog source section, then come back."
+msgstr ""
+
+msgid "No machines available in this category. Please contact us directly."
+msgstr "Keine Maschinen in dieser Kategorie verfügbar. Bitte kontaktieren Sie uns direkt."
+
+msgid "No machines selected."
+msgstr "Keine Maschinen ausgewählt."
+
+msgid "No partial leads yet."
+msgstr ""
+
+msgid "No product categories found."
+msgstr ""
+
+msgid "No published products in this category."
+msgstr ""
+
+msgid "Not convinced — contact me"
+msgstr ""
+
+msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+msgid "Offer \"Help me choose\" path that recommends top-3 products by score."
+msgstr ""
+
+msgid "On which materials?"
+msgstr ""
+
+msgid "One option per line."
+msgstr ""
+
+msgid "One option per line. The chat shows a \"Skip\" chip too."
+msgstr ""
+
+msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
+msgstr ""
+
+msgid "OpenAI API key"
+msgstr ""
+
+msgid "OpenAI API key is missing."
+msgstr ""
+
+msgid "OpenAI OK"
+msgstr ""
+
+msgid "OpenAI rate limit reached (429). Try again later."
+msgstr ""
+
+msgid "OpenAI rejected the API key (401)."
+msgstr ""
+
+msgid "OpenAI returned an invalid response."
+msgstr ""
+
+msgid "OpenAI returned malformed data."
+msgstr ""
+
+msgid "Or type your answer freely…"
+msgstr ""
+
+msgid "Packaging"
+msgstr ""
+
+msgid "Partial leads"
+msgstr ""
+
+msgid "Partials"
+msgstr ""
+
+msgid "Perfect. To send your personalised quote, I just need your details."
+msgstr ""
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Phone is required."
+msgstr "Telefon ist erforderlich."
+
+msgid "Pick"
+msgstr ""
+
+msgid "Pick an option above…"
+msgstr ""
+
+msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
+msgstr ""
+
+msgid "Pick image"
+msgstr ""
+
+msgid "Placeholders: {nombre}, {empresa}, {producto}"
+msgstr ""
+
+msgid "Please accept the privacy policy."
+msgstr ""
+
+msgid "Please complete the verification."
+msgstr ""
+
+msgid "Please enter a valid email."
+msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
+
+msgid "Please enter a valid name and email."
+msgstr ""
+
+msgid "Please pick at least one application."
+msgstr "Bitte wähle mindestens eine Anwendung."
+
+msgid "Please pick at least one machine."
+msgstr "Bitte wähle mindestens eine Maschine."
+
+msgid "Please take a moment before submitting."
+msgstr ""
+
+msgid "Post-submit redirect URL"
+msgstr ""
+
+msgid "Print on objects (UV-LED)"
+msgstr ""
+
+msgid "Print on textile"
+msgstr ""
+
+msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
+msgstr ""
+
+msgid "Privacy policy URL"
+msgstr ""
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Product categories"
+msgstr ""
+
+msgid "Product of interest"
+msgstr "Produkt von Interesse"
+
+msgid "Products of interest"
+msgstr "Produkte von Interesse"
+
+msgid "Protected by Google reCAPTCHA."
+msgstr ""
+
+msgid "Quick check"
+msgstr ""
+
+msgid "Quick check:"
+msgstr "Kurze Prüfung:"
+
+msgid "Quote Lead"
+msgstr ""
+
+msgid "Quote Leads"
+msgstr ""
+
+msgid "Quote request wizard"
+msgstr ""
+
+msgid "Quote wizard"
+msgstr ""
+
+msgid "REST API Key"
+msgstr ""
+
+msgid "Reassurance text below the button"
+msgstr ""
+
+msgid "Recipient emails"
+msgstr ""
+
+msgid "Recommendations"
+msgstr ""
+
+msgid "Refresh interval"
+msgstr ""
+
+msgid "Refresh now"
+msgstr ""
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Render a welcome screen before step 1."
+msgstr ""
+
+msgid "Request quote"
+msgstr ""
+
+msgid "Requested model:"
+msgstr "Angefragtes Modell:"
+
+msgid "Retry send"
+msgstr ""
+
+msgid "Right column heading"
+msgstr ""
+
+msgid "Save changes first. Sends a 5-token ping to OpenAI."
+msgstr ""
+
+msgid "Save your changes before testing."
+msgstr ""
+
+msgid "Saved mapping:"
+msgstr ""
+
+msgid "Screen 1 — Intro"
+msgstr ""
+
+msgid "Screen 2 — Path picker"
+msgstr ""
+
+msgid "Script diagnostic"
+msgstr ""
+
+msgid "Search categories"
+msgstr ""
+
+msgid "Search input placeholder"
+msgstr ""
+
+msgid "Search machines…"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Secret key"
+msgstr ""
+
+msgid "Security & marketing"
+msgstr ""
+
+msgid "Security check failed."
+msgstr ""
+
+msgid "Security check failed. Reload the page."
+msgstr ""
+
+msgid "See recommendations"
+msgstr ""
+
+msgid "Selected"
+msgstr ""
+
+msgid "Selected (drag to reorder)"
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Send button"
+msgstr ""
+
+msgid "Send my details →"
+msgstr ""
+
+msgid "Send request"
+msgstr "Anfrage senden"
+
+msgid "Send the customer's answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA."
+msgstr ""
+
+msgid "Sending…"
+msgstr "Wird gesendet…"
+
+msgid "Session"
+msgstr ""
+
+msgid "Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation."
+msgstr ""
+
+msgid "Show a marketing opt-in checkbox in the contact step."
+msgstr ""
+
+msgid "Show all published products"
+msgstr ""
+
+msgid "Show empty"
+msgstr ""
+
+msgid "Show hero"
+msgstr ""
+
+msgid "Show the first \"What do you want to do?\" question."
+msgstr ""
+
+msgid "Site catalog title (supports {site_display_name})"
+msgstr ""
+
+msgid "Site display name"
+msgstr ""
+
+msgid "Site key"
+msgstr ""
+
+msgid "Skip this question"
+msgstr ""
+
+msgid "Solicitud presupuesto web"
+msgstr ""
+
+msgid "Something went wrong. Please try again."
+msgstr "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+
+msgid "Source URL"
+msgstr ""
+
+msgid "Source site"
+msgstr ""
+
+msgid "Square logo recommended (64×64 or 128×128). When empty, the wizard renders a circular badge with the initial below."
+msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Step %1$d of %2$d"
+msgstr ""
+
+msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
+msgstr ""
+
+msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
+msgstr ""
+
+msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+msgstr ""
+
+msgid "Subtitle"
+msgstr ""
+
+msgid "Subtitle (supports {n})"
+msgstr ""
+
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+msgid "Task type prompt"
+msgstr ""
+
+msgid "Task type → brands mapping"
+msgstr ""
+
+msgid "Task types (step 1)"
+msgstr ""
+
+msgid "Tasks defined:"
+msgstr ""
+
+msgid "Tell us what you need…"
+msgstr ""
+
+msgid "Test API connection"
+msgstr ""
+
+msgid "Test connection"
+msgstr ""
+
+msgid "Testing…"
+msgstr ""
+
+msgid "Textile"
+msgstr ""
+
+msgid "Thanks!"
+msgstr ""
+
+msgid "Thanks! We received your request."
+msgstr "Danke! Wir haben deine Anfrage erhalten."
+
+msgid "The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted."
+msgstr ""
+
+msgid "The verification answer is incorrect. Please try again."
+msgstr "Die Verifizierungsantwort ist falsch. Bitte erneut versuchen."
+
+msgid "The verification expired. Please reload the page."
+msgstr ""
+
+msgid "This field is required."
+msgstr "Dieses Feld ist erforderlich."
+
+msgid "Tip: a [NO MATCH] line means the filter dropped every product. Lines like \"products=0/30\" mean the brand IDs you selected do not match any product's \"brand\" field in the catalog."
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Title (supports {nombre})"
+msgstr ""
+
+msgid "Toggle children"
+msgstr ""
+
+msgid "Tray label (supports {n})"
+msgstr ""
+
+msgid "Tray quote button"
+msgstr ""
+
+msgid "Turnstile could not verify your submission."
+msgstr ""
+
+msgid "Turnstile keys"
+msgstr ""
+
+msgid "Turnstile verification failed."
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "UV-LED"
+msgstr ""
+
+msgid "Unknown step."
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
+msgstr ""
+
+msgid "Upload manual JSON"
+msgstr ""
+
+msgid "Usage today"
+msgstr ""
+
+msgid "Use AI for recommendations"
+msgstr ""
+
+msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+msgstr ""
+
+msgid "Used only when no avatar image is set."
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "View on"
+msgstr ""
+
+msgid "View other options"
+msgstr ""
+
+msgid "View product →"
+msgstr ""
+
+msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
+msgstr ""
+
+msgid "Volume prompt"
+msgstr ""
+
+msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr ""
+
+msgid "We found %d machines for you"
+msgstr ""
+
+msgid "We just need a couple more details."
+msgstr ""
+
+msgid "We've received your answers. We'll get back to you with a personalized recommendation."
+msgstr ""
+
+msgid "Weekly"
+msgstr ""
+
+msgid "What do you want to produce?"
+msgstr ""
+
+msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
+msgstr ""
+
+msgid "Wizard"
+msgstr ""
+
+msgid "Wizard copy"
+msgstr ""
+
+msgid "Wizard language"
+msgstr ""
+
+msgid "Wizard questions"
+msgstr ""
+
+msgid "WooCommerce is not active. Activate it to pick categories."
+msgstr ""
+
+msgid "Write log file in uploads/bqw-logs/"
+msgstr ""
+
+msgid "You must accept the privacy policy."
+msgstr "Du musst die Datenschutzerklärung akzeptieren."
+
+msgid "You picked %d machines"
+msgstr "Du hast %d Maschinen ausgewählt"
+
+msgid "You picked 1 machine"
+msgstr "Du hast 1 Maschine ausgewählt"
+
+msgid "You've seen all the available options."
+msgstr ""
+
+msgid "Your application"
+msgstr "Deine Anwendung"
+
+msgid "Your case is specific. Drop your details below and our team will reach out with a tailored proposal."
+msgstr ""
+
+msgid "Your case is specific. Let's talk directly."
+msgstr ""
+
+msgid "Your details"
+msgstr "Deine Daten"
+
+msgid "Your recommended machines will appear here as we chat."
+msgstr ""
+
+msgid "Your request:"
+msgstr ""
+
+msgid "Your selected machines"
+msgstr "Deine ausgewählten Maschinen"
+
+msgid "Your submission looks suspicious. Try again."
+msgstr ""
+
+msgid "Your top matches"
+msgstr ""
+
+msgid "all brands (no filter)"
+msgstr ""
+
+msgid "calls today"
+msgstr ""
+
+msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
+msgstr ""
+
+msgid "e.g. ideal for textile, EU stock, best for SMB, avoid >2000 prints/month"
+msgstr ""
+
+msgid "hCaptcha"
+msgstr ""
+
+msgid "hCaptcha could not verify your submission."
+msgstr ""
+
+msgid "hCaptcha keys"
+msgstr ""
+
+msgid "hCaptcha verification failed."
+msgstr ""
+
+msgid "more"
+msgstr ""
+
+msgid "privacy policy"
+msgstr ""
+
+msgid "reCAPTCHA could not verify your submission."
+msgstr ""
+
+msgid "reCAPTCHA keys"
+msgstr ""
+
+msgid "reCAPTCHA verification failed."
+msgstr ""
+
+msgid "selected"
+msgstr ""
+
+msgid "v3 score threshold (0.0–1.0):"
+msgstr ""
+
+msgid "~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive."
+msgstr ""
+
+msgid "← Back to categories"
+msgstr "← Zurück zu Kategorien"
+
+msgid "↺ Start over"
+msgstr ""
+

@@ -1,0 +1,1239 @@
+# Bomedia Quote Wizard translation
+msgid ""
+msgstr ""
+"Project-Id-Version: Bomedia Quote Wizard 1.7.13\n"
+"PO-Revision-Date: 2026-05-06 00:00+0000\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: bomedia-quote-wizard\n"
+
+msgid " and the processing of my data to receive a quote."
+msgstr " y el tratamiento de mis datos para recibir presupuesto."
+
+msgid "%1$s ago · %2$d products cached"
+msgstr "Hace %1$s · %2$d productos cacheados"
+
+msgid "%d machines in your request:"
+msgstr "%d máquinas en tu consulta:"
+
+msgid "%s, our team will contact you shortly with a personalized quote."
+msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
+
+msgid "(no entries yet — run the chatbot once)"
+msgstr "(sin entradas todavía — ejecuta el chatbot una vez)"
+
+msgid "(skipped)"
+msgstr "(saltada)"
+
+msgid "1 machine in your request:"
+msgstr "1 máquina en tu consulta:"
+
+msgid "A valid email is required."
+msgstr "Se requiere un correo electrónico válido."
+
+msgid "AI Catalog source"
+msgstr "Origen del catálogo IA"
+
+msgid "AI Recommendations (OpenAI)"
+msgstr "Recomendaciones con IA (OpenAI)"
+
+msgid "AI notes import: %1$d products updated, %2$d slugs not found."
+msgstr "Importación de notas IA: %1$d productos actualizados, %2$d slugs no encontrados."
+
+msgid "Abandoned"
+msgstr "Abandonadas"
+
+msgid "Abandoned at step"
+msgstr "Paso abandonado"
+
+msgid "Abandoned conversations"
+msgstr "Conversaciones abandonadas"
+
+msgid "Account email"
+msgstr "Email de la cuenta"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Add categories from the list on the left."
+msgstr "Añade categorías desde la lista de la izquierda."
+
+msgid "Add machines from another category"
+msgstr "Añadir máquinas de otra categoría"
+
+msgid "Add machines to request a quote"
+msgstr "Añade máquinas para pedir presupuesto"
+
+msgid "Add to request"
+msgstr "Añadir a la consulta"
+
+msgid "Add to request button"
+msgstr ""
+
+msgid "Added"
+msgstr "Añadida"
+
+msgid "Added state label"
+msgstr ""
+
+msgid "AgileCRM"
+msgstr "AgileCRM"
+
+msgid "AgileCRM ID"
+msgstr "ID AgileCRM"
+
+msgid "AgileCRM contact"
+msgstr "Contacto AgileCRM"
+
+msgid "AgileCRM credentials are incomplete."
+msgstr "Las credenciales de AgileCRM están incompletas."
+
+msgid "AgileCRM is not configured."
+msgstr "AgileCRM no está configurado."
+
+msgid "All statuses"
+msgstr "Todos los estados"
+
+msgid "All types"
+msgstr "Todos los tipos"
+
+msgid "Almost done"
+msgstr "Casi terminamos"
+
+msgid "Another spin"
+msgstr "Otra vuelta"
+
+msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
+msgstr "¿Quieres preguntarme algo sobre estas máquinas? O salta directo al envío."
+
+msgid "Application"
+msgstr "Aplicación"
+
+msgid "Application (one or more)"
+msgstr "Aplicación (una o varias)"
+
+msgid "Application prompt"
+msgstr ""
+
+msgid "Application step"
+msgstr "Paso de aplicación"
+
+msgid "Approximate budget? (optional)"
+msgstr "¿Presupuesto orientativo? (opcional)"
+
+msgid "Ask anything about these machines…"
+msgstr "Pregúntame lo que quieras de estas máquinas…"
+
+msgid "Ask me anything about these machines, or skip to send."
+msgstr "Pregúntame lo que quieras sobre estas máquinas, o salta al envío."
+
+msgid "Auto (site language)"
+msgstr "Auto (idioma del sitio)"
+
+msgid "Available as the {bot_name} variable in Wizard copy. Examples: \"Asistente de artisJet\", \"FLUX Assistant\", \"Asesor PimPam\"."
+msgstr "Disponible como variable {bot_name} en los textos del wizard. Ejemplos: \"Asistente de artisJet\", \"FLUX Assistant\", \"Asesor PimPam\"."
+
+msgid "Available categories"
+msgstr "Categorías disponibles"
+
+msgid "Available on %s"
+msgstr "Disponible en %s"
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "Back to home"
+msgstr "Volver al inicio"
+
+msgid "Back to list"
+msgstr "Volver a la lista"
+
+msgid "Background image"
+msgstr "Imagen de fondo"
+
+msgid "Based on what you told me, here are the machines I'd recommend:"
+msgstr "Por lo que me cuentas, te recomendaría estas máquinas:"
+
+msgid "Before we start, what should we call you?"
+msgstr "Antes de empezar, ¿cómo te llamamos?"
+
+msgid "Best matches for you"
+msgstr "Las mejores opciones para ti"
+
+msgid "Bomedia Quote Wizard"
+msgstr "Bomedia Quote Wizard"
+
+msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
+msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. El plugin se ha desactivado."
+
+msgid "Bomedia catalog title"
+msgstr ""
+
+msgid "Bot avatar"
+msgstr "Avatar del bot"
+
+msgid "Bot avatar background"
+msgstr "Color del avatar"
+
+msgid "Bot branding"
+msgstr "Branding del bot"
+
+msgid "Bot display name"
+msgstr "Nombre del bot"
+
+msgid "Bot initial letter"
+msgstr "Letra inicial"
+
+msgid "Bot verification"
+msgstr "Verificación anti-bot"
+
+msgid "Brand"
+msgstr "Marca"
+
+msgid "Brands in catalog:"
+msgstr "Marcas en catálogo:"
+
+msgid "Budget"
+msgstr "Presupuesto"
+
+msgid "Budget prompt"
+msgstr ""
+
+msgid "Budget step"
+msgstr "Paso de presupuesto"
+
+msgid "Bulk AI notes"
+msgstr "Notas IA en bloque"
+
+msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
+msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: { \"product-slug\": \"notas…\" }."
+
+msgid "Captcha provider"
+msgstr "Proveedor de captcha"
+
+msgid "Card 1 — subtitle"
+msgstr ""
+
+msgid "Card 1 — title"
+msgstr ""
+
+msgid "Card 2 — subtitle"
+msgstr ""
+
+msgid "Card 2 — title (supports {site_display_name})"
+msgstr ""
+
+msgid "Card 3 — subtitle"
+msgstr ""
+
+msgid "Card 3 — title"
+msgstr ""
+
+msgid "Catalog API key"
+msgstr "API key del catálogo"
+
+msgid "Catalog URL"
+msgstr "URL del catálogo"
+
+msgid "Catalog screens"
+msgstr ""
+
+msgid "Catalog uploaded: %d products cached."
+msgstr "Catálogo subido: %d productos cacheados."
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Change"
+msgstr "Cambiar"
+
+msgid "Checkbox label"
+msgstr "Texto de la casilla"
+
+msgid "Choose a category"
+msgstr "Elige una categoría"
+
+msgid "Choose a model"
+msgstr "Elige un modelo"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Cloudflare Turnstile"
+msgstr "Cloudflare Turnstile"
+
+msgid "Comma separated, e.g. web-lead, boprint"
+msgstr "Separadas por comas, ej. web-lead, boprint"
+
+msgid "Comma separated."
+msgstr "Separados por comas."
+
+msgid "Company"
+msgstr "Empresa"
+
+msgid "Configure how the in-page assistant identifies itself per installation. Defaults are kept across older sites that have not been edited yet."
+msgstr "Configura cómo se identifica el asistente en cada instalación. Los valores por defecto se mantienen en sitios antiguos sin editar."
+
+msgid "Confirmation"
+msgstr "Confirmación"
+
+msgid "Connection OK"
+msgstr "Conexión OK"
+
+msgid "Connection failed: "
+msgstr "Conexión fallida: "
+
+msgid "Contact us"
+msgstr "Contáctanos"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "Continue and request quote →"
+msgstr "Continuar y pedir presupuesto →"
+
+msgid "Continue with selected"
+msgstr "Continuar con seleccionadas"
+
+msgid "Could not parse the JSON file."
+msgstr "No se pudo procesar el archivo JSON."
+
+msgid "Could not parse the catalog JSON."
+msgstr "No se pudo procesar el JSON del catálogo."
+
+msgid "Country"
+msgstr "País"
+
+msgid "Country code"
+msgstr "Prefijo internacional"
+
+msgid "Country is required."
+msgstr ""
+
+msgid "Created"
+msgstr "Creado"
+
+msgid "Customer is not sure, asks for help."
+msgstr "El cliente no está seguro, pide ayuda."
+
+msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
+msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
+
+msgid "Customise every visible string of the multi-screen wizard. Variables are replaced at runtime: {nombre} (visitor name), {site_display_name} (the value above) and {n} (count of recommendations or selections). Leave a field blank to fall back to the default."
+msgstr "Personaliza todos los textos visibles del wizard. Las variables se sustituyen en runtime: {nombre} (nombre del visitante), {site_display_name} (el valor de arriba) y {n} (número de recomendaciones o selecciones). Deja un campo en blanco para usar el valor por defecto."
+
+msgid "Cut/engrave with laser"
+msgstr "Cortar y grabar con láser"
+
+msgid "Daily"
+msgstr "Diario"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Default tags"
+msgstr "Tags por defecto"
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete this conversation?"
+msgstr "¿Eliminar esta conversación?"
+
+msgid "Delete this partial lead?"
+msgstr "¿Borrar este lead parcial?"
+
+msgid "Domain"
+msgstr "Dominio"
+
+msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
+msgstr "Arrastra productos para reordenar. En modo \"Mostrar todos los publicados\", arrastrar cambia a modo manual para conservar el nuevo orden."
+
+msgid "Drag to reorder"
+msgstr "Arrastra para reordenar"
+
+msgid "Edit selection"
+msgstr "Editar selección"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Email subject"
+msgstr "Asunto del email"
+
+msgid "Empty request message"
+msgstr ""
+
+msgid "Empty state for filtered grid"
+msgstr ""
+
+msgid "Enable"
+msgstr "Activar"
+
+msgid "Enable captcha challenge before submit."
+msgstr "Activa la verificación captcha antes del envío."
+
+msgid "Enable matchmaker"
+msgstr "Habilitar matchmaker"
+
+msgid "Estimated cost this month:"
+msgstr "Coste estimado este mes:"
+
+msgid "Estimated monthly volume"
+msgstr "Volumen mensual estimado"
+
+msgid "Estimated monthly volume?"
+msgstr "¿Volumen mensual estimado?"
+
+msgid "Every 6 hours"
+msgstr "Cada 6 horas"
+
+msgid "Every hour"
+msgstr "Cada hora"
+
+msgid "Expand"
+msgstr "Desplegar"
+
+msgid "Export JSON"
+msgstr "Exportar JSON"
+
+msgid "File logging"
+msgstr "Registro a archivo"
+
+msgid "Filter diagnostic"
+msgstr "Diagnóstico del filtro"
+
+msgid "Final screen"
+msgstr ""
+
+msgid "First message"
+msgstr "Primer mensaje"
+
+msgid "First name"
+msgstr "Nombre"
+
+msgid "First name is required."
+msgstr "El nombre es obligatorio."
+
+msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
+msgstr "Para cada tarea del primer paso, elige qué marcas de Supabase puede recomendar la IA. Las marcas se leen del cache; pulsa \"Refrescar ahora\" arriba si no ves todas."
+
+msgid "Forbidden"
+msgstr "Prohibido"
+
+msgid "Format"
+msgstr "Formato"
+
+msgid "Format prompt"
+msgstr ""
+
+msgid "Format step"
+msgstr "Paso de formato"
+
+msgid "Google reCAPTCHA v2 (checkbox)"
+msgstr "Google reCAPTCHA v2 (checkbox)"
+
+msgid "Google reCAPTCHA v3 (invisible, score)"
+msgstr "Google reCAPTCHA v3 (invisible, score)"
+
+msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
+msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UTC."
+
+msgid "Help me choose"
+msgstr "Ayúdame a elegir"
+
+msgid "Helper text above the inputs"
+msgstr ""
+
+msgid "Helps us avoid spam."
+msgstr "Nos ayuda a evitar spam."
+
+msgid "Hero (welcome screen)"
+msgstr "Hero (pantalla de bienvenida)"
+
+msgid "Hex color for the initial badge. Ignored when an avatar image is set."
+msgstr "Color hex para el círculo. Ignorado si hay imagen de avatar."
+
+msgid "Hi %s, thanks for your interest."
+msgstr "Hola %s, gracias por tu interés."
+
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
+
+msgid "Hint shown next to the request list"
+msgstr ""
+
+msgid "I accept the "
+msgstr "Acepto la "
+
+msgid "I have enough info — request quote →"
+msgstr "Tengo bastante info — pedir presupuesto →"
+
+msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
+msgstr "He leído y acepto la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>"
+
+msgid "I have read and accept the privacy policy"
+msgstr "He leído y acepto la política de privacidad"
+
+msgid "I know which machine I want"
+msgstr "Sé qué máquina quiero"
+
+msgid "I want to receive product updates from Bomedia."
+msgstr "Quiero recibir información sobre productos y novedades de Bomedia."
+
+msgid "I'm not sure"
+msgstr "No estoy seguro"
+
+msgid "I'm not sure, help me choose"
+msgstr "No estoy seguro, ayúdame a elegir"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Import JSON"
+msgstr "Importar JSON"
+
+msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
+msgstr "Te ayudamos en 2 minutos. No te enviamos spam, solo respondemos a tu consulta."
+
+msgid "Labels / packaging"
+msgstr "Etiquetas / packaging"
+
+msgid "Laser"
+msgstr "Láser"
+
+msgid "Last call:"
+msgstr "Última llamada:"
+
+msgid "Last fetch"
+msgstr "Último fetch"
+
+msgid "Last message"
+msgstr "Último mensaje"
+
+msgid "Last name"
+msgstr "Apellidos"
+
+msgid "Last recommendation calls:"
+msgstr "Últimas recomendaciones:"
+
+msgid "Lead"
+msgstr "Lead"
+
+msgid "Lead data missing or corrupt."
+msgstr "Faltan datos del lead o están corruptos."
+
+msgid "Leave empty to use the default Bomedia Composer endpoint."
+msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
+
+msgid "Left column heading"
+msgstr ""
+
+msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
+msgstr "Snapshot en vivo del script. Cada paso muestra el estado de activación, tipo, opciones servidas al visitante y el siguiente paso."
+
+msgid "Loading models…"
+msgstr "Cargando modelos…"
+
+msgid "Machines of interest"
+msgstr "Máquinas de interés"
+
+msgid "Machines of interest:"
+msgstr "Máquinas de interés:"
+
+msgid "Manual catalog upload"
+msgstr "Subida manual de catálogo"
+
+msgid "Marketing opt-in"
+msgstr "Opt-in de marketing"
+
+msgid "Marketing opt-in label"
+msgstr ""
+
+msgid "Matches at"
+msgstr "Encaja al"
+
+msgid "Matchmaker AI internal notes"
+msgstr "Notas internas para Matchmaker IA"
+
+msgid "Matchmaker mode"
+msgstr "Modo Matchmaker"
+
+msgid "Materials"
+msgstr "Materiales"
+
+msgid "Materials (multi-select)"
+msgstr "Materiales (selección múltiple)"
+
+msgid "Materials prompt"
+msgstr ""
+
+msgid "Materials step"
+msgstr "Paso de materiales"
+
+msgid "Math (no setup)"
+msgstr "Matemática (sin configuración)"
+
+msgid "Max calls per day"
+msgstr "Máximo de llamadas por día"
+
+msgid "Maximum piece size?"
+msgstr "¿Tamaño máximo de pieza?"
+
+msgid "Message (optional)"
+msgstr "Mensaje (opcional)"
+
+msgid "Message:"
+msgstr "Mensaje:"
+
+msgid "Messages"
+msgstr "Mensajes"
+
+msgid "Missing category."
+msgstr "Falta la categoría."
+
+msgid "Missing context."
+msgstr "Falta el contexto."
+
+msgid "Missing session."
+msgstr "Falta la sesión."
+
+msgid "Model"
+msgstr "Modelo"
+
+msgid "Model of"
+msgstr "Modelo de"
+
+msgid "Monthly volume"
+msgstr "Volumen mensual"
+
+msgid "Monthly volume step"
+msgstr "Paso de volumen mensual"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
+
+msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
+msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
+
+msgid "Never"
+msgstr "Nunca"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "No abandoned conversations with 3+ messages."
+msgstr "No hay conversaciones abandonadas con 3 o más mensajes."
+
+msgid "No brands cached yet. Click \"Refresh now\" in the AI Catalog source section, then come back."
+msgstr "Aún no hay marcas en cache. Pulsa \"Refrescar ahora\" en la sección AI Catalog source y vuelve."
+
+msgid "No machines available in this category. Please contact us directly."
+msgstr "No hay máquinas disponibles en esta categoría. Contáctanos directamente."
+
+msgid "No machines selected."
+msgstr "Ninguna máquina seleccionada."
+
+msgid "No partial leads yet."
+msgstr "Aún no hay leads parciales."
+
+msgid "No product categories found."
+msgstr "No se encontraron categorías de producto."
+
+msgid "No published products in this category."
+msgstr "No hay productos publicados en esta categoría."
+
+msgid "Not convinced — contact me"
+msgstr "No me convence — contactarme"
+
+msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
+msgstr "Notas que la IA usará para recomendar esta máquina. Ejemplos: \"ideal para principiantes\", \"stock EU\", \"ideal para talleres textiles pequeños\", \"evitar para >2000/mes\". No se muestran al cliente."
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "Offer \"Help me choose\" path that recommends top-3 products by score."
+msgstr "Ofrece un camino \"Ayúdame a elegir\" que recomienda los 3 mejores productos según score."
+
+msgid "On which materials?"
+msgstr "¿En qué materiales?"
+
+msgid "One option per line."
+msgstr "Una opción por línea."
+
+msgid "One option per line. The chat shows a \"Skip\" chip too."
+msgstr "Una opción por línea. El chat también muestra un chip \"Saltar\"."
+
+msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
+msgstr "Una por línea, formato: valor_estable|Etiqueta visible. El valor_estable es el que usa el mapping de marcas."
+
+msgid "OpenAI API key"
+msgstr "API key de OpenAI"
+
+msgid "OpenAI API key is missing."
+msgstr "Falta la API key de OpenAI."
+
+msgid "OpenAI OK"
+msgstr "OpenAI OK"
+
+msgid "OpenAI rate limit reached (429). Try again later."
+msgstr "Límite de OpenAI alcanzado (429). Inténtalo más tarde."
+
+msgid "OpenAI rejected the API key (401)."
+msgstr "OpenAI rechazó la API key (401)."
+
+msgid "OpenAI returned an invalid response."
+msgstr "OpenAI devolvió una respuesta inválida."
+
+msgid "OpenAI returned malformed data."
+msgstr "OpenAI devolvió datos mal formados."
+
+msgid "Or type your answer freely…"
+msgstr "O escribe tu respuesta libremente…"
+
+msgid "Packaging"
+msgstr "Packaging"
+
+msgid "Partial leads"
+msgstr "Leads parciales"
+
+msgid "Partials"
+msgstr "Parciales"
+
+msgid "Perfect. To send your personalised quote, I just need your details."
+msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos."
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Phone is required."
+msgstr "El teléfono es obligatorio."
+
+msgid "Pick"
+msgstr "Seleccionar"
+
+msgid "Pick an option above…"
+msgstr "Elige una opción arriba…"
+
+msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
+msgstr "Elige categorías en la columna de la izquierda y arrastra para reordenar en la derecha. Despliega una fila para afinar qué productos aparecen y en qué orden."
+
+msgid "Pick image"
+msgstr "Elegir imagen"
+
+msgid "Placeholders: {nombre}, {empresa}, {producto}"
+msgstr "Placeholders: {nombre}, {empresa}, {producto}"
+
+msgid "Please accept the privacy policy."
+msgstr ""
+
+msgid "Please complete the verification."
+msgstr "Por favor, completa la verificación."
+
+msgid "Please enter a valid email."
+msgstr "Introduce un email válido."
+
+msgid "Please enter a valid name and email."
+msgstr "Introduce un nombre y un email válidos."
+
+msgid "Please pick at least one application."
+msgstr "Selecciona al menos una aplicación."
+
+msgid "Please pick at least one machine."
+msgstr "Selecciona al menos una máquina."
+
+msgid "Please take a moment before submitting."
+msgstr "Tómate un momento antes de enviar."
+
+msgid "Post-submit redirect URL"
+msgstr "URL de redirección post-envío"
+
+msgid "Print on objects (UV-LED)"
+msgstr "Imprimir sobre objetos (UV-LED)"
+
+msgid "Print on textile"
+msgstr "Imprimir textil"
+
+msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
+msgstr ""
+
+msgid "Privacy policy URL"
+msgstr "URL política de privacidad"
+
+msgid "Product"
+msgstr "Producto"
+
+msgid "Product categories"
+msgstr "Categorías de producto"
+
+msgid "Product of interest"
+msgstr "Producto de interés"
+
+msgid "Products of interest"
+msgstr "Productos de interés"
+
+msgid "Protected by Google reCAPTCHA."
+msgstr "Protegido por Google reCAPTCHA."
+
+msgid "Quick check"
+msgstr "Verificación rápida"
+
+msgid "Quick check:"
+msgstr "Comprobación rápida:"
+
+msgid "Quote Lead"
+msgstr "Lead de presupuesto"
+
+msgid "Quote Leads"
+msgstr "Leads de presupuesto"
+
+msgid "Quote request wizard"
+msgstr "Asistente de solicitud de presupuesto"
+
+msgid "Quote wizard"
+msgstr ""
+
+msgid "REST API Key"
+msgstr "Clave REST API"
+
+msgid "Reassurance text below the button"
+msgstr ""
+
+msgid "Recipient emails"
+msgstr "Emails destinatarios"
+
+msgid "Recommendations"
+msgstr ""
+
+msgid "Refresh interval"
+msgstr "Intervalo de refresco"
+
+msgid "Refresh now"
+msgstr "Refrescar ahora"
+
+msgid "Remove"
+msgstr "Quitar"
+
+msgid "Render a welcome screen before step 1."
+msgstr "Renderiza una pantalla de bienvenida antes del paso 1."
+
+msgid "Request quote"
+msgstr "Pedir presupuesto"
+
+msgid "Requested model:"
+msgstr "Modelo solicitado:"
+
+msgid "Retry send"
+msgstr "Reintentar envío"
+
+msgid "Right column heading"
+msgstr ""
+
+msgid "Save changes first. Sends a 5-token ping to OpenAI."
+msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
+
+msgid "Save your changes before testing."
+msgstr "Guarda los cambios antes de probar."
+
+msgid "Saved mapping:"
+msgstr "Mapping guardado:"
+
+msgid "Screen 1 — Intro"
+msgstr ""
+
+msgid "Screen 2 — Path picker"
+msgstr ""
+
+msgid "Script diagnostic"
+msgstr "Diagnóstico del script"
+
+msgid "Search categories"
+msgstr "Buscar categorías"
+
+msgid "Search input placeholder"
+msgstr ""
+
+msgid "Search machines…"
+msgstr "Buscar máquinas…"
+
+msgid "Search…"
+msgstr "Buscar…"
+
+msgid "Secret key"
+msgstr "Secret key"
+
+msgid "Security & marketing"
+msgstr "Seguridad y marketing"
+
+msgid "Security check failed."
+msgstr "Falló la comprobación de seguridad."
+
+msgid "Security check failed. Reload the page."
+msgstr "Falló la comprobación de seguridad. Recarga la página."
+
+msgid "See recommendations"
+msgstr "Ver recomendaciones"
+
+msgid "Selected"
+msgstr "Seleccionada"
+
+msgid "Selected (drag to reorder)"
+msgstr "Seleccionadas (arrastra para reordenar)"
+
+msgid "Send"
+msgstr "Enviar"
+
+msgid "Send button"
+msgstr ""
+
+msgid "Send my details →"
+msgstr "Enviar mis datos →"
+
+msgid "Send request"
+msgstr "Enviar solicitud"
+
+msgid "Send the customer's answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA."
+msgstr "Envía las respuestas del cliente a OpenAI para puntuar productos. Si lo desactivas, se devuelve un resultado vacío con CTA de fallback."
+
+msgid "Sending…"
+msgstr "Enviando…"
+
+msgid "Session"
+msgstr "Sesión"
+
+msgid "Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation."
+msgstr "Sesiones con al menos 3 mensajes que no acabaron en lead. Click en una fila para ver la conversación."
+
+msgid "Show a marketing opt-in checkbox in the contact step."
+msgstr "Muestra una casilla de opt-in de marketing en el paso de contacto."
+
+msgid "Show all published products"
+msgstr "Mostrar todos los productos publicados"
+
+msgid "Show empty"
+msgstr "Mostrar vacías"
+
+msgid "Show hero"
+msgstr "Mostrar hero"
+
+msgid "Show the first \"What do you want to do?\" question."
+msgstr "Mostrar la primera pregunta \"¿Qué te interesa hacer?\"."
+
+msgid "Site catalog title (supports {site_display_name})"
+msgstr ""
+
+msgid "Site display name"
+msgstr "Nombre del sitio"
+
+msgid "Site key"
+msgstr "Site key"
+
+msgid "Skip this question"
+msgstr "Saltar esta pregunta"
+
+msgid "Solicitud presupuesto web"
+msgstr "Solicitud presupuesto web"
+
+msgid "Something went wrong. Please try again."
+msgstr "Algo ha fallado. Inténtalo de nuevo."
+
+msgid "Source URL"
+msgstr "URL de origen"
+
+msgid "Source site"
+msgstr "Sitio de origen"
+
+msgid "Square logo recommended (64×64 or 128×128). When empty, the wizard renders a circular badge with the initial below."
+msgstr "Logo cuadrado recomendado (64×64 o 128×128). Si está vacío, el wizard renderiza un círculo con la inicial de abajo."
+
+msgid "Start"
+msgstr "Empezar"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Step %1$d of %2$d"
+msgstr "Paso %1$d de %2$d"
+
+msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
+msgstr "Almacenada cifrada con AUTH_KEY. Déjalo vacío para usar la publishable key por defecto."
+
+msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
+msgstr "Almacenado cifrado con AUTH_KEY. Deja el valor enmascarado para conservar el actual."
+
+msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+msgstr "Almacenada cifrada con AUTH_KEY. ¿No tienes API key? Créala en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
+
+msgid "Subtitle"
+msgstr "Subtítulo"
+
+msgid "Subtitle (supports {n})"
+msgstr ""
+
+msgid "Summary"
+msgstr "Resumen"
+
+msgid "Task type prompt"
+msgstr ""
+
+msgid "Task type → brands mapping"
+msgstr "Mapeo tipo de tarea → marcas"
+
+msgid "Task types (step 1)"
+msgstr "Tipos de tarea (paso 1)"
+
+msgid "Tasks defined:"
+msgstr "Tareas definidas:"
+
+msgid "Tell us what you need…"
+msgstr "Cuéntanos qué necesitas…"
+
+msgid "Test API connection"
+msgstr "Probar conexión API"
+
+msgid "Test connection"
+msgstr "Probar conexión"
+
+msgid "Testing…"
+msgstr "Probando…"
+
+msgid "Textile"
+msgstr "Textil"
+
+msgid "Thanks!"
+msgstr "¡Gracias!"
+
+msgid "Thanks! We received your request."
+msgstr "¡Gracias! Hemos recibido tu solicitud."
+
+msgid "The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted."
+msgstr "El matchmaker lee productos desde un endpoint Supabase remoto. Solo se extraen los campos products y brands; cualquier otro dato (usuarios, claves, log de actividad, plantillas) se descarta inmediatamente al hacer fetch y nunca se persiste."
+
+msgid "The verification answer is incorrect. Please try again."
+msgstr "La respuesta de verificación es incorrecta. Inténtalo de nuevo."
+
+msgid "The verification expired. Please reload the page."
+msgstr "La verificación expiró. Recarga la página."
+
+msgid "This field is required."
+msgstr "Este campo es obligatorio."
+
+msgid "Tip: a [NO MATCH] line means the filter dropped every product. Lines like \"products=0/30\" mean the brand IDs you selected do not match any product's \"brand\" field in the catalog."
+msgstr "Pista: una línea [NO MATCH] significa que el filtro descartó todos los productos. \"products=0/30\" significa que los IDs de marca que marcaste no coinciden con el campo \"brand\" de ningún producto del catálogo."
+
+msgid "Title"
+msgstr "Titular"
+
+msgid "Title (supports {nombre})"
+msgstr ""
+
+msgid "Toggle children"
+msgstr "Mostrar/ocultar hijos"
+
+msgid "Tray label (supports {n})"
+msgstr ""
+
+msgid "Tray quote button"
+msgstr ""
+
+msgid "Turnstile could not verify your submission."
+msgstr "Turnstile no pudo verificar tu envío."
+
+msgid "Turnstile keys"
+msgstr "Claves de Turnstile"
+
+msgid "Turnstile verification failed."
+msgstr "La verificación de Turnstile falló."
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "UV-LED"
+msgstr "UV-LED"
+
+msgid "Unknown step."
+msgstr "Paso desconocido."
+
+msgid "Updated"
+msgstr "Actualizado"
+
+msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
+msgstr "Sube un archivo JSON con { products: [...], brands: [...] } para sobrescribir el cache cuando el endpoint remoto no esté disponible."
+
+msgid "Upload manual JSON"
+msgstr "Subir JSON manual"
+
+msgid "Usage today"
+msgstr "Uso hoy"
+
+msgid "Use AI for recommendations"
+msgstr "Usar IA para recomendaciones"
+
+msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+msgstr "Se usa en la card del welcome \"Ver catálogo de {site_name}\". Pon el nombre del sitio donde corre el plugin (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+
+msgid "Used only when no avatar image is set."
+msgstr "Solo se usa cuando no hay imagen de avatar."
+
+msgid "View"
+msgstr "Ver"
+
+msgid "View on"
+msgstr "Ver en"
+
+msgid "View other options"
+msgstr "Ver otras opciones"
+
+msgid "View product →"
+msgstr "Ver producto →"
+
+msgid "Visitors who entered name + email but did not finish. Useful for follow-up. Records are removed automatically when the visitor completes the form."
+msgstr "Visitantes que dejaron nombre y email pero no terminaron. Útiles para seguimiento. Los registros se borran automáticamente cuando el visitante completa el formulario."
+
+msgid "Volume prompt"
+msgstr ""
+
+msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
+
+msgid "We found %d machines for you"
+msgstr "Hemos encontrado %d máquinas para ti"
+
+msgid "We just need a couple more details."
+msgstr "Solo necesitamos un par de datos más."
+
+msgid "We've received your answers. We'll get back to you with a personalized recommendation."
+msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
+
+msgid "Weekly"
+msgstr "Semanal"
+
+msgid "What do you want to produce?"
+msgstr "¿Qué quieres producir?"
+
+msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
+msgstr "Si se rellena, tras un envío exitoso se redirige al usuario aquí con ?lead_id={id}. Útil para tracking de conversiones. Déjalo vacío para mostrar la pantalla de gracias del plugin."
+
+msgid "Wizard"
+msgstr "Wizard"
+
+msgid "Wizard copy"
+msgstr "Textos del wizard"
+
+msgid "Wizard language"
+msgstr "Idioma del wizard"
+
+msgid "Wizard questions"
+msgstr "Preguntas del wizard"
+
+msgid "WooCommerce is not active. Activate it to pick categories."
+msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
+
+msgid "Write log file in uploads/bqw-logs/"
+msgstr "Escribir archivo de log en uploads/bqw-logs/"
+
+msgid "You must accept the privacy policy."
+msgstr "Debes aceptar la política de privacidad."
+
+msgid "You picked %d machines"
+msgstr "Has seleccionado %d máquinas"
+
+msgid "You picked 1 machine"
+msgstr "Has seleccionado 1 máquina"
+
+msgid "You've seen all the available options."
+msgstr "Has visto todas las opciones disponibles."
+
+msgid "Your application"
+msgstr "Tu aplicación"
+
+msgid "Your case is specific. Drop your details below and our team will reach out with a tailored proposal."
+msgstr "Tu caso es específico. Déjanos tus datos y nuestro equipo te contactará con una propuesta personalizada."
+
+msgid "Your case is specific. Let's talk directly."
+msgstr "Tu caso es específico. Hablemos directamente."
+
+msgid "Your details"
+msgstr "Tus datos"
+
+msgid "Your recommended machines will appear here as we chat."
+msgstr "Aquí aparecerán tus máquinas recomendadas según vayamos hablando."
+
+msgid "Your request:"
+msgstr "Tu consulta:"
+
+msgid "Your selected machines"
+msgstr "Máquinas seleccionadas"
+
+msgid "Your submission looks suspicious. Try again."
+msgstr "Tu envío parece sospechoso. Inténtalo de nuevo."
+
+msgid "Your top matches"
+msgstr "Tus mejores opciones"
+
+msgid "all brands (no filter)"
+msgstr "todas las marcas (sin filtro)"
+
+msgid "calls today"
+msgstr "llamadas hoy"
+
+msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
+msgstr "ej. \"bomedia\" para bomedia.agilecrm.com"
+
+msgid "e.g. ideal for textile, EU stock, best for SMB, avoid >2000 prints/month"
+msgstr "ej. ideal para textil, stock EU, ideal para PYMES, evitar >2000 impresiones/mes"
+
+msgid "hCaptcha"
+msgstr "hCaptcha"
+
+msgid "hCaptcha could not verify your submission."
+msgstr "hCaptcha no pudo verificar tu envío."
+
+msgid "hCaptcha keys"
+msgstr "Claves de hCaptcha"
+
+msgid "hCaptcha verification failed."
+msgstr "La verificación de hCaptcha falló."
+
+msgid "more"
+msgstr "más"
+
+msgid "privacy policy"
+msgstr "política de privacidad"
+
+msgid "reCAPTCHA could not verify your submission."
+msgstr "reCAPTCHA no pudo verificar tu envío."
+
+msgid "reCAPTCHA keys"
+msgstr "Claves de reCAPTCHA"
+
+msgid "reCAPTCHA verification failed."
+msgstr "La verificación de reCAPTCHA falló."
+
+msgid "selected"
+msgstr "seleccionadas"
+
+msgid "v3 score threshold (0.0–1.0):"
+msgstr "Umbral de score v3 (0.0–1.0):"
+
+msgid "~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive."
+msgstr "~$0.001 por recomendación con gpt-4o-mini. Otros modelos son 5–60× más caros."
+
+msgid "← Back to categories"
+msgstr "← Volver a categorías"
+
+msgid "↺ Start over"
+msgstr "↺ Empezar de nuevo"
+
