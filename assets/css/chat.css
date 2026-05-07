@@ -733,3 +733,36 @@
 }
 .bqw-captcha-help { margin: 0; font-size: 0.78rem; color: var(--bqw-muted, #64748b); font-style: italic; }
 .g-recaptcha, .cf-turnstile, .h-captcha { transform-origin: 0 0; }
+
+/* v1.7.13 — bot identity (avatar + name) on the intro screen. */
+.bqw-bot-identity {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+.bqw-bot-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-weight: 700;
+	font-size: 1.05rem;
+	flex: 0 0 40px;
+	overflow: hidden;
+}
+.bqw-bot-avatar-img {
+	background: var(--bqw-bg-soft, #f8fafc);
+	object-fit: cover;
+	border: 1px solid var(--bqw-border, #e5e7eb);
+}
+.bqw-bot-name {
+	font-size: 0.86rem;
+	font-weight: 700;
+	color: var(--bqw-muted, #64748b);
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}

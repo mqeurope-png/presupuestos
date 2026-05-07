@@ -89,6 +89,12 @@ final class Settings {
 			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
 			'hero_image_id'         => 0,
 			'site_display_name'     => 'boprint.net',
+			// v1.7.13 — bot branding (per-installation). bot_avatar_url wins
+			// over the initial+color combo when both are set.
+			'bot_name'              => 'Asistente de Bomedia',
+			'bot_avatar_id'         => 0,
+			'bot_avatar_color'      => '#0066cc',
+			'bot_initial'           => 'B',
 			'copy'                  => self::default_copy(),
 			// Microcopy retired in v1.7.0 (chatbot replaces step-based flow).
 			'enable_matchmaker'     => 1,
@@ -384,6 +390,13 @@ final class Settings {
 		$out['hero_subtitle']    = sanitize_text_field( $input['hero_subtitle'] ?? '' );
 		$out['hero_image_id']    = absint( $input['hero_image_id'] ?? 0 );
 		$out['site_display_name']= sanitize_text_field( $input['site_display_name'] ?? '' );
+
+		// v1.7.13 — bot branding.
+		$out['bot_name']         = sanitize_text_field( $input['bot_name'] ?? '' );
+		$out['bot_avatar_id']    = absint( $input['bot_avatar_id'] ?? 0 );
+		$color                   = sanitize_hex_color( (string) ( $input['bot_avatar_color'] ?? '' ) );
+		$out['bot_avatar_color'] = $color ?: '#0066cc';
+		$out['bot_initial']      = mb_substr( sanitize_text_field( $input['bot_initial'] ?? 'B' ), 0, 2 ) ?: 'B';
 
 		// Editable copy. Allow blanks (fall back to defaults at render time).
 		$copy_in  = (array) ( $input['copy'] ?? [] );
@@ -797,6 +810,45 @@ final class Settings {
 							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[site_display_name]"
 							value="<?php echo esc_attr( $s['site_display_name'] ?? '' ); ?>" placeholder="boprint.net" />
 						<p class="description"><?php esc_html_e( 'Used in the welcome card "View {site_name} catalog". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …).', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Bot branding', 'bomedia-quote-wizard' ); ?></h2>
+			<p class="description" style="max-width:760px"><?php esc_html_e( 'Configure how the in-page assistant identifies itself per installation. Defaults are kept across older sites that have not been edited yet.', 'bomedia-quote-wizard' ); ?></p>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="bqw_bot_name"><?php esc_html_e( 'Bot display name', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="text" id="bqw_bot_name" class="regular-text"
+							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[bot_name]"
+							value="<?php echo esc_attr( $s['bot_name'] ?? '' ); ?>" placeholder="Asistente de Bomedia" />
+						<p class="description"><?php esc_html_e( 'Available as the {bot_name} variable in Wizard copy. Examples: "Asistente de artisJet", "FLUX Assistant", "Asesor PimPam".', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Bot avatar', 'bomedia-quote-wizard' ); ?></th>
+					<td>
+						<?php $this->render_media_picker( 'bot_avatar_id', (int) ( $s['bot_avatar_id'] ?? 0 ) ); ?>
+						<p class="description"><?php esc_html_e( 'Square logo recommended (64×64 or 128×128). When empty, the wizard renders a circular badge with the initial below.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_bot_initial"><?php esc_html_e( 'Bot initial letter', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="text" id="bqw_bot_initial" maxlength="2" style="width:80px;"
+							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[bot_initial]"
+							value="<?php echo esc_attr( $s['bot_initial'] ?? 'B' ); ?>" />
+						<p class="description"><?php esc_html_e( 'Used only when no avatar image is set.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_bot_avatar_color"><?php esc_html_e( 'Bot avatar background', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="text" id="bqw_bot_avatar_color" class="bqw-color-input" style="width:120px;"
+							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[bot_avatar_color]"
+							value="<?php echo esc_attr( $s['bot_avatar_color'] ?? '#0066cc' ); ?>" placeholder="#0066cc" />
+						<p class="description"><?php esc_html_e( 'Hex color for the initial badge. Ignored when an avatar image is set.', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 			</table>

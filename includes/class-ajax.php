@@ -722,6 +722,17 @@ final class Ajax {
 		$lines   = [];
 		$lines[] = 'Lead recibido desde ' . ( $data['source_site'] ?? '' );
 		$lines[] = 'URL: ' . ( $data['source_url'] ?? '' );
+		// v1.7.13 — origin trail so sales can spot which site/branding the
+		// lead came from without parsing the URL.
+		$bot_name = trim( (string) Settings::get( 'bot_name', '' ) );
+		$site_dn  = trim( (string) Settings::get( 'site_display_name', '' ) );
+		if ( '' !== $bot_name || '' !== $site_dn ) {
+			$lines[] = sprintf(
+				'Generado desde el asistente de %s en %s',
+				$bot_name !== '' ? $bot_name : 'Bomedia',
+				$site_dn  !== '' ? $site_dn  : ( $data['source_site'] ?? '' )
+			);
+		}
 		$lines[] = '';
 		$lines[] = 'Máquinas de interés:';
 		if ( ! empty( $data['unsure'] ) ) {

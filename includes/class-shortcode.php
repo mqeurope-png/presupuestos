@@ -140,6 +140,14 @@ final class Shortcode {
 
 			// v1.7.11 — exposed for JS interpolation.
 			'site_display_name'   => (string) Settings::get( 'site_display_name', '' ),
+
+			// v1.7.13 — bot branding.
+			'bot_name'            => (string) Settings::get( 'bot_name', 'Asistente de Bomedia' ),
+			'bot_avatar_url'      => ! empty( $bot_avatar_id = (int) Settings::get( 'bot_avatar_id', 0 ) )
+				? (string) wp_get_attachment_image_url( $bot_avatar_id, 'thumbnail' )
+				: '',
+			'bot_avatar_color'    => (string) Settings::get( 'bot_avatar_color', '#0066cc' ),
+			'bot_initial'         => (string) Settings::get( 'bot_initial', 'B' ),
 		];
 
 		$this->assets_needed = true;
@@ -215,8 +223,13 @@ final class Shortcode {
 
 	private function i18n_strings(): array {
 		$site = (string) Settings::get( 'site_display_name', 'this site' );
-		$cp   = static function ( string $key ) use ( $site ): string {
-			return str_replace( '{site_display_name}', $site, Settings::copy( $key ) );
+		$bot  = (string) Settings::get( 'bot_name', 'Asistente de Bomedia' );
+		$cp   = static function ( string $key ) use ( $site, $bot ): string {
+			return str_replace(
+				[ '{site_display_name}', '{bot_name}' ],
+				[ $site, $bot ],
+				Settings::copy( $key )
+			);
 		};
 		return [
 			'step1Title'    => __( 'Product of interest', 'bomedia-quote-wizard' ),

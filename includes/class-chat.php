@@ -114,8 +114,13 @@ final class Chat {
 		$budget_options      = self::lines_to_options( (string) ( $w['matchmaker_budget_options'] ?? '' ) );
 
 		$site_display = (string) Settings::get( 'site_display_name', 'this site' );
-		$copy_replace = static function ( string $s ) use ( $site_display ): string {
-			return str_replace( '{site_display_name}', $site_display, $s );
+		$bot_name     = (string) Settings::get( 'bot_name', 'Asistente de Bomedia' );
+		$copy_replace = static function ( string $s ) use ( $site_display, $bot_name ): string {
+			return str_replace(
+				[ '{site_display_name}', '{bot_name}' ],
+				[ $site_display, $bot_name ],
+				$s
+			);
 		};
 
 		return [
@@ -402,7 +407,11 @@ final class Chat {
 		// admin's selected_categories. Brand-mapping does not apply here
 		// (the user explicitly asked for the local store catalog).
 		if ( '__site_catalog' === $next_id ) {
-			$msg = str_replace( '{site_display_name}', (string) Settings::get( 'site_display_name', 'this site' ), Settings::copy( 'site_catalog_title' ) );
+			$msg = str_replace(
+				[ '{site_display_name}', '{bot_name}' ],
+				[ (string) Settings::get( 'site_display_name', 'this site' ), (string) Settings::get( 'bot_name', 'Asistente de Bomedia' ) ],
+				Settings::copy( 'site_catalog_title' )
+			);
 			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'site_catalog' ] );
 			wp_send_json_success( [ 'step' => [
 				'id'         => 'site_catalog',

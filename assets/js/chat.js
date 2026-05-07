@@ -82,11 +82,31 @@
 		var bag = vars || {
 			nombre: state.contact_partial.name || '',
 			site_display_name: (cfg.site_display_name || ''),
+			bot_name: (cfg.bot_name || ''),
 			n: state.selection.length,
 		};
 		return text.replace(/\{(\w+)\}/g, function (m, k) {
 			return (bag[k] !== undefined && bag[k] !== null) ? String(bag[k]) : m;
 		});
+	}
+
+	// v1.7.13 — bot avatar + name shown on the intro screen.
+	function buildBotIdentity() {
+		var wrap = el('div', 'bqw-bot-identity');
+		var avatar;
+		if (cfg.bot_avatar_url) {
+			avatar = el('img', 'bqw-bot-avatar bqw-bot-avatar-img');
+			avatar.src = cfg.bot_avatar_url;
+			avatar.alt = '';
+			avatar.loading = 'lazy';
+		} else {
+			avatar = el('span', 'bqw-bot-avatar', escapeHtml(cfg.bot_initial || 'B'));
+			avatar.style.background = cfg.bot_avatar_color || '#0066cc';
+		}
+		wrap.appendChild(avatar);
+		var name = el('span', 'bqw-bot-name', escapeHtml(cfg.bot_name || 'Bomedia'));
+		wrap.appendChild(name);
+		return wrap;
 	}
 	function escapeHtml(s) {
 		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -299,15 +319,22 @@
 		progress.hidden = true;
 
 		var wrap = el('div', 'bqw-wiz-card bqw-wiz-intro');
-		wrap.innerHTML =
-			'<h2 class="bqw-wiz-h">' + escapeHtml(i18n.introTitle || 'Before we start, what should we call you?') + '</h2>' +
-			'<p class="bqw-wiz-sub">' + escapeHtml(i18n.introSub || 'It takes 2 minutes. No spam — we only reply to your enquiry.') + '</p>' +
+		wrap.appendChild(buildBotIdentity());
+		var hbox = el('div');
+		hbox.innerHTML =
+			'<h2 class="bqw-wiz-h">' + escapeHtml(bqwInterpolate(i18n.introTitle || 'Before we start, what should we call you?')) + '</h2>' +
+			'<p class="bqw-wiz-sub">' + escapeHtml(bqwInterpolate(i18n.introSub || 'It takes 2 minutes. No spam — we only reply to your enquiry.')) + '</p>';
+		wrap.appendChild(hbox);
+		// (the rest of the intro card follows below)
+		var fields = document.createElement('div');
+		fields.innerHTML =
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.firstName || 'First name') + ' *</span>' +
 				'<input type="text" id="bqw-intro-name" autocomplete="given-name" value="' + escapeHtml(state.contact_partial.name) + '" required></label>' +
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.email || 'Email') + ' *</span>' +
 				'<input type="email" id="bqw-intro-email" autocomplete="email" value="' + escapeHtml(state.contact_partial.email) + '" required></label>' +
 			'<p class="bqw-wiz-error" id="bqw-intro-error" hidden></p>' +
 			'<div class="bqw-wiz-actions"><button type="button" class="bqw-btn bqw-btn-primary" id="bqw-intro-continue">' + escapeHtml(i18n.continue || 'Continue') + ' →</button></div>';
+		wrap.appendChild(fields);
 		screen.appendChild(wrap);
 
 		var nameEl = wrap.querySelector('#bqw-intro-name');

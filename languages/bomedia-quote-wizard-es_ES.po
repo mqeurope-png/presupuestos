@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.12\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.13\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -136,6 +136,9 @@ msgstr "Pregúntame lo que quieras sobre estas máquinas, o salta al envío."
 msgid "Auto (site language)"
 msgstr "Auto (idioma del sitio)"
 
+msgid "Available as the {bot_name} variable in Wizard copy. Examples: \"Asistente de artisJet\", \"FLUX Assistant\", \"Asesor PimPam\"."
+msgstr "Disponible como variable {bot_name} en los textos del wizard. Ejemplos: \"Asistente de artisJet\", \"FLUX Assistant\", \"Asesor PimPam\"."
+
 msgid "Available categories"
 msgstr "Categorías disponibles"
 
@@ -171,6 +174,21 @@ msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. 
 
 msgid "Bomedia catalog title"
 msgstr ""
+
+msgid "Bot avatar"
+msgstr "Avatar del bot"
+
+msgid "Bot avatar background"
+msgstr "Color del avatar"
+
+msgid "Bot branding"
+msgstr "Branding del bot"
+
+msgid "Bot display name"
+msgstr "Nombre del bot"
+
+msgid "Bot initial letter"
+msgstr "Letra inicial"
 
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
@@ -258,6 +276,9 @@ msgstr "Separados por comas."
 
 msgid "Company"
 msgstr "Empresa"
+
+msgid "Configure how the in-page assistant identifies itself per installation. Defaults are kept across older sites that have not been edited yet."
+msgstr "Configura cómo se identifica el asistente en cada instalación. Los valores por defecto se mantienen en sitios antiguos sin editar."
 
 msgid "Confirmation"
 msgstr "Confirmación"
@@ -435,6 +456,9 @@ msgstr "Nos ayuda a evitar spam."
 
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
+
+msgid "Hex color for the initial badge. Ignored when an avatar image is set."
+msgstr "Color hex para el círculo. Ignorado si hay imagen de avatar."
 
 msgid "Hi %s, thanks for your interest."
 msgstr "Hola %s, gracias por tu interés."
@@ -931,6 +955,9 @@ msgstr "URL de origen"
 msgid "Source site"
 msgstr "Sitio de origen"
 
+msgid "Square logo recommended (64×64 or 128×128). When empty, the wizard renders a circular badge with the initial below."
+msgstr "Logo cuadrado recomendado (64×64 o 128×128). Si está vacío, el wizard renderiza un círculo con la inicial de abajo."
+
 msgid "Start"
 msgstr "Empezar"
 
@@ -1056,6 +1083,9 @@ msgstr "Usar IA para recomendaciones"
 
 msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …)."
 msgstr "Se usa en la card del welcome \"Ver catálogo de {site_name}\". Pon el nombre del sitio donde corre el plugin (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+
+msgid "Used only when no avatar image is set."
+msgstr "Solo se usa cuando no hay imagen de avatar."
 
 msgid "View"
 msgstr "Ver"
