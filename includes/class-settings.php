@@ -84,8 +84,7 @@ final class Settings {
 			'hero_title'            => 'Encuentra tu solución de impresión ideal',
 			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
 			'hero_image_id'         => 0,
-			'enable_microcopy'      => 1,
-			'microcopy_messages'    => "Vamos allá\nGenial, sigamos\nCasi lo tenemos\nÚltima pregunta\nListo para mandarlo",
+			// Microcopy retired in v1.7.0 (chatbot replaces step-based flow).
 			'enable_matchmaker'     => 1,
 			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
 			'matchmaker_budget_options'  => "Hasta 5.000 €\n5.000–15.000 €\n15.000–40.000 €\nMás de 40.000 €",
@@ -310,8 +309,8 @@ final class Settings {
 		unset( $out['hero_trust'] );
 
 		// Microcopy.
-		$out['enable_microcopy']  = ! empty( $input['enable_microcopy'] ) ? 1 : 0;
-		$out['microcopy_messages'] = $this->sanitize_lines( (string) ( $input['microcopy_messages'] ?? '' ) );
+		// v1.7.0 — microcopy retired. Drop legacy values from BD on next save.
+		unset( $out['enable_microcopy'], $out['microcopy_messages'] );
 
 		// Matchmaker.
 		$out['enable_matchmaker']           = ! empty( $input['enable_matchmaker'] ) ? 1 : 0;
@@ -688,20 +687,6 @@ final class Settings {
 					<th scope="row"><?php esc_html_e( 'Background image', 'bomedia-quote-wizard' ); ?></th>
 					<td>
 						<?php $this->render_media_picker( 'hero_image_id', (int) ( $s['hero_image_id'] ?? 0 ) ); ?>
-					</td>
-				</tr>
-			</table>
-
-			<h2 class="title"><?php esc_html_e( 'Microcopy between steps', 'bomedia-quote-wizard' ); ?></h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><?php esc_html_e( 'Show microcopy', 'bomedia-quote-wizard' ); ?></th>
-					<td>
-						<label><input type="checkbox" name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[enable_microcopy]" value="1" <?php checked( ! empty( $s['enable_microcopy'] ) ); ?> /> <?php esc_html_e( 'Display brief encouragement messages when advancing.', 'bomedia-quote-wizard' ); ?></label>
-						<p style="margin-top:8px;">
-							<textarea name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[microcopy_messages]" rows="6" cols="60" class="large-text code"><?php echo esc_textarea( $s['microcopy_messages'] ); ?></textarea>
-						</p>
-						<p class="description"><?php esc_html_e( 'One message per line, in step order. Default: 5 messages for hero→step1, 1→2, 2→3, 3→4, pre-submit.', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 			</table>

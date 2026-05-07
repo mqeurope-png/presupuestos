@@ -31,7 +31,9 @@ final class Shortcode {
 
 	public function register_assets(): void {
 		wp_register_style( 'bqw-wizard', BQW_PLUGIN_URL . 'assets/css/wizard.css', [], BQW_VERSION );
+		wp_register_style( 'bqw-chat',   BQW_PLUGIN_URL . 'assets/css/chat.css',   [ 'bqw-wizard' ], BQW_VERSION );
 		wp_register_script( 'bqw-wizard', BQW_PLUGIN_URL . 'assets/js/wizard.js', [], BQW_VERSION, true );
+		wp_register_script( 'bqw-chat',   BQW_PLUGIN_URL . 'assets/js/chat.js',   [], BQW_VERSION, true );
 	}
 
 	public function render( $atts ): string {
@@ -127,8 +129,6 @@ final class Shortcode {
 			'hero_image_url'      => ! empty( $settings['hero_image_id'] ) ? wp_get_attachment_image_url( (int) $settings['hero_image_id'], 'large' ) : '',
 
 			// Microcopy.
-			'enable_microcopy'    => ! empty( $settings['enable_microcopy'] ),
-			'microcopy_messages'  => $this->lines_to_array( $settings['microcopy_messages'] ?? '' ),
 
 			// Matchmaker.
 			'enable_matchmaker'   => ! empty( $settings['enable_matchmaker'] ),
@@ -141,7 +141,8 @@ final class Shortcode {
 
 		$this->assets_needed = true;
 		wp_enqueue_style( 'bqw-wizard' );
-		wp_enqueue_script( 'bqw-wizard' );
+		wp_enqueue_style( 'bqw-chat' );
+		wp_enqueue_script( 'bqw-chat' );
 		wp_localize_script(
 			'bqw-wizard',
 			'BQW',
@@ -155,9 +156,9 @@ final class Shortcode {
 			]
 		);
 
-		$tpl = locate_template( 'bomedia-quote-wizard/wizard.php' );
+		$tpl = locate_template( 'bomedia-quote-wizard/chat.php' );
 		if ( ! $tpl ) {
-			$tpl = BQW_PLUGIN_DIR . 'templates/wizard.php';
+			$tpl = BQW_PLUGIN_DIR . 'templates/chat.php';
 		}
 
 		ob_start();
@@ -257,6 +258,15 @@ final class Shortcode {
 			'pickThis'      => __( 'Pick', 'bomedia-quote-wizard' ),
 			/* translators: %s: external domain name */
 			'availableOn'   => __( 'Available on %s', 'bomedia-quote-wizard' ),
+			// Chatbot strings.
+			'greeting'      => __( "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine.", 'bomedia-quote-wizard' ),
+			'taskUVLED'     => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ),
+			'taskTextile'   => __( 'Print on textile', 'bomedia-quote-wizard' ),
+			'taskLaser'     => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),
+			'taskPack'      => __( 'Labels / packaging', 'bomedia-quote-wizard' ),
+			'taskUnsure'    => __( "I'm not sure", 'bomedia-quote-wizard' ),
+			'typeHere'      => __( 'Or type your answer freely…', 'bomedia-quote-wizard' ),
+			'send'          => __( 'Send', 'bomedia-quote-wizard' ),
 		];
 	}
 

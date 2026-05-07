@@ -13,7 +13,15 @@ delete_option( 'bqw_wizard_settings' );
 delete_option( 'bqw_notifications_settings' );
 delete_option( 'bqw_settings_migrated_v2' );
 delete_option( 'bqw_settings_migrated_v3' );
+delete_option( 'bqw_conversations_schema_v1' );
 delete_option( 'bqw_openai_last_call' );
+delete_option( 'bqw_catalog_last_fetch' );
+delete_option( 'bqw_catalog_count' );
+
+// Drop the conversations table.
+global $wpdb;
+$convo_table = $wpdb->prefix . 'bqw_conversations';
+$wpdb->query( "DROP TABLE IF EXISTS {$convo_table}" ); // phpcs:ignore WordPress.DB.PreparedSQL
 
 // Drop monthly cost trackers (best-effort, current and recent months).
 for ( $i = 0; $i < 12; $i++ ) {

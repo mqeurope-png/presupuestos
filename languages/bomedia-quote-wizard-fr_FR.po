@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.6.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -28,7 +28,16 @@ msgstr ""
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr ""
 
+msgid "Abandoned"
+msgstr ""
+
+msgid "Abandoned conversations"
+msgstr ""
+
 msgid "Account email"
+msgstr ""
+
+msgid "Actions"
 msgstr ""
 
 msgid "Add"
@@ -88,6 +97,9 @@ msgstr "Retour"
 msgid "Back to home"
 msgstr "Retour à l'accueil"
 
+msgid "Back to list"
+msgstr ""
+
 msgid "Background image"
 msgstr ""
 
@@ -98,6 +110,9 @@ msgid "Bomedia Quote Wizard"
 msgstr ""
 
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
+msgstr ""
+
+msgid "Bomedia assistant"
 msgstr ""
 
 msgid "Bot verification"
@@ -187,6 +202,9 @@ msgstr ""
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr ""
 
+msgid "Cut/engrave with laser"
+msgstr ""
+
 msgid "Daily"
 msgstr ""
 
@@ -196,7 +214,10 @@ msgstr ""
 msgid "Default tags"
 msgstr ""
 
-msgid "Display brief encouragement messages when advancing."
+msgid "Delete"
+msgstr ""
+
+msgid "Delete this conversation?"
 msgstr ""
 
 msgid "Domain"
@@ -215,6 +236,9 @@ msgid "Email"
 msgstr "E-mail"
 
 msgid "Email subject"
+msgstr ""
+
+msgid "Empty message."
 msgstr ""
 
 msgid "Enable"
@@ -250,6 +274,9 @@ msgstr ""
 msgid "File logging"
 msgstr ""
 
+msgid "First message"
+msgstr ""
+
 msgid "First name"
 msgstr "Prénom"
 
@@ -280,6 +307,9 @@ msgstr "Nous aide à éviter le spam."
 msgid "Hero (welcome screen)"
 msgstr ""
 
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgstr ""
+
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr "J'ai lu et j'accepte la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">politique de confidentialité</a>"
 
@@ -295,13 +325,22 @@ msgstr "Je ne suis pas sûr"
 msgid "I'm not sure, help me choose"
 msgstr "Je ne suis pas sûr, aidez-moi à choisir"
 
+msgid "IP"
+msgstr ""
+
 msgid "Import JSON"
+msgstr ""
+
+msgid "Labels / packaging"
 msgstr ""
 
 msgid "Last call:"
 msgstr ""
 
 msgid "Last fetch"
+msgstr ""
+
+msgid "Last message"
 msgstr ""
 
 msgid "Last name"
@@ -364,7 +403,7 @@ msgstr "Message (facultatif)"
 msgid "Message:"
 msgstr ""
 
-msgid "Microcopy between steps"
+msgid "Messages"
 msgstr ""
 
 msgid "Missing category."
@@ -403,6 +442,9 @@ msgstr ""
 msgid "Next"
 msgstr "Suivant"
 
+msgid "No abandoned conversations with 3+ messages."
+msgstr ""
+
 msgid "No machines available in this category. Please contact us directly."
 msgstr "Aucune machine disponible dans cette catégorie. Contactez-nous directement."
 
@@ -427,10 +469,10 @@ msgstr ""
 msgid "On which materials?"
 msgstr ""
 
-msgid "One message per line, in step order. Default: 5 messages for hero→step1, 1→2, 2→3, 3→4, pre-submit."
+msgid "One option per line."
 msgstr ""
 
-msgid "One option per line."
+msgid "Open chat again →"
 msgstr ""
 
 msgid "OpenAI API key"
@@ -452,6 +494,9 @@ msgid "OpenAI returned an invalid response."
 msgstr ""
 
 msgid "OpenAI returned malformed data."
+msgstr ""
+
+msgid "Or type your answer freely…"
 msgstr ""
 
 msgid "Phone"
@@ -487,6 +532,12 @@ msgstr ""
 msgid "Post-submit redirect URL"
 msgstr ""
 
+msgid "Print on objects (UV-LED)"
+msgstr ""
+
+msgid "Print on textile"
+msgstr ""
+
 msgid "Privacy policy URL"
 msgstr ""
 
@@ -512,6 +563,9 @@ msgid "Quote Lead"
 msgstr ""
 
 msgid "Quote Leads"
+msgstr ""
+
+msgid "Quote chatbot"
 msgstr ""
 
 msgid "Quote request wizard"
@@ -571,6 +625,12 @@ msgstr ""
 msgid "Selected (drag to reorder)"
 msgstr ""
 
+msgid "Send"
+msgstr ""
+
+msgid "Send my request"
+msgstr ""
+
 msgid "Send request"
 msgstr "Envoyer la demande"
 
@@ -579,6 +639,12 @@ msgstr ""
 
 msgid "Sending…"
 msgstr "Envoi…"
+
+msgid "Session"
+msgstr ""
+
+msgid "Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation."
+msgstr ""
 
 msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr ""
@@ -592,10 +658,13 @@ msgstr ""
 msgid "Show hero"
 msgstr ""
 
-msgid "Show microcopy"
+msgid "Site key"
 msgstr ""
 
-msgid "Site key"
+msgid "Skip the conversation and just send your details"
+msgstr ""
+
+msgid "Skip to send"
 msgstr ""
 
 msgid "Solicitud presupuesto web"
@@ -603,6 +672,9 @@ msgstr ""
 
 msgid "Something went wrong. Please try again."
 msgstr "Une erreur est survenue. Veuillez réessayer."
+
+msgid "Sorry, I'm having trouble responding right now. Try again in a moment, or skip to send your details."
+msgstr ""
 
 msgid "Source URL"
 msgstr ""
@@ -630,6 +702,9 @@ msgstr ""
 
 msgid "Summary"
 msgstr "Récapitulatif"
+
+msgid "Tell us what you need…"
+msgstr ""
 
 msgid "Test API connection"
 msgstr ""
@@ -682,10 +757,16 @@ msgstr ""
 msgid "Use AI for recommendations"
 msgstr ""
 
+msgid "View"
+msgstr ""
+
 msgid "View product →"
 msgstr ""
 
 msgid "We don't have machines configured for the wizard yet. Please contact us."
+msgstr ""
+
+msgid "We've received your answers. We'll get back to you soon."
 msgstr ""
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
@@ -710,6 +791,9 @@ msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr ""
 
 msgid "Write log file in uploads/bqw-logs/"
+msgstr ""
+
+msgid "You chose to skip the conversation. Want to use the assistant instead?"
 msgstr ""
 
 msgid "You must accept the privacy policy."

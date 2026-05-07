@@ -31,7 +31,92 @@ final class Lead_CPT {
 		add_action( 'restrict_manage_posts', [ $this, 'status_filter' ] );
 		add_filter( 'parse_query', [ $this, 'apply_status_filter' ] );
 		add_action( 'admin_post_bqw_retry_lead', [ $this, 'handle_retry' ] );
+		add_action( 'admin_post_bqw_delete_session', [ $this, 'handle_delete_session' ] );
 		add_filter( 'post_row_actions', [ $this, 'row_actions' ], 10, 2 );
+		add_action( 'admin_menu', [ $this, 'register_abandoned_submenu' ] );
+	}
+
+	public function register_abandoned_submenu(): void {
+		add_submenu_page(
+			'edit.php?post_type=' . self::POST_TYPE,
+			__( 'Abandoned conversations', 'bomedia-quote-wizard' ),
+			__( 'Abandoned', 'bomedia-quote-wizard' ),
+			'edit_posts',
+			'bqw-abandoned',
+			[ $this, 'render_abandoned_page' ]
+		);
+	}
+
+	public function render_abandoned_page(): void {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		$rows = Conversations::abandoned( 3, 100 );
+		echo '<div class="wrap"><h1>' . esc_html__( 'Abandoned conversations', 'bomedia-quote-wizard' ) . '</h1>';
+		if ( empty( $rows ) ) {
+			echo '<p>' . esc_html__( 'No abandoned conversations with 3+ messages.', 'bomedia-quote-wizard' ) . '</p></div>';
+			return;
+		}
+		echo '<p>' . esc_html__( 'Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation.', 'bomedia-quote-wizard' ) . '</p>';
+		$view = isset( $_GET['view'] ) ? sanitize_text_field( wp_unslash( $_GET['view'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $view ) {
+			$this->render_session_view( $view );
+			return;
+		}
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th>' . esc_html__( 'First message', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Last message', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Messages', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'IP', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Session', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Actions', 'bomedia-quote-wizard' ) . '</th>';
+		echo '</tr></thead><tbody>';
+		foreach ( $rows as $r ) {
+			$view_url = add_query_arg( [ 'post_type' => self::POST_TYPE, 'page' => 'bqw-abandoned', 'view' => $r['session_id'] ], admin_url( 'edit.php' ) );
+			$delete_url = wp_nonce_url(
+				admin_url( 'admin-post.php?action=bqw_delete_session&session=' . rawurlencode( $r['session_id'] ) ),
+				'bqw_delete_session_' . $r['session_id']
+			);
+			echo '<tr>';
+			echo '<td>' . esc_html( $r['first_at'] ) . '</td>';
+			echo '<td>' . esc_html( $r['last_at'] ) . '</td>';
+			echo '<td>' . (int) $r['messages'] . '</td>';
+			echo '<td>' . esc_html( $r['ip'] ) . '</td>';
+			echo '<td><code>' . esc_html( substr( $r['session_id'], 0, 8 ) ) . '…</code></td>';
+			echo '<td><a href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'bomedia-quote-wizard' ) . '</a> · ';
+			echo '<a href="' . esc_url( $delete_url ) . '" onclick="return confirm(\'' . esc_js( __( 'Delete this conversation?', 'bomedia-quote-wizard' ) ) . '\');">' . esc_html__( 'Delete', 'bomedia-quote-wizard' ) . '</a></td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table></div>';
+	}
+
+	private function render_session_view( string $session_id ): void {
+		$rows = Conversations::history( $session_id, 200 );
+		$back = remove_query_arg( 'view' );
+		echo '<p><a href="' . esc_url( $back ) . '">&larr; ' . esc_html__( 'Back to list', 'bomedia-quote-wizard' ) . '</a></p>';
+		echo '<div style="background:#fff;border:1px solid #ccd0d4;border-radius:4px;padding:12px;max-width:760px;">';
+		foreach ( $rows as $r ) {
+			$role = $r['role'];
+			$bg = ( 'assistant' === $role ) ? '#f1f5f9' : '#dbeafe';
+			$align = ( 'assistant' === $role ) ? 'left' : 'right';
+			echo '<div style="margin:6px 0;text-align:' . esc_attr( $align ) . ';">';
+			echo '<span style="display:inline-block;background:' . esc_attr( $bg ) . ';padding:6px 10px;border-radius:8px;max-width:75%;text-align:left;">';
+			echo '<small style="color:#777;">' . esc_html( $r['role'] ) . ' · ' . esc_html( $r['created_at'] ) . '</small><br/>';
+			echo esc_html( $r['content'] );
+			echo '</span></div>';
+		}
+		echo '</div></div>';
+	}
+
+	public function handle_delete_session(): void {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( esc_html__( 'Forbidden', 'bomedia-quote-wizard' ) );
+		}
+		$sid = isset( $_GET['session'] ) ? sanitize_text_field( wp_unslash( $_GET['session'] ) ) : '';
+		check_admin_referer( 'bqw_delete_session_' . $sid );
+		Conversations::delete_session( $sid );
+		wp_safe_redirect( add_query_arg( [ 'post_type' => self::POST_TYPE, 'page' => 'bqw-abandoned' ], admin_url( 'edit.php' ) ) );
+		exit;
 	}
 
 	public function register_cpt(): void {

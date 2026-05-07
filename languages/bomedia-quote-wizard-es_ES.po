@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.6.1\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.0\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -28,8 +28,17 @@ msgstr "Recomendaciones con IA (OpenAI)"
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr "Importación de notas IA: %1$d productos actualizados, %2$d slugs no encontrados."
 
+msgid "Abandoned"
+msgstr "Abandonadas"
+
+msgid "Abandoned conversations"
+msgstr "Conversaciones abandonadas"
+
 msgid "Account email"
 msgstr "Email de la cuenta"
+
+msgid "Actions"
+msgstr "Acciones"
 
 msgid "Add"
 msgstr "Añadir"
@@ -88,6 +97,9 @@ msgstr "Atrás"
 msgid "Back to home"
 msgstr "Volver al inicio"
 
+msgid "Back to list"
+msgstr "Volver a la lista"
+
 msgid "Background image"
 msgstr "Imagen de fondo"
 
@@ -99,6 +111,9 @@ msgstr "Bomedia Quote Wizard"
 
 msgid "Bomedia Quote Wizard requires WooCommerce to be installed and active. The plugin has been deactivated."
 msgstr "Bomedia Quote Wizard requiere que WooCommerce esté instalado y activo. El plugin se ha desactivado."
+
+msgid "Bomedia assistant"
+msgstr "Asistente de Bomedia"
 
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
@@ -187,6 +202,9 @@ msgstr "El cliente no está seguro, pide ayuda."
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr "Las respuestas del wizard del cliente se envían a OpenAI para generar recomendaciones. Los datos personales (nombre, email, teléfono) NO se envían."
 
+msgid "Cut/engrave with laser"
+msgstr "Cortar y grabar con láser"
+
 msgid "Daily"
 msgstr "Diario"
 
@@ -196,8 +214,11 @@ msgstr "Fecha"
 msgid "Default tags"
 msgstr "Tags por defecto"
 
-msgid "Display brief encouragement messages when advancing."
-msgstr "Muestra mensajes breves de ánimo al avanzar."
+msgid "Delete"
+msgstr ""
+
+msgid "Delete this conversation?"
+msgstr "¿Eliminar esta conversación?"
 
 msgid "Domain"
 msgstr "Dominio"
@@ -216,6 +237,9 @@ msgstr "Email"
 
 msgid "Email subject"
 msgstr "Asunto del email"
+
+msgid "Empty message."
+msgstr "Mensaje vacío."
 
 msgid "Enable"
 msgstr "Activar"
@@ -250,6 +274,9 @@ msgstr "Exportar JSON"
 msgid "File logging"
 msgstr "Registro a archivo"
 
+msgid "First message"
+msgstr "Primer mensaje"
+
 msgid "First name"
 msgstr "Nombre"
 
@@ -280,6 +307,9 @@ msgstr "Nos ayuda a evitar spam."
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
 
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
+msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
+
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr "He leído y acepto la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>"
 
@@ -295,14 +325,23 @@ msgstr "No estoy seguro"
 msgid "I'm not sure, help me choose"
 msgstr "No estoy seguro, ayúdame a elegir"
 
+msgid "IP"
+msgstr "IP"
+
 msgid "Import JSON"
 msgstr "Importar JSON"
+
+msgid "Labels / packaging"
+msgstr "Etiquetas / packaging"
 
 msgid "Last call:"
 msgstr "Última llamada:"
 
 msgid "Last fetch"
 msgstr "Último fetch"
+
+msgid "Last message"
+msgstr "Último mensaje"
 
 msgid "Last name"
 msgstr "Apellidos"
@@ -364,8 +403,8 @@ msgstr "Mensaje (opcional)"
 msgid "Message:"
 msgstr "Mensaje:"
 
-msgid "Microcopy between steps"
-msgstr "Microcopy entre pasos"
+msgid "Messages"
+msgstr "Mensajes"
 
 msgid "Missing category."
 msgstr "Falta la categoría."
@@ -403,6 +442,9 @@ msgstr "Nunca"
 msgid "Next"
 msgstr "Siguiente"
 
+msgid "No abandoned conversations with 3+ messages."
+msgstr "No hay conversaciones abandonadas con 3 o más mensajes."
+
 msgid "No machines available in this category. Please contact us directly."
 msgstr "No hay máquinas disponibles en esta categoría. Contáctanos directamente."
 
@@ -427,11 +469,11 @@ msgstr "Ofrece un camino \"Ayúdame a elegir\" que recomienda los 3 mejores prod
 msgid "On which materials?"
 msgstr "¿En qué materiales?"
 
-msgid "One message per line, in step order. Default: 5 messages for hero→step1, 1→2, 2→3, 3→4, pre-submit."
-msgstr "Un mensaje por línea, en orden de paso. Por defecto: 5 mensajes para hero→1, 1→2, 2→3, 3→4, pre-envío."
-
 msgid "One option per line."
 msgstr "Una opción por línea."
+
+msgid "Open chat again →"
+msgstr "Abrir el chat otra vez →"
 
 msgid "OpenAI API key"
 msgstr "API key de OpenAI"
@@ -453,6 +495,9 @@ msgstr "OpenAI devolvió una respuesta inválida."
 
 msgid "OpenAI returned malformed data."
 msgstr "OpenAI devolvió datos mal formados."
+
+msgid "Or type your answer freely…"
+msgstr "O escribe tu respuesta libremente…"
 
 msgid "Phone"
 msgstr "Teléfono"
@@ -487,6 +532,12 @@ msgstr "Tómate un momento antes de enviar."
 msgid "Post-submit redirect URL"
 msgstr "URL de redirección post-envío"
 
+msgid "Print on objects (UV-LED)"
+msgstr "Imprimir sobre objetos (UV-LED)"
+
+msgid "Print on textile"
+msgstr "Imprimir textil"
+
 msgid "Privacy policy URL"
 msgstr "URL política de privacidad"
 
@@ -513,6 +564,9 @@ msgstr "Lead de presupuesto"
 
 msgid "Quote Leads"
 msgstr "Leads de presupuesto"
+
+msgid "Quote chatbot"
+msgstr "Asistente de presupuesto"
 
 msgid "Quote request wizard"
 msgstr "Asistente de solicitud de presupuesto"
@@ -571,6 +625,12 @@ msgstr "Ver recomendaciones"
 msgid "Selected (drag to reorder)"
 msgstr "Seleccionadas (arrastra para reordenar)"
 
+msgid "Send"
+msgstr "Enviar"
+
+msgid "Send my request"
+msgstr "Enviar mi solicitud"
+
 msgid "Send request"
 msgstr "Enviar solicitud"
 
@@ -579,6 +639,12 @@ msgstr "Envía las respuestas del cliente a OpenAI para puntuar productos. Si lo
 
 msgid "Sending…"
 msgstr "Enviando…"
+
+msgid "Session"
+msgstr "Sesión"
+
+msgid "Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation."
+msgstr "Sesiones con al menos 3 mensajes que no acabaron en lead. Click en una fila para ver la conversación."
 
 msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr "Muestra una casilla de opt-in de marketing en el paso de contacto."
@@ -592,17 +658,23 @@ msgstr "Mostrar vacías"
 msgid "Show hero"
 msgstr "Mostrar hero"
 
-msgid "Show microcopy"
-msgstr "Mostrar microcopy"
-
 msgid "Site key"
 msgstr "Site key"
+
+msgid "Skip the conversation and just send your details"
+msgstr "Saltar la conversación y enviar tus datos directamente"
+
+msgid "Skip to send"
+msgstr "Saltar al envío"
 
 msgid "Solicitud presupuesto web"
 msgstr "Solicitud presupuesto web"
 
 msgid "Something went wrong. Please try again."
 msgstr "Algo ha fallado. Inténtalo de nuevo."
+
+msgid "Sorry, I'm having trouble responding right now. Try again in a moment, or skip to send your details."
+msgstr "Lo siento, tengo problemas para responder ahora mismo. Inténtalo en un momento o salta directamente al envío."
 
 msgid "Source URL"
 msgstr "URL de origen"
@@ -630,6 +702,9 @@ msgstr "Subtítulo"
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "Tell us what you need…"
+msgstr "Cuéntanos qué necesitas…"
 
 msgid "Test API connection"
 msgstr "Probar conexión API"
@@ -682,11 +757,17 @@ msgstr "Uso hoy"
 msgid "Use AI for recommendations"
 msgstr "Usar IA para recomendaciones"
 
+msgid "View"
+msgstr "Ver"
+
 msgid "View product →"
 msgstr "Ver producto →"
 
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
+
+msgid "We've received your answers. We'll get back to you soon."
+msgstr "Hemos recibido tus respuestas. Te contactaremos en breve."
 
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
@@ -711,6 +792,9 @@ msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
 
 msgid "Write log file in uploads/bqw-logs/"
 msgstr "Escribir archivo de log en uploads/bqw-logs/"
+
+msgid "You chose to skip the conversation. Want to use the assistant instead?"
+msgstr "Has decidido saltarte la conversación. ¿Quieres volver al asistente?"
 
 msgid "You must accept the privacy policy."
 msgstr "Debes aceptar la política de privacidad."

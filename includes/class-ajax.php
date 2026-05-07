@@ -323,7 +323,66 @@ final class Ajax {
 			wp_send_json_error( [ 'message' => $data->get_error_message() ], 400 );
 		}
 
+		// If we have a chat session, snapshot the conversation and ask OpenAI
+		// for a 5-point summary + best-effort field extraction.
+		if ( ! empty( $data['session_id'] ) ) {
+			$history = Conversations::history( (string) $data['session_id'], 100 );
+			$data['conversation_history'] = $history;
+
+			// Track whether the user actually conversed (>= 1 user message).
+			$user_msgs = 0;
+			foreach ( $history as $h ) {
+				if ( 'user' === $h['role'] ) {
+					$user_msgs++;
+				}
+			}
+			$data['conversation_user_messages'] = $user_msgs;
+
+			$summary = Chat::summarise( (string) $data['session_id'], substr( get_locale(), 0, 2 ) );
+			if ( ! empty( $summary['summary'] ) ) {
+				$data['ai_summary'] = $summary['summary'];
+			}
+			if ( ! empty( $summary['fields'] ) ) {
+				// Backfill any empty extracted fields with the summariser pass.
+				foreach ( $summary['fields'] as $k => $v ) {
+					if ( empty( $data['extracted_fields'][ $k ] ) ) {
+						$data['extracted_fields'][ $k ] = $v;
+					}
+				}
+			}
+		}
+
+		// Backfill the lead form values from extracted fields when the user
+		// skipped without typing them (chat-only path).
+		if ( ! empty( $data['extracted_fields'] ) ) {
+			foreach ( [ 'first_name', 'last_name', 'company', 'email', 'phone', 'country' ] as $field ) {
+				if ( empty( $data[ $field ] ) && ! empty( $data['extracted_fields'][ $field ] ) ) {
+					$data[ $field ] = $data['extracted_fields'][ $field ];
+				}
+			}
+			// Map to the existing application/materials/volume fields too.
+			if ( empty( $data['applications'] ) && ! empty( $data['extracted_fields']['applications'] ) ) {
+				$data['applications'] = $data['extracted_fields']['applications'];
+				$data['application']  = implode( ', ', $data['applications'] );
+			}
+			if ( empty( $data['materials'] ) && ! empty( $data['extracted_fields']['materials'] ) ) {
+				$data['materials'] = $data['extracted_fields']['materials'];
+			}
+			if ( empty( $data['volume'] ) && ! empty( $data['extracted_fields']['volume'] ) ) {
+				$data['volume'] = $data['extracted_fields']['volume'];
+			}
+		}
+
 		$lead_id = Lead_CPT::create_lead( $data, 'pending_retry' );
+
+		// Persist session id and conversation snapshot on the lead.
+		if ( $lead_id && ! empty( $data['session_id'] ) ) {
+			update_post_meta( $lead_id, '_bqw_session_id', (string) $data['session_id'] );
+			update_post_meta( $lead_id, '_bqw_conversation_full', wp_json_encode( $data['conversation_history'] ?? [] ) );
+			if ( ! empty( $data['ai_summary'] ) ) {
+				update_post_meta( $lead_id, '_bqw_ai_summary', wp_json_encode( $data['ai_summary'] ) );
+			}
+		}
 
 		[ $ok, $contact_id, $contact_url, $error ] = self::push_to_agile( $data, $lead_id );
 
@@ -391,6 +450,17 @@ final class Ajax {
 		$message      = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
 		$privacy      = ! empty( $_POST['privacy'] );
 		$email_optin  = ! empty( $_POST['email_optin'] );
+		$flow_origin  = sanitize_text_field( (string) ( $_POST['flow'] ?? 'chat' ) );
+		$session_id   = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+
+		$extracted = [];
+		$ext_raw   = (string) wp_unslash( $_POST['extracted_fields_json'] ?? '' );
+		if ( '' !== $ext_raw ) {
+			$decoded = json_decode( $ext_raw, true );
+			if ( is_array( $decoded ) ) {
+				$extracted = Chat::sanitize_extracted_fields( $decoded );
+			}
+		}
 
 		$unsure  = ! empty( $_POST['unsure'] );
 		$json    = wp_unslash( $_POST['selected_products_json'] ?? '[]' );
@@ -426,24 +496,27 @@ final class Ajax {
 		if ( ! $privacy ) {
 			return new \WP_Error( 'bqw_privacy', __( 'You must accept the privacy policy.', 'bomedia-quote-wizard' ) );
 		}
-		// At least one machine OR explicit "unsure".
-		if ( ! $unsure && empty( $selected_products ) ) {
+		// In chat flow the user may submit without explicit picks; the AI
+		// summary + extracted_fields tell sales what they want. Only the
+		// classic step-based flow requires an explicit machine pick.
+		$is_chat_or_skip = in_array( $flow_origin, [ 'chat', 'skip' ], true );
+		if ( ! $is_chat_or_skip && ! $unsure && empty( $selected_products ) ) {
 			return new \WP_Error( 'bqw_no_products', __( 'Please pick at least one machine.', 'bomedia-quote-wizard' ) );
-		}
-		// At least one application if step is enabled.
-		$enable_application = (int) Settings::get( 'enable_application', 0 );
-		if ( $enable_application && empty( $applications ) ) {
-			return new \WP_Error( 'bqw_no_application', __( 'Please pick at least one application.', 'bomedia-quote-wizard' ) );
 		}
 
 		// Aggregate fields used for AgileCRM and notifications.
 		$product_names = array_map( static function ( $p ) { return $p['name']; }, $selected_products );
 		$product_ids   = array_map( static function ( $p ) { return (int) $p['id']; }, $selected_products );
 
-		// Union of product_cat slugs across all selected products (for tags).
+		// Union of product_cat slugs across Woo-sourced selections (for tags).
+		// Catalog (Supabase) selections expose their brand instead.
 		$category_slugs = [];
 		$category_names = [];
 		foreach ( $selected_products as $p ) {
+			$is_woo = ( ( $p['source'] ?? 'woo' ) === 'woo' ) && ctype_digit( (string) $p['id'] );
+			if ( ! $is_woo ) {
+				continue;
+			}
 			$terms = (array) wp_get_post_terms( (int) $p['id'], 'product_cat' );
 			foreach ( $terms as $t ) {
 				if ( is_object( $t ) ) {
@@ -477,6 +550,9 @@ final class Ajax {
 			'materials'         => $materials,
 			'volume'            => $volume,
 			'email_optin'       => $email_optin,
+			'flow_origin'       => $flow_origin,
+			'session_id'        => $session_id,
+			'extracted_fields'  => $extracted,
 			'source_url'        => esc_url_raw( wp_unslash( $_POST['source_url'] ?? home_url( add_query_arg( null, null ) ) ) ),
 			'source_site'       => wp_parse_url( home_url(), PHP_URL_HOST ),
 			'ip'                => self::client_ip(),
@@ -573,6 +649,13 @@ final class Ajax {
 		if ( ! empty( $data['email_optin'] ) ) {
 			$tags[] = 'marketing-optin';
 		}
+		// Tag origin so sales sees the path the user took.
+		if ( ! empty( $data['flow_origin'] ) && 'skip' === $data['flow_origin'] ) {
+			$tags[] = 'direct-send';
+			if ( ! empty( $data['conversation_user_messages'] ) ) {
+				$tags[] = 'partial-conversation';
+			}
+		}
 		$tags = array_values( array_unique( $tags ) );
 
 		$properties = [
@@ -641,6 +724,14 @@ final class Ajax {
 		$lines[] = '';
 		$lines[] = 'Mensaje:';
 		$lines[] = $data['message'] ?? '';
+
+		if ( ! empty( $data['ai_summary'] ) && is_array( $data['ai_summary'] ) ) {
+			$lines[] = '';
+			$lines[] = 'Resumen IA de la conversación:';
+			foreach ( $data['ai_summary'] as $bullet ) {
+				$lines[] = '  • ' . $bullet;
+			}
+		}
 		return implode( "\n", $lines );
 	}
 

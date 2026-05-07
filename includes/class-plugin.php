@@ -43,12 +43,14 @@ final class Plugin {
 		}
 
 		Settings::maybe_migrate();
+		Conversations::maybe_install();
 
 		Lead_CPT::instance()->register();
 		Settings::instance()->register();
 		Product_Meta::instance()->register();
 		Shortcode::instance()->register();
 		Ajax::instance()->register();
+		Chat::register();
 
 		// Background catalog refresh.
 		add_action( Catalog_Client::REFRESH_HOOK, [ Catalog_Client::class, 'fetch_remote' ] );
@@ -74,6 +76,7 @@ final class Plugin {
 		flush_rewrite_rules();
 
 		Settings::maybe_migrate();
+		Conversations::maybe_install();
 	}
 
 	public static function deactivate(): void {
