@@ -208,12 +208,14 @@
 		var grid = document.getElementById('bqw-browse-grid');
 		var search = document.getElementById('bqw-browse-search');
 		var brandSel = document.getElementById('bqw-browse-brand');
+		var taskSel = document.getElementById('bqw-browse-task');
 		var counter = document.getElementById('bqw-browse-counter');
 		var cta = document.getElementById('bqw-browse-cta');
 		view.hidden = false;
 
 		var products = (step.products || []).slice();
 		var brands   = step.brands || [];
+		var tasks    = step.tasks  || [];
 
 		brandSel.innerHTML = '';
 		brands.forEach(function (b) {
@@ -222,13 +224,34 @@
 			brandSel.appendChild(o);
 		});
 
+		// Type filter: dropdown mapping task_type → list of allowed brands.
+		if (taskSel) {
+			taskSel.innerHTML = '<option value="">' + escapeHtml(i18n.allTypes || 'All types') + '</option>';
+			tasks.forEach(function (t) {
+				if (!t.brands || !t.brands.length) return;
+				var o = document.createElement('option');
+				o.value = t.value;
+				o.textContent = t.label;
+				taskSel.appendChild(o);
+			});
+			taskSel.hidden = taskSel.options.length <= 1;
+		}
+
 		function paint() {
 			var q = (search.value || '').toLowerCase().trim();
 			var picked = Array.from(brandSel.selectedOptions).map(function (o) { return o.value; });
+			var pickedTask = taskSel ? taskSel.value : '';
+			var taskBrands = [];
+			if (pickedTask) {
+				for (var i = 0; i < tasks.length; i++) {
+					if (tasks[i].value === pickedTask) { taskBrands = tasks[i].brands || []; break; }
+				}
+			}
 			grid.innerHTML = '';
 			products.forEach(function (p) {
 				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
 				if (picked.length && picked.indexOf(p.brand) === -1) return;
+				if (taskBrands.length && taskBrands.indexOf((p.brand || '').toLowerCase()) === -1) return;
 				grid.appendChild(buildBrowseCard(p));
 			});
 		}
@@ -291,6 +314,7 @@
 
 		search.oninput = paint;
 		brandSel.onchange = paint;
+		if (taskSel) taskSel.onchange = paint;
 		cta.onclick = function () {
 			view.hidden = true;
 			revealContactForm({ withHint: false });
@@ -302,14 +326,100 @@
 		updateBrowseCounter();
 	}
 
-	function renderSiteCatalogTodo() {
-		// Camino B (WooCommerce categories): minimal v1.7.6 — point the user
-		// to the contact form with a brief explanation. A full Woo browser
-		// will land in a follow-up; the existing classic flow already covers
-		// theme overrides for shops that need it.
-		revealContactForm({ withHint: false });
-		document.getElementById('bqw-flow').value = 'direct-catalog';
-		state.flow_origin = 'direct-catalog';
+	function renderSiteCatalog(step) {
+		// Camino B — WooCommerce browser using selected_categories.
+		optionsWrap.innerHTML = '';
+		optionsWrap.classList.remove('bqw-opt-cards');
+		var view = document.getElementById('bqw-browse-view');
+		var grid = document.getElementById('bqw-browse-grid');
+		var search = document.getElementById('bqw-browse-search');
+		var brandSel = document.getElementById('bqw-browse-brand');
+		var taskSel = document.getElementById('bqw-browse-task');
+		var counter = document.getElementById('bqw-browse-counter');
+		var cta = document.getElementById('bqw-browse-cta');
+		view.hidden = false;
+		if (taskSel) taskSel.hidden = true;
+
+		var products = (step.products || []).slice();
+		var cats     = step.categories || [];
+
+		// Reuse the brand <select> as the category filter for camino B.
+		brandSel.innerHTML = '';
+		cats.forEach(function (c) {
+			var o = document.createElement('option');
+			o.value = c.slug; o.textContent = c.name + ' (' + c.count + ')';
+			brandSel.appendChild(o);
+		});
+
+		function paint() {
+			var q = (search.value || '').toLowerCase().trim();
+			var picked = Array.from(brandSel.selectedOptions).map(function (o) { return o.value; });
+			grid.innerHTML = '';
+			products.forEach(function (p) {
+				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
+				if (picked.length && picked.indexOf(p.category_slug) === -1) return;
+				grid.appendChild(buildWooCard(p));
+			});
+		}
+
+		function buildWooCard(p) {
+			var card = document.createElement('div');
+			card.className = 'bqw-browse-card';
+			card.dataset.productId = p.id;
+			if (state.selection.some(function (s) { return s.id === p.id; })) card.classList.add('is-selected');
+			var siteHost = (window.location && window.location.hostname) || '';
+			var linkHost = '';
+			try { linkHost = new URL(p.permalink).hostname; } catch (e) {}
+			var linkLabel = (linkHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, ''))
+				? (i18n.viewOn || 'View on') + ' ' + linkHost + ' ↗'
+				: (i18n.viewProduct || 'View product →');
+			var permalink = p.permalink ? '<a href="' + p.permalink + '" target="_blank" rel="noopener">' + escapeHtml(linkLabel) + '</a>' : '';
+
+			card.innerHTML =
+				(p.image ? '<img class="bqw-browse-card-img" src="' + p.image + '" alt="" loading="lazy">' : '<div class="bqw-browse-card-img"></div>') +
+				'<div class="bqw-browse-card-body">' +
+					'<span class="bqw-browse-card-brand">' + escapeHtml(p.category_name || '') + '</span>' +
+					'<span class="bqw-browse-card-name">' + escapeHtml(p.name || '') + '</span>' +
+				'</div>' +
+				'<div class="bqw-browse-card-actions">' +
+					'<button type="button" class="bqw-btn bqw-btn-primary bqw-browse-pick">' + escapeHtml(i18n.requestQuote || 'Request quote') + '</button>' +
+					permalink +
+				'</div>';
+
+			card.querySelector('.bqw-browse-pick').addEventListener('click', function () {
+				var picked = !card.classList.contains('is-selected');
+				if (picked) {
+					card.classList.add('is-selected');
+					addSelection({
+						id: p.id, name: p.name, image: p.image || '', sku: '',
+						brand: '', price: '', area: '', link: p.permalink || '',
+						source: 'woo', categoryId: 0, categorySlug: p.category_slug || '', categoryName: p.category_name || '',
+					});
+				} else {
+					card.classList.remove('is-selected');
+					removeSelection(p.id);
+				}
+				updateBrowseCounter();
+			});
+			return card;
+		}
+
+		function updateBrowseCounter() {
+			counter.textContent = state.selection.length + (i18n.selectedSuffix ? ' ' + i18n.selectedSuffix : '');
+			cta.disabled = state.selection.length === 0;
+		}
+
+		search.oninput = paint;
+		brandSel.onchange = paint;
+		cta.onclick = function () {
+			view.hidden = true;
+			revealContactForm({ withHint: false });
+			document.getElementById('bqw-flow').value = 'direct-catalog';
+			state.flow_origin = 'direct-catalog';
+		};
+
+		paint();
+		updateBrowseCounter();
 	}
 
 	function renderRecommendations(recs) {
@@ -355,6 +465,7 @@
 			: '<span class="bqw-rec-img bqw-opt-img-fallback">★</span>';
 		var brandHtml = r.brand ? '<span class="bqw-rec-brand">' + escapeHtml(r.brand) + '</span>' : '';
 		var badgeHtml = r.badge ? '<span class="bqw-rec-badge">' + escapeHtml(r.badge) + '</span>' : '';
+		var taskHtml  = r.task_label ? '<span class="bqw-rec-task" data-task="' + escapeHtml(r.task_type || '') + '">' + escapeHtml(r.task_label) + '</span>' : '';
 		var feats = [];
 		if (r.area)  feats.push('<li>' + escapeHtml(r.area) + '</li>');
 		if (r.feat1) feats.push('<li>' + escapeHtml(r.feat1) + '</li>');
@@ -380,7 +491,7 @@
 			'<div class="bqw-rec-body">' +
 				'<div class="bqw-rec-head">' +
 					'<div class="bqw-rec-titlewrap"><strong>' + escapeHtml(r.name) + '</strong>' + brandHtml + offsiteHtml + '</div>' +
-					'<div class="bqw-rec-meta">' + badgeHtml + (r.score ? '<span class="bqw-rec-score">' + escapeHtml(i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>' : '') + '</div>' +
+					'<div class="bqw-rec-meta">' + badgeHtml + taskHtml + (r.score ? '<span class="bqw-rec-score">' + escapeHtml(i18n.matchScore || 'Matches at') + ' ' + r.score + '%</span>' : '') + '</div>' +
 				'</div>' +
 				featsHtml +
 				reasonsHtml +
@@ -551,7 +662,7 @@
 				break;
 
 			case 'site_catalog':
-				renderSiteCatalogTodo();
+				renderSiteCatalog(step);
 				break;
 
 			case 'bomedia_catalog':

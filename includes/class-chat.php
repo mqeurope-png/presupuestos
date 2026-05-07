@@ -342,14 +342,18 @@ final class Chat {
 			}
 		}
 
-		// Welcome card "Browse {site} catalog" → list WooCommerce categories.
+		// Welcome card "Browse {site} catalog" → real WC products from the
+		// admin's selected_categories. Brand-mapping does not apply here
+		// (the user explicitly asked for the local store catalog).
 		if ( '__site_catalog' === $next_id ) {
 			$msg = __( "Here's our store catalog. Pick the machines you're interested in.", 'bomedia-quote-wizard' );
 			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'site_catalog' ] );
 			wp_send_json_success( [ 'step' => [
-				'id'      => 'site_catalog',
-				'type'    => 'site_catalog',
-				'message' => $msg,
+				'id'         => 'site_catalog',
+				'type'       => 'site_catalog',
+				'message'    => $msg,
+				'products'   => self::woo_catalog_for_browse(),
+				'categories' => self::woo_categories_for_browse(),
 			] ] );
 		}
 
@@ -366,6 +370,7 @@ final class Chat {
 				'brands'   => array_values( array_filter( array_map( static function ( $b ) {
 					return [ 'id' => (string) ( $b['id'] ?? '' ), 'label' => (string) ( $b['label'] ?? $b['id'] ?? '' ) ];
 				}, Catalog_Client::get_brands() ), static function ( $b ) { return '' !== $b['id']; } ) ),
+				'tasks'    => self::task_filter_options(),
 			] ] );
 		}
 
@@ -546,17 +551,56 @@ final class Chat {
 		}
 
 		$client = new OpenAI_Client();
-		$result = $client->recommend( [
-			'application' => array_merge( $answers['task_types'], $answers['applications'] ),
+
+		// Build a brand → task_value reverse index (one brand may belong to
+		// several tasks; first hit wins for the per-card mini-tag).
+		$brand_to_task = [];
+		foreach ( $mapping as $task_value => $brand_list ) {
+			foreach ( (array) $brand_list as $b ) {
+				$bn = strtolower( (string) $b );
+				if ( '' !== $bn && ! isset( $brand_to_task[ $bn ] ) ) {
+					$brand_to_task[ $bn ] = (string) $task_value;
+				}
+			}
+		}
+
+		$base_input = [
+			'task_types'  => $task_values,
+			'application' => $answers['applications'],
 			'materials'   => $answers['materials'],
 			'volume'      => $answers['volume'],
 			'format'      => $answers['formats'],
 			'budget'      => $answers['budget'],
 			'lang'        => $lang,
-		], $products );
+		];
+
+		$result = $client->recommend( $base_input, $products );
 
 		if ( is_wp_error( $result ) || empty( $result['recommendations'] ) ) {
 			return [];
+		}
+
+		// Multi-task balance verification + 1 retry.
+		if ( count( $task_values ) >= 2 ) {
+			$coverage_first = self::coverage_for( (array) $result['recommendations'], $products, $brand_to_task );
+			$missing        = array_diff( $task_values, array_keys( array_filter( $coverage_first ) ) );
+			self::log_balance( $session_id, 1, $coverage_first, $missing );
+			if ( ! empty( $missing ) ) {
+				$followup = sprintf(
+					'Your previous reply covered task_types %s but the customer also asked for %s. Return a balanced top 3 that includes at least one product per requested task type.',
+					wp_json_encode( array_keys( array_filter( $coverage_first ) ) ),
+					wp_json_encode( array_values( $missing ) )
+				);
+				$retry = $client->recommend( array_merge( $base_input, [ '_followup' => $followup ] ), $products );
+				if ( ! is_wp_error( $retry ) && ! empty( $retry['recommendations'] ) ) {
+					$coverage_second = self::coverage_for( (array) $retry['recommendations'], $products, $brand_to_task );
+					$still_missing   = array_diff( $task_values, array_keys( array_filter( $coverage_second ) ) );
+					self::log_balance( $session_id, 2, $coverage_second, $still_missing );
+					if ( count( $still_missing ) < count( $missing ) ) {
+						$result = $retry;
+					}
+				}
+			}
 		}
 
 		// CRITICAL: index only the filtered set so an LLM hallucination of a
@@ -579,15 +623,96 @@ final class Chat {
 			if ( '' === $slug || ! isset( $index[ $slug ] ) ) {
 				continue;
 			}
-			$loc = Catalog_Client::localize_product( $index[ $slug ], $lang );
+			$loc       = Catalog_Client::localize_product( $index[ $slug ], $lang );
+			$brand_n   = strtolower( (string) ( $loc['brand'] ?? '' ) );
+			$task_type = $brand_to_task[ $brand_n ] ?? '';
 			$cards[] = array_merge( $loc, [
-				'score'   => (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) ),
-				'reasons' => array_slice( array_map( 'sanitize_text_field', (array) ( $r['reasons'] ?? [] ) ), 0, 2 ),
-				'source'  => 'catalog',
+				'score'      => (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) ),
+				'reasons'    => array_slice( array_map( 'sanitize_text_field', (array) ( $r['reasons'] ?? [] ) ), 0, 2 ),
+				'source'     => 'catalog',
+				'task_type'  => $task_type,
+				'task_label' => self::task_label_for( $task_type ),
 			] );
 		}
 		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
 		return array_slice( $cards, 0, 3 );
+	}
+
+	/**
+	 * Counts how many of the LLM-returned recommendations belong to each
+	 * task_value via the brand→task index.
+	 */
+	private static function coverage_for( array $recommendations, array $products_for_lookup, array $brand_to_task ): array {
+		$by_id = [];
+		foreach ( $products_for_lookup as $p ) {
+			$by_id[ (string) ( $p['product_id'] ?? '' ) ] = $p;
+		}
+		$coverage = [];
+		foreach ( $recommendations as $r ) {
+			if ( ! is_array( $r ) ) {
+				continue;
+			}
+			$slug = (string) ( $r['product_id'] ?? '' );
+			if ( '' === $slug || ! isset( $by_id[ $slug ] ) ) {
+				continue;
+			}
+			$brand = strtolower( (string) ( $by_id[ $slug ]['brand'] ?? '' ) );
+			$task  = $brand_to_task[ $brand ] ?? '';
+			if ( '' !== $task ) {
+				$coverage[ $task ] = ( $coverage[ $task ] ?? 0 ) + 1;
+			}
+		}
+		return $coverage;
+	}
+
+	private static function log_balance( string $session_id, int $intent, array $coverage, array $missing ): void {
+		$u = wp_upload_dir();
+		if ( ! empty( $u['error'] ) ) {
+			return;
+		}
+		$dir = trailingslashit( $u['basedir'] ) . 'bqw-logs';
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+		}
+		$pairs = [];
+		foreach ( $coverage as $k => $n ) {
+			$pairs[] = $k . ':' . $n;
+		}
+		$line = sprintf(
+			"[%s] session=%s intent=%d coverage=[%s] missing=[%s] %s\n",
+			gmdate( 'Y-m-d H:i:s' ),
+			substr( $session_id, 0, 8 ),
+			$intent,
+			implode( ',', $pairs ),
+			implode( ',', $missing ),
+			empty( $missing ) ? 'OK' : 'BIASED'
+		);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		@file_put_contents( $dir . '/recommendations.log', $line, FILE_APPEND | LOCK_EX );
+	}
+
+	private static function task_label_for( string $task_value ): string {
+		switch ( $task_value ) {
+			case 'uv_objects': return '🖨️ ' . __( 'UV-LED', 'bomedia-quote-wizard' );
+			case 'textile':    return '👕 ' . __( 'Textile', 'bomedia-quote-wizard' );
+			case 'laser':      return '✂️ ' . __( 'Laser', 'bomedia-quote-wizard' );
+			case 'packaging':  return '📦 ' . __( 'Packaging', 'bomedia-quote-wizard' );
+			default:           return '';
+		}
+	}
+
+	public static function task_filter_options(): array {
+		$mapping = (array) Settings::get( 'task_brand_map', [] );
+		$out     = [];
+		foreach ( [ 'uv_objects', 'textile', 'laser', 'packaging' ] as $tv ) {
+			$brands = isset( $mapping[ $tv ] ) ? array_values( array_filter( array_map( 'strval', (array) $mapping[ $tv ] ) ) ) : [];
+			$out[]  = [
+				'value'  => $tv,
+				'label'  => self::task_label_for( $tv ),
+				'brands' => array_map( 'strtolower', $brands ),
+			];
+		}
+		return $out;
 	}
 
 
@@ -661,6 +786,76 @@ final class Chat {
 				'desc'  => $loc['desc'],
 				'img'   => $loc['img'],
 				'link'  => $loc['link'],
+			];
+		}
+		return $out;
+	}
+
+	/**
+	 * Lists the WooCommerce categories the admin selected in
+	 * Settings → Wizard (dual list).
+	 */
+	public static function woo_categories_for_browse(): array {
+		$ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
+		$out = [];
+		foreach ( $ids as $cid ) {
+			$term = get_term( $cid, 'product_cat' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				$out[] = [
+					'id'    => (int) $term->term_id,
+					'name'  => $term->name,
+					'slug'  => $term->slug,
+					'count' => (int) $term->count,
+				];
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Returns published WooCommerce products from the admin-selected
+	 * categories. No price exposed (per UX rule).
+	 */
+	public static function woo_catalog_for_browse(): array {
+		$cat_ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
+		if ( empty( $cat_ids ) ) {
+			return [];
+		}
+		$query = new \WP_Query( [
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 200,
+			'no_found_rows'  => true,
+			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
+			'tax_query'      => [
+				[
+					'taxonomy'         => 'product_cat',
+					'field'            => 'term_id',
+					'terms'            => $cat_ids,
+					'include_children' => false,
+				],
+			],
+		] );
+		$out = [];
+		foreach ( $query->posts as $p ) {
+			$pid    = (int) $p->ID;
+			$cats   = [];
+			$slugs  = [];
+			$terms  = wp_get_post_terms( $pid, 'product_cat' );
+			if ( $terms && ! is_wp_error( $terms ) ) {
+				foreach ( $terms as $t ) {
+					$cats[]  = $t->name;
+					$slugs[] = $t->slug;
+				}
+			}
+			$out[] = [
+				'id'            => $pid,
+				'name'          => $p->post_title,
+				'image'         => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
+				'category_name' => implode( ', ', $cats ),
+				'category_slug' => $slugs[0] ?? '',
+				'permalink'     => get_permalink( $pid ),
+				'source'        => 'woo',
 			];
 		}
 		return $out;

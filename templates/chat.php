@@ -60,6 +60,9 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 			<div class="bqw-browse-view" id="bqw-browse-view" hidden>
 				<div class="bqw-browse-filters">
 					<input type="search" id="bqw-browse-search" placeholder="<?php esc_attr_e( 'Search machines…', 'bomedia-quote-wizard' ); ?>" />
+					<select id="bqw-browse-task" aria-label="<?php esc_attr_e( 'Filter by type', 'bomedia-quote-wizard' ); ?>" hidden>
+						<option value=""><?php esc_html_e( 'All types', 'bomedia-quote-wizard' ); ?></option>
+					</select>
 					<select id="bqw-browse-brand" multiple aria-label="<?php esc_attr_e( 'Filter by brand', 'bomedia-quote-wizard' ); ?>"></select>
 				</div>
 				<div class="bqw-browse-grid" id="bqw-browse-grid"></div>

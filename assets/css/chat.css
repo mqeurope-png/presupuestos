@@ -50,10 +50,13 @@
 /* Welcome 3 cards. */
 .bqw-welcome-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-	gap: 14px;
-	margin: 0;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	margin: 16px 0;
 	padding: 0;
+}
+@media (max-width: 720px) {
+	.bqw-welcome-grid { grid-template-columns: 1fr; }
 }
 .bqw-welcome-card {
 	display: flex;
@@ -174,6 +177,11 @@
 	font: inherit;
 	font-size: 0.85rem;
 }
+.bqw-browse-filters select#bqw-browse-task {
+	min-width: 150px;
+	background: #f8fafc;
+}
+.bqw-browse-filters select#bqw-browse-task[hidden] { display: none; }
 .bqw-browse-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -619,3 +627,21 @@
 	color: var(--bqw-muted, #64748b);
 }
 .bqw-contact-hint a { color: var(--bqw-primary, #0066cc); font-weight: 600; }
+
+/* Rec card task_type pill (v1.7.7). */
+.bqw-rec-task {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 8px;
+	border-radius: 10px;
+	font-size: 0.72rem;
+	font-weight: 600;
+	background: #eef2ff;
+	color: #3730a3;
+	white-space: nowrap;
+}
+.bqw-rec-task[data-task="laser"]      { background: #fef3c7; color: #92400e; }
+.bqw-rec-task[data-task="textile"]    { background: #dcfce7; color: #166534; }
+.bqw-rec-task[data-task="packaging"]  { background: #ffe4e6; color: #9f1239; }
+.bqw-rec-task[data-task="uv_objects"] { background: #e0e7ff; color: #3730a3; }

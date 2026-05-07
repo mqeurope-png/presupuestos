@@ -277,6 +277,7 @@ final class Shortcode {
 			'notConvinced'  => __( "Not convinced — contact me", 'bomedia-quote-wizard' ),
 			'viewOn'        => __( 'View on', 'bomedia-quote-wizard' ),
 			'selectedSuffix'=> __( 'selected', 'bomedia-quote-wizard' ),
+			'allTypes'      => __( 'All types', 'bomedia-quote-wizard' ),
 		];
 	}
 

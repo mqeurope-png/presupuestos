@@ -83,7 +83,7 @@ final class OpenAI_Client {
 			return new WP_Error( 'bqw_openai_not_configured', __( 'OpenAI API key is missing.', 'bomedia-quote-wizard' ) );
 		}
 
-		$system_prompt = 'You are an expert sales advisor for Bomedia SL, a European distributor of UV-LED industrial printers and laser cutting/engraving machines (artisJet, MBO, Flux brands).' . "\n\n"
+		$system_prompt = 'You are an expert sales advisor for Bomedia SL, a European distributor of UV-LED industrial printers, DTG/DTF textile printers, and laser cutting/engraving machines (artisJet, MBO, Flux, smartJet, pimpam brands).' . "\n\n"
 			. 'A potential customer has filled out a needs assessment. Your job is to recommend the 3 machines from our catalog that best fit their needs, based on:' . "\n"
 			. '- Their stated requirements (production type, materials, monthly volume, max format, budget)' . "\n"
 			. "- Each machine's description and internal sales notes" . "\n\n"
@@ -107,24 +107,29 @@ final class OpenAI_Client {
 			. '- Each reason: max 12 words, concrete, mention specific machine capability matching their need' . "\n"
 			. '- Do not invent capabilities not present in the product data' . "\n"
 			. '- CRITICAL: ONLY recommend product_id values from the array provided below. Do NOT mention or recommend any product that is not in that array. If you do not see a product matching the customer needs, return empty recommendations.' . "\n"
+			. '- MULTI-TASK BALANCE: when the customer selected MORE THAN ONE production type (e.g. laser AND uv_objects), your top 3 MUST include at least one product per selected type when products of that type exist in the catalog. Do NOT bias the result towards one type. Example: customer asked for "laser + textile" → at least one laser machine AND at least one textile machine in the top 3.' . "\n"
 			. '- Internal notes ARE PRIVATE — never quote them verbatim, just use them to inform your reasoning';
 
-		$apps      = self::join_list( $client_answers['application'] ?? [] );
-		$mats      = self::join_list( $client_answers['materials'] ?? [] );
-		$volume    = (string) ( $client_answers['volume'] ?? '' );
-		$format    = (string) ( $client_answers['format'] ?? '' );
-		$budget    = (string) ( $client_answers['budget'] ?? '' );
-		$lang      = (string) ( $client_answers['lang'] ?? 'en' );
+		$apps       = self::join_list( $client_answers['application'] ?? [] );
+		$mats       = self::join_list( $client_answers['materials'] ?? [] );
+		$volume     = (string) ( $client_answers['volume'] ?? '' );
+		$format     = (string) ( $client_answers['format'] ?? '' );
+		$budget     = (string) ( $client_answers['budget'] ?? '' );
+		$lang       = (string) ( $client_answers['lang'] ?? 'en' );
+		$tasks      = self::join_list( $client_answers['task_types'] ?? [] );
+		$followup   = (string) ( $client_answers['_followup'] ?? '' );
 
 		$user_message = "Customer answers:\n"
-			. '- Production type: ' . ( $apps ?: '(not specified)' ) . "\n"
+			. '- Selected task types (CRITICAL — multi-task balance): ' . ( $tasks ?: '(not specified)' ) . "\n"
+			. '- Application: ' . ( $apps ?: '(not specified)' ) . "\n"
 			. '- Materials: ' . ( $mats ?: '(not specified)' ) . "\n"
 			. '- Monthly volume: ' . ( $volume ?: '(not specified)' ) . "\n"
 			. '- Max piece size: ' . ( $format ?: '(not specified)' ) . "\n"
 			. '- Budget range: ' . ( $budget ?: 'not specified' ) . "\n\n"
 			. 'Available products (JSON):' . "\n"
 			. wp_json_encode( $products ) . "\n\n"
-			. 'Customer language: ' . $lang;
+			. 'Customer language: ' . $lang
+			. ( '' !== $followup ? "\n\n[Follow-up note] " . $followup : '' );
 
 		$payload = [
 			'model'           => $this->model,

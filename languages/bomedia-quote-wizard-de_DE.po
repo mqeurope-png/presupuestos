@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.6\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.7\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -80,6 +80,9 @@ msgid "All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)"
 msgstr ""
 
 msgid "All statuses"
+msgstr ""
+
+msgid "All types"
 msgstr ""
 
 msgid "Any rough budget? Optional."
@@ -313,6 +316,9 @@ msgstr ""
 msgid "Filter by brand"
 msgstr ""
 
+msgid "Filter by type"
+msgstr ""
+
 msgid "Filter diagnostic"
 msgstr ""
 
@@ -398,6 +404,9 @@ msgid "Import JSON"
 msgstr ""
 
 msgid "Labels / packaging"
+msgstr ""
+
+msgid "Laser"
 msgstr ""
 
 msgid "Last call:"
@@ -584,6 +593,9 @@ msgid "OpenAI returned malformed data."
 msgstr ""
 
 msgid "Or type your answer freely…"
+msgstr ""
+
+msgid "Packaging"
 msgstr ""
 
 msgid "Perfect. To send your personalised quote, I just need your details."
@@ -853,6 +865,9 @@ msgstr ""
 msgid "Testing…"
 msgstr ""
 
+msgid "Textile"
+msgstr ""
+
 msgid "Thanks!"
 msgstr ""
 
@@ -887,6 +902,9 @@ msgid "Turnstile keys"
 msgstr ""
 
 msgid "Turnstile verification failed."
+msgstr ""
+
+msgid "UV-LED"
 msgstr ""
 
 msgid "Unknown step."

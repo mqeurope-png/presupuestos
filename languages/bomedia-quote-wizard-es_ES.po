@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.6\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.7\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -81,6 +81,9 @@ msgstr "Todas las máquinas del grupo (artisJet, MBO, Flux, PimPam, SmartJet)"
 
 msgid "All statuses"
 msgstr "Todos los estados"
+
+msgid "All types"
+msgstr "Todos los tipos"
 
 msgid "Any rough budget? Optional."
 msgstr "¿Tienes presupuesto orientativo? Es opcional."
@@ -313,6 +316,9 @@ msgstr "Registro a archivo"
 msgid "Filter by brand"
 msgstr "Filtrar por marca"
 
+msgid "Filter by type"
+msgstr "Filtrar por tipo"
+
 msgid "Filter diagnostic"
 msgstr "Diagnóstico del filtro"
 
@@ -399,6 +405,9 @@ msgstr "Importar JSON"
 
 msgid "Labels / packaging"
 msgstr "Etiquetas / packaging"
+
+msgid "Laser"
+msgstr "Láser"
 
 msgid "Last call:"
 msgstr "Última llamada:"
@@ -585,6 +594,9 @@ msgstr "OpenAI devolvió datos mal formados."
 
 msgid "Or type your answer freely…"
 msgstr "O escribe tu respuesta libremente…"
+
+msgid "Packaging"
+msgstr "Packaging"
 
 msgid "Perfect. To send your personalised quote, I just need your details."
 msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos."
@@ -853,6 +865,9 @@ msgstr "Probar conexión"
 msgid "Testing…"
 msgstr "Probando…"
 
+msgid "Textile"
+msgstr "Textil"
+
 msgid "Thanks!"
 msgstr "¡Gracias!"
 
@@ -888,6 +903,9 @@ msgstr "Claves de Turnstile"
 
 msgid "Turnstile verification failed."
 msgstr "La verificación de Turnstile falló."
+
+msgid "UV-LED"
+msgstr "UV-LED"
 
 msgid "Unknown step."
 msgstr "Paso desconocido."
