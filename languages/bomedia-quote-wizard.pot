@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.7\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.8\n"
 "Report-Msgid-Bugs-To: https://bomedia.net/\n"
 "POT-Creation-Date: 2026-05-06 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -112,7 +112,6 @@ msgid "All statuses"
 msgstr ""
 
 #: includes/class-shortcode.php:280
-#: templates/chat.php:64
 msgid "All types"
 msgstr ""
 
@@ -212,6 +211,10 @@ msgstr ""
 msgid "Bot verification"
 msgstr ""
 
+#: includes/class-shortcode.php:282
+msgid "Brand"
+msgstr ""
+
 #: includes/class-settings.php:1175
 msgid "Brands in catalog:"
 msgstr ""
@@ -256,6 +259,10 @@ msgstr ""
 msgid "Catalog uploaded: %d products cached."
 msgstr ""
 
+#: includes/class-shortcode.php:283
+msgid "Category"
+msgstr ""
+
 #: includes/class-settings.php:1210
 msgid "Change"
 msgstr ""
@@ -272,7 +279,7 @@ msgstr ""
 msgid "Choose a model"
 msgstr ""
 
-#: templates/chat.php:79
+#: templates/chat.php:76
 #: templates/wizard.php:384
 msgid "Close"
 msgstr ""
@@ -313,7 +320,7 @@ msgstr ""
 msgid "Contact us"
 msgstr ""
 
-#: templates/chat.php:71
+#: templates/chat.php:68
 #: templates/wizard.php:371
 msgid "Continue"
 msgstr ""
@@ -333,12 +340,12 @@ msgstr ""
 
 #: includes/class-shortcode.php:228
 #: includes/class-mailer.php:42
-#: templates/chat.php:141
+#: templates/chat.php:138
 #: templates/wizard.php:201
 msgid "Country"
 msgstr ""
 
-#: templates/chat.php:149
+#: templates/chat.php:146
 msgid "Country code"
 msgstr ""
 
@@ -395,7 +402,7 @@ msgstr ""
 #: includes/class-shortcode.php:226
 #: includes/class-lead-cpt.php:203
 #: includes/class-mailer.php:40
-#: templates/chat.php:137
+#: templates/chat.php:134
 #: templates/wizard.php:197
 msgid "Email"
 msgstr ""
@@ -452,14 +459,6 @@ msgstr ""
 msgid "File logging"
 msgstr ""
 
-#: templates/chat.php:66
-msgid "Filter by brand"
-msgstr ""
-
-#: templates/chat.php:63
-msgid "Filter by type"
-msgstr ""
-
 #: includes/class-settings.php:1170
 msgid "Filter diagnostic"
 msgstr ""
@@ -469,7 +468,7 @@ msgid "First message"
 msgstr ""
 
 #: includes/class-shortcode.php:223
-#: templates/chat.php:123
+#: templates/chat.php:120
 #: templates/wizard.php:181
 msgid "First name"
 msgstr ""
@@ -526,7 +525,7 @@ msgstr ""
 msgid "Help me choose"
 msgstr ""
 
-#: templates/chat.php:180
+#: templates/chat.php:177
 #: templates/wizard.php:239
 msgid "Helps us avoid spam."
 msgstr ""
@@ -555,13 +554,13 @@ msgstr ""
 msgid "I have enough info — request quote →"
 msgstr ""
 
-#: templates/chat.php:193
+#: templates/chat.php:190
 #: templates/wizard.php:252
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr ""
 
 #: includes/class-shortcode.php:238
-#: templates/chat.php:199
+#: templates/chat.php:196
 #: templates/wizard.php:258
 msgid "I have read and accept the privacy policy"
 msgstr ""
@@ -610,7 +609,7 @@ msgid "Last message"
 msgstr ""
 
 #: includes/class-shortcode.php:224
-#: templates/chat.php:127
+#: templates/chat.php:124
 #: templates/wizard.php:185
 msgid "Last name"
 msgstr ""
@@ -693,7 +692,7 @@ msgid "Maximum piece size?"
 msgstr ""
 
 #: includes/class-shortcode.php:229
-#: templates/chat.php:156
+#: templates/chat.php:153
 #: templates/wizard.php:215
 msgid "Message (optional)"
 msgstr ""
@@ -823,7 +822,7 @@ msgstr ""
 msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
 msgstr ""
 
-#: templates/chat.php:100
+#: templates/chat.php:97
 msgid "Open chat again →"
 msgstr ""
 
@@ -870,7 +869,7 @@ msgstr ""
 
 #: includes/class-shortcode.php:227
 #: includes/class-mailer.php:41
-#: templates/chat.php:147
+#: templates/chat.php:144
 #: templates/wizard.php:207
 msgid "Phone"
 msgstr ""
@@ -953,12 +952,12 @@ msgstr ""
 msgid "Products of interest"
 msgstr ""
 
-#: templates/chat.php:174
+#: templates/chat.php:171
 #: templates/wizard.php:233
 msgid "Protected by Google reCAPTCHA."
 msgstr ""
 
-#: templates/chat.php:164
+#: templates/chat.php:161
 #: templates/wizard.php:223
 msgid "Quick check:"
 msgstr ""
@@ -988,7 +987,7 @@ msgstr ""
 msgid "Recipient emails"
 msgstr ""
 
-#: templates/chat.php:76
+#: templates/chat.php:73
 msgid "Recommended machines"
 msgstr ""
 
@@ -1014,7 +1013,7 @@ msgstr ""
 msgid "Request quote"
 msgstr ""
 
-#: templates/chat.php:86
+#: templates/chat.php:83
 msgid "Request quote →"
 msgstr ""
 
@@ -1083,6 +1082,10 @@ msgstr ""
 msgid "See recommendations"
 msgstr ""
 
+#: includes/class-shortcode.php:285
+msgid "Selected"
+msgstr ""
+
 #: includes/class-settings.php:1324
 msgid "Selected (drag to reorder)"
 msgstr ""
@@ -1095,7 +1098,7 @@ msgstr ""
 msgid "Send my details →"
 msgstr ""
 
-#: templates/chat.php:216
+#: templates/chat.php:213
 msgid "Send my request"
 msgstr ""
 
@@ -1136,7 +1139,7 @@ msgstr ""
 msgid "Show hero"
 msgstr ""
 
-#: templates/chat.php:91
+#: templates/chat.php:88
 msgid "Show recommended machines"
 msgstr ""
 
@@ -1222,7 +1225,7 @@ msgstr ""
 msgid "Tasks defined:"
 msgstr ""
 
-#: templates/chat.php:157
+#: templates/chat.php:154
 msgid "Tell us what you need…"
 msgstr ""
 
@@ -1291,6 +1294,10 @@ msgstr ""
 
 #: includes/class-captcha.php:258
 msgid "Turnstile verification failed."
+msgstr ""
+
+#: includes/class-shortcode.php:281
+msgid "Type"
 msgstr ""
 
 #: includes/class-chat.php:696
@@ -1380,7 +1387,7 @@ msgstr ""
 msgid "Write log file in uploads/bqw-logs/"
 msgstr ""
 
-#: templates/chat.php:99
+#: templates/chat.php:96
 msgid "You chose to skip the conversation. Want to use the assistant instead?"
 msgstr ""
 
@@ -1410,17 +1417,17 @@ msgid "Your case is specific. Let's talk directly."
 msgstr ""
 
 #: includes/class-shortcode.php:217
-#: templates/chat.php:119
+#: templates/chat.php:116
 #: templates/wizard.php:177
 msgid "Your details"
 msgstr ""
 
-#: templates/chat.php:78
+#: templates/chat.php:75
 msgid "Your recommendations"
 msgstr ""
 
 #: includes/class-shortcode.php:274
-#: templates/chat.php:82
+#: templates/chat.php:79
 msgid "Your recommended machines will appear here as we chat."
 msgstr ""
 
@@ -1462,6 +1469,10 @@ msgstr ""
 
 #: includes/class-captcha.php:295
 msgid "hCaptcha verification failed."
+msgstr ""
+
+#: includes/class-shortcode.php:284
+msgid "more"
 msgstr ""
 
 #: includes/class-captcha.php:185

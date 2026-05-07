@@ -278,6 +278,11 @@ final class Shortcode {
 			'viewOn'        => __( 'View on', 'bomedia-quote-wizard' ),
 			'selectedSuffix'=> __( 'selected', 'bomedia-quote-wizard' ),
 			'allTypes'      => __( 'All types', 'bomedia-quote-wizard' ),
+			'typeLabel'     => __( 'Type', 'bomedia-quote-wizard' ),
+			'brandLabel'    => __( 'Brand', 'bomedia-quote-wizard' ),
+			'categoryLabel' => __( 'Category', 'bomedia-quote-wizard' ),
+			'moreSuffix'    => __( 'more', 'bomedia-quote-wizard' ),
+			'picked'        => __( 'Selected', 'bomedia-quote-wizard' ),
 		];
 	}
 

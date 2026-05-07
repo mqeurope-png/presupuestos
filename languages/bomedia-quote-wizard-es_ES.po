@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.7\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.8\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -148,6 +148,9 @@ msgstr "Asistente de Bomedia"
 msgid "Bot verification"
 msgstr "Verificación anti-bot"
 
+msgid "Brand"
+msgstr "Marca"
+
 msgid "Brands in catalog:"
 msgstr "Marcas en catálogo:"
 
@@ -180,6 +183,9 @@ msgstr "URL del catálogo"
 
 msgid "Catalog uploaded: %d products cached."
 msgstr "Catálogo subido: %d productos cacheados."
+
+msgid "Category"
+msgstr "Categoría"
 
 msgid "Change"
 msgstr "Cambiar"
@@ -312,12 +318,6 @@ msgstr "Exportar JSON"
 
 msgid "File logging"
 msgstr "Registro a archivo"
-
-msgid "Filter by brand"
-msgstr "Filtrar por marca"
-
-msgid "Filter by type"
-msgstr "Filtrar por tipo"
 
 msgid "Filter diagnostic"
 msgstr "Diagnóstico del filtro"
@@ -751,6 +751,9 @@ msgstr "Falló la comprobación de seguridad. Recarga la página."
 msgid "See recommendations"
 msgstr "Ver recomendaciones"
 
+msgid "Selected"
+msgstr "Seleccionada"
+
 msgid "Selected (drag to reorder)"
 msgstr "Seleccionadas (arrastra para reordenar)"
 
@@ -904,6 +907,9 @@ msgstr "Claves de Turnstile"
 msgid "Turnstile verification failed."
 msgstr "La verificación de Turnstile falló."
 
+msgid "Type"
+msgstr "Tipo"
+
 msgid "UV-LED"
 msgstr "UV-LED"
 
@@ -1026,6 +1032,9 @@ msgstr "Claves de hCaptcha"
 
 msgid "hCaptcha verification failed."
 msgstr "La verificación de hCaptcha falló."
+
+msgid "more"
+msgstr "más"
 
 msgid "reCAPTCHA could not verify your submission."
 msgstr "reCAPTCHA no pudo verificar tu envío."

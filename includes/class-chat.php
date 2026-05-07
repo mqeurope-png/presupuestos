@@ -813,52 +813,115 @@ final class Chat {
 	}
 
 	/**
-	 * Returns published WooCommerce products from the admin-selected
-	 * categories. No price exposed (per UX rule).
+	 * Returns published WooCommerce products from EVERY admin-selected
+	 * category, respecting per-category mode ("all" vs. manual IDs) and
+	 * preserving the admin's drag-and-drop order. No price exposed.
 	 */
 	public static function woo_catalog_for_browse(): array {
 		$cat_ids = array_map( 'absint', (array) Settings::get( 'selected_categories', [] ) );
+		$pbc     = (array) Settings::get( 'products_by_category', [] );
 		if ( empty( $cat_ids ) ) {
+			self::log_site_catalog( [], [], 0 );
 			return [];
 		}
-		$query = new \WP_Query( [
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'posts_per_page' => 200,
-			'no_found_rows'  => true,
-			'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
-			'tax_query'      => [
-				[
-					'taxonomy'         => 'product_cat',
-					'field'            => 'term_id',
-					'terms'            => $cat_ids,
-					'include_children' => false,
-				],
-			],
-		] );
-		$out = [];
-		foreach ( $query->posts as $p ) {
-			$pid    = (int) $p->ID;
-			$cats   = [];
-			$slugs  = [];
-			$terms  = wp_get_post_terms( $pid, 'product_cat' );
-			if ( $terms && ! is_wp_error( $terms ) ) {
-				foreach ( $terms as $t ) {
-					$cats[]  = $t->name;
-					$slugs[] = $t->slug;
-				}
-			}
-			$out[] = [
-				'id'            => $pid,
-				'name'          => $p->post_title,
-				'image'         => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
-				'category_name' => implode( ', ', $cats ),
-				'category_slug' => $slugs[0] ?? '',
-				'permalink'     => get_permalink( $pid ),
-				'source'        => 'woo',
+
+		$out         = [];
+		$seen        = [];
+		$mode_per    = [];
+		$cat_counts  = [];
+
+		foreach ( $cat_ids as $cid ) {
+			$cfg  = isset( $pbc[ $cid ] ) && is_array( $pbc[ $cid ] ) ? $pbc[ $cid ] : [];
+			$mode = ( ( $cfg['mode'] ?? '' ) === 'manual' ) ? 'manual' : 'all';
+			$ids  = array_values( array_unique( array_map( 'absint', (array) ( $cfg['ids'] ?? [] ) ) ) );
+
+			$cat_term = get_term( $cid, 'product_cat' );
+			$slug     = ( $cat_term && ! is_wp_error( $cat_term ) ) ? $cat_term->slug : (string) $cid;
+			$mode_per[ $slug ] = $mode;
+
+			$args = [
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => 200,
+				'no_found_rows'  => true,
+				'orderby'        => [ 'menu_order' => 'ASC', 'title' => 'ASC' ],
 			];
+			if ( 'manual' === $mode && ! empty( $ids ) ) {
+				$args['post__in'] = $ids;
+				$args['orderby']  = 'post__in';
+			} else {
+				$args['tax_query'] = [
+					[
+						'taxonomy'         => 'product_cat',
+						'field'            => 'term_id',
+						'terms'            => [ $cid ],
+						'include_children' => false,
+					],
+				];
+			}
+
+			$query = new \WP_Query( $args );
+			$loaded = 0;
+			foreach ( $query->posts as $p ) {
+				$pid = (int) $p->ID;
+				if ( isset( $seen[ $pid ] ) ) {
+					continue;
+				}
+				$seen[ $pid ] = true;
+				$loaded++;
+
+				$terms     = wp_get_post_terms( $pid, 'product_cat' );
+				$cat_names = [];
+				$cat_slugs = [];
+				if ( $terms && ! is_wp_error( $terms ) ) {
+					foreach ( $terms as $t ) {
+						$cat_names[] = $t->name;
+						$cat_slugs[] = $t->slug;
+					}
+				}
+				$out[] = [
+					'id'            => $pid,
+					'name'          => $p->post_title,
+					'image'         => get_the_post_thumbnail_url( $pid, 'medium' ) ?: '',
+					'category_name' => $cat_term && ! is_wp_error( $cat_term ) ? $cat_term->name : implode( ', ', $cat_names ),
+					'category_slug' => $slug,
+					'category_slugs' => $cat_slugs,
+					'permalink'     => get_permalink( $pid ),
+					'source'        => 'woo',
+				];
+			}
+			$cat_counts[ $slug ] = $loaded;
 		}
+
+		self::log_site_catalog( $mode_per, $cat_counts, count( $out ) );
 		return $out;
+	}
+
+	private static function log_site_catalog( array $mode_per, array $cat_counts, int $total ): void {
+		$u = wp_upload_dir();
+		if ( ! empty( $u['error'] ) ) {
+			return;
+		}
+		$dir = trailingslashit( $u['basedir'] ) . 'bqw-logs';
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions
+			@file_put_contents( $dir . '/.htaccess', "Deny from all\n" );
+		}
+		$mode_pairs = [];
+		foreach ( $mode_per as $slug => $mode ) {
+			$cnt = $cat_counts[ $slug ] ?? 0;
+			$mode_pairs[] = sprintf( '%s:%s/%d', $slug, $mode, $cnt );
+		}
+		$line = sprintf(
+			"[%s] categories=[%s] mode_per_cat={%s} products_loaded=%d\n",
+			gmdate( 'Y-m-d H:i:s' ),
+			implode( ',', array_keys( $mode_per ) ),
+			implode( ',', $mode_pairs ),
+			$total
+		);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		@file_put_contents( $dir . '/site-catalog.log', $line, FILE_APPEND | LOCK_EX );
 	}
 
 	private static function catalog_for_prompt( string $lang ): array {

@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.7\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.8\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -148,6 +148,9 @@ msgstr ""
 msgid "Bot verification"
 msgstr ""
 
+msgid "Brand"
+msgstr ""
+
 msgid "Brands in catalog:"
 msgstr ""
 
@@ -179,6 +182,9 @@ msgid "Catalog URL"
 msgstr ""
 
 msgid "Catalog uploaded: %d products cached."
+msgstr ""
+
+msgid "Category"
 msgstr ""
 
 msgid "Change"
@@ -311,12 +317,6 @@ msgid "Export JSON"
 msgstr ""
 
 msgid "File logging"
-msgstr ""
-
-msgid "Filter by brand"
-msgstr ""
-
-msgid "Filter by type"
 msgstr ""
 
 msgid "Filter diagnostic"
@@ -751,6 +751,9 @@ msgstr ""
 msgid "See recommendations"
 msgstr ""
 
+msgid "Selected"
+msgstr ""
+
 msgid "Selected (drag to reorder)"
 msgstr ""
 
@@ -904,6 +907,9 @@ msgstr ""
 msgid "Turnstile verification failed."
 msgstr ""
 
+msgid "Type"
+msgstr ""
+
 msgid "UV-LED"
 msgstr ""
 
@@ -1025,6 +1031,9 @@ msgid "hCaptcha keys"
 msgstr ""
 
 msgid "hCaptcha verification failed."
+msgstr ""
+
+msgid "more"
 msgstr ""
 
 msgid "reCAPTCHA could not verify your submission."
