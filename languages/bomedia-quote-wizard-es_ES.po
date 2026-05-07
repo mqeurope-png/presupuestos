@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.0\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.1\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -16,8 +16,38 @@ msgstr "Hace %1$s · %2$d productos cacheados"
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr "%s, nuestro equipo se pondrá en contacto contigo en breve con un presupuesto personalizado."
 
+msgid "(skipped)"
+msgstr "(saltada)"
+
+msgid "100 – 500"
+msgstr "100 – 500"
+
+msgid "15,000 – 30,000 €"
+msgstr "15.000 – 30.000 €"
+
+msgid "5,000 – 15,000 €"
+msgstr "5.000 – 15.000 €"
+
+msgid "500 – 2000"
+msgstr "500 – 2000"
+
+msgid "60×90 cm"
+msgstr "60×90 cm"
+
+msgid "< 100 / month"
+msgstr "< 100 / mes"
+
+msgid "> 2000"
+msgstr "> 2000"
+
 msgid "A valid email is required."
 msgstr "Se requiere un correo electrónico válido."
+
+msgid "A3 (297×420 mm)"
+msgstr "A3 (297×420 mm)"
+
+msgid "A4 (210×297 mm)"
+msgstr "A4 (210×297 mm)"
 
 msgid "AI Catalog source"
 msgstr "Origen del catálogo IA"
@@ -70,6 +100,12 @@ msgstr "AgileCRM no está configurado."
 msgid "All statuses"
 msgstr "Todos los estados"
 
+msgid "Any rough budget? Optional."
+msgstr "¿Tienes presupuesto orientativo? Es opcional."
+
+msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
+msgstr "¿Quieres preguntarme algo sobre estas máquinas? O salta directo al envío."
+
 msgid "Application"
 msgstr "Aplicación"
 
@@ -81,6 +117,12 @@ msgstr "Paso de aplicación"
 
 msgid "Approximate budget? (optional)"
 msgstr "¿Presupuesto orientativo? (opcional)"
+
+msgid "Ask anything about these machines…"
+msgstr "Pregúntame lo que quieras de estas máquinas…"
+
+msgid "Ask me anything about these machines, or skip to send."
+msgstr "Pregúntame lo que quieras sobre estas máquinas, o salta al envío."
 
 msgid "Auto (site language)"
 msgstr "Auto (idioma del sitio)"
@@ -102,6 +144,9 @@ msgstr "Volver a la lista"
 
 msgid "Background image"
 msgstr "Imagen de fondo"
+
+msgid "Based on what you told me, here are the machines I'd recommend:"
+msgstr "Por lo que me cuentas, te recomendaría estas máquinas:"
 
 msgid "Best matches for you"
 msgstr "Las mejores opciones para ti"
@@ -132,6 +177,9 @@ msgstr "Edita las notas IA internas por producto en bloque, por slug. Formato: {
 
 msgid "Captcha provider"
 msgstr "Proveedor de captcha"
+
+msgid "Cardboard"
+msgstr "Cartón"
 
 msgid "Catalog API key"
 msgstr "API key del catálogo"
@@ -187,11 +235,20 @@ msgstr "Contáctanos"
 msgid "Continue"
 msgstr "Continuar"
 
+msgid "Continue and request quote →"
+msgstr "Continuar y pedir presupuesto →"
+
+msgid "Cotton"
+msgstr "Algodón"
+
 msgid "Could not parse the JSON file."
 msgstr "No se pudo procesar el archivo JSON."
 
 msgid "Could not parse the catalog JSON."
 msgstr "No se pudo procesar el JSON del catálogo."
+
+msgid "Could you rephrase that?"
+msgstr "¿Puedes reformularlo?"
 
 msgid "Country"
 msgstr "País"
@@ -211,6 +268,9 @@ msgstr "Diario"
 msgid "Date"
 msgstr "Fecha"
 
+msgid "Decoration / signage"
+msgstr "Decoración / señalética"
+
 msgid "Default tags"
 msgstr "Tags por defecto"
 
@@ -222,6 +282,9 @@ msgstr "¿Eliminar esta conversación?"
 
 msgid "Domain"
 msgstr "Dominio"
+
+msgid "Don't know yet"
+msgstr "Aún no lo sé"
 
 msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
 msgstr "Arrastra productos para reordenar. En modo \"Mostrar todos los publicados\", arrastrar cambia a modo manual para conservar el nuevo orden."
@@ -237,9 +300,6 @@ msgstr "Email"
 
 msgid "Email subject"
 msgstr "Asunto del email"
-
-msgid "Empty message."
-msgstr "Mensaje vacío."
 
 msgid "Enable"
 msgstr "Activar"
@@ -289,11 +349,23 @@ msgstr "Formato"
 msgid "Format options"
 msgstr "Opciones de formato"
 
+msgid "Glass"
+msgstr "Vidrio"
+
 msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr "Google reCAPTCHA v2 (checkbox)"
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr "Google reCAPTCHA v3 (invisible, score)"
+
+msgid "Got it — drop your details below and our team will reach out."
+msgstr "Hecho — déjanos tus datos abajo y nuestro equipo te contactará."
+
+msgid "Got it. What kind of products will you mostly produce?"
+msgstr "¡Bien! ¿Qué tipo de productos vas a producir principalmente?"
+
+msgid "Great. What are you interested in doing? You can pick more than one."
+msgstr "Genial. ¿Qué te interesa hacer? Puedes elegir varias opciones."
 
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
 msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UTC."
@@ -307,8 +379,17 @@ msgstr "Nos ayuda a evitar spam."
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
 
+msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine in 2 minutes. Ready?"
+msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la solución de impresión ideal en 2 minutos. ¿Empezamos?"
+
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
+
+msgid "I already know which machine"
+msgstr "Ya sé qué máquina necesito"
+
+msgid "I have enough info — request quote →"
+msgstr "Tengo bastante info — pedir presupuesto →"
 
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr "He leído y acepto la <a href=\"%s\" target=\"_blank\" rel=\"noopener\">política de privacidad</a>"
@@ -331,8 +412,14 @@ msgstr "IP"
 msgid "Import JSON"
 msgstr "Importar JSON"
 
+msgid "Industrial"
+msgstr "Industrial"
+
 msgid "Labels / packaging"
 msgstr "Etiquetas / packaging"
+
+msgid "Larger than 60×90"
+msgstr "Más grande que 60×90"
 
 msgid "Last call:"
 msgstr "Última llamada:"
@@ -351,6 +438,9 @@ msgstr "Lead"
 
 msgid "Lead data missing or corrupt."
 msgstr "Faltan datos del lead o están corruptos."
+
+msgid "Leather"
+msgstr "Cuero"
 
 msgid "Leave empty to use the default Bomedia Composer endpoint."
 msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
@@ -406,8 +496,17 @@ msgstr "Mensaje:"
 msgid "Messages"
 msgstr "Mensajes"
 
+msgid "Metal"
+msgstr "Metal"
+
 msgid "Missing category."
 msgstr "Falta la categoría."
+
+msgid "Missing context."
+msgstr "Falta el contexto."
+
+msgid "Missing session."
+msgstr "Falta la sesión."
 
 msgid "Model"
 msgstr "Modelo"
@@ -420,6 +519,9 @@ msgstr "Volumen mensual"
 
 msgid "Monthly volume step"
 msgstr "Paso de volumen mensual"
+
+msgid "More than 30,000 €"
+msgstr "Más de 30.000 €"
 
 msgid "Name"
 msgstr "Nombre"
@@ -499,6 +601,18 @@ msgstr "OpenAI devolvió datos mal formados."
 msgid "Or type your answer freely…"
 msgstr "O escribe tu respuesta libremente…"
 
+msgid "Other"
+msgstr "Otros"
+
+msgid "PVC / acrylic"
+msgstr "PVC / acrílico"
+
+msgid "Packaging"
+msgstr "Packaging"
+
+msgid "Perfect. To send your personalised quote, I just need your details."
+msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos."
+
 msgid "Phone"
 msgstr "Teléfono"
 
@@ -507,6 +621,9 @@ msgstr "El teléfono es obligatorio."
 
 msgid "Pick"
 msgstr "Seleccionar"
+
+msgid "Pick an option above…"
+msgstr "Elige una opción arriba…"
 
 msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr "Elige categorías en la columna de la izquierda y arrastra para reordenar en la derecha. Despliega una fila para afinar qué productos aparecen y en qué orden."
@@ -528,6 +645,9 @@ msgstr "Selecciona al menos una máquina."
 
 msgid "Please take a moment before submitting."
 msgstr "Tómate un momento antes de enviar."
+
+msgid "Polyester"
+msgstr "Poliéster"
 
 msgid "Post-submit redirect URL"
 msgstr "URL de redirección post-envío"
@@ -553,6 +673,9 @@ msgstr "Producto de interés"
 msgid "Products of interest"
 msgstr "Productos de interés"
 
+msgid "Promotional / merch"
+msgstr "Promocional / merchandising"
+
 msgid "Protected by Google reCAPTCHA."
 msgstr "Protegido por Google reCAPTCHA."
 
@@ -574,6 +697,9 @@ msgstr "Asistente de solicitud de presupuesto"
 msgid "REST API Key"
 msgstr "Clave REST API"
 
+msgid "Rather not say"
+msgstr "Prefiero no decirlo"
+
 msgid "Recipient emails"
 msgstr "Emails destinatarios"
 
@@ -594,6 +720,9 @@ msgstr "Modelo solicitado:"
 
 msgid "Retry send"
 msgstr "Reintentar envío"
+
+msgid "Roughly, what monthly volume do you expect?"
+msgstr "¿Qué volumen mensual estimas, aproximadamente?"
 
 msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
@@ -664,6 +793,9 @@ msgstr "Site key"
 msgid "Skip the conversation and just send your details"
 msgstr "Saltar la conversación y enviar tus datos directamente"
 
+msgid "Skip this question"
+msgstr "Saltar esta pregunta"
+
 msgid "Skip to send"
 msgstr "Saltar al envío"
 
@@ -673,8 +805,11 @@ msgstr "Solicitud presupuesto web"
 msgid "Something went wrong. Please try again."
 msgstr "Algo ha fallado. Inténtalo de nuevo."
 
-msgid "Sorry, I'm having trouble responding right now. Try again in a moment, or skip to send your details."
-msgstr "Lo siento, tengo problemas para responder ahora mismo. Inténtalo en un momento o salta directamente al envío."
+msgid "Sorry, I can't answer that right now. Drop your details below and our team will help you."
+msgstr "Lo siento, no puedo responder ahora. Déjanos tus datos abajo y nuestro equipo te ayudará."
+
+msgid "Sorry, I had a glitch. Try again in a moment."
+msgstr "Disculpa, tuve un fallo. Inténtalo de nuevo en un momento."
 
 msgid "Source URL"
 msgstr "URL de origen"
@@ -715,6 +850,12 @@ msgstr "Probar conexión"
 msgid "Testing…"
 msgstr "Probando…"
 
+msgid "Textile / fashion"
+msgstr "Textil / moda"
+
+msgid "Thanks!"
+msgstr "¡Gracias!"
+
 msgid "Thanks! We received your request."
 msgstr "¡Gracias! Hemos recibido tu solicitud."
 
@@ -745,6 +886,12 @@ msgstr "Claves de Turnstile"
 msgid "Turnstile verification failed."
 msgstr "La verificación de Turnstile falló."
 
+msgid "Unknown step."
+msgstr "Paso desconocido."
+
+msgid "Up to 5,000 €"
+msgstr "Hasta 5.000 €"
+
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
 msgstr "Sube un archivo JSON con { products: [...], brands: [...] } para sobrescribir el cache cuando el endpoint remoto no esté disponible."
 
@@ -766,9 +913,6 @@ msgstr "Ver producto →"
 msgid "We don't have machines configured for the wizard yet. Please contact us."
 msgstr "Aún no tenemos máquinas configuradas para el wizard. Contáctanos por favor."
 
-msgid "We've received your answers. We'll get back to you soon."
-msgstr "Hemos recibido tus respuestas. Te contactaremos en breve."
-
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr "Hemos recibido tus respuestas. Te contactaremos con una recomendación personalizada."
 
@@ -778,8 +922,14 @@ msgstr "Semanal"
 msgid "What do you want to produce?"
 msgstr "¿Qué quieres producir?"
 
+msgid "What max piece size do you need? You can skip this question."
+msgstr "¿Tamaño máximo de pieza? Puedes saltar esta pregunta."
+
 msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
 msgstr "Si se rellena, tras un envío exitoso se redirige al usuario aquí con ?lead_id={id}. Útil para tracking de conversiones. Déjalo vacío para mostrar la pantalla de gracias del plugin."
+
+msgid "Which materials will you print on most often?"
+msgstr "¿Sobre qué materiales imprimirás más?"
 
 msgid "Wizard"
 msgstr "Wizard"
@@ -790,8 +940,14 @@ msgstr "Idioma del wizard"
 msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
 
+msgid "Wood"
+msgstr "Madera"
+
 msgid "Write log file in uploads/bqw-logs/"
 msgstr "Escribir archivo de log en uploads/bqw-logs/"
+
+msgid "Yes, let's go"
+msgstr "Sí, vamos"
 
 msgid "You chose to skip the conversation. Want to use the assistant instead?"
 msgstr "Has decidido saltarte la conversación. ¿Quieres volver al asistente?"
@@ -807,6 +963,9 @@ msgstr "Has seleccionado 1 máquina"
 
 msgid "Your application"
 msgstr "Tu aplicación"
+
+msgid "Your case is specific. Drop your details below and our team will reach out with a tailored proposal."
+msgstr "Tu caso es específico. Déjanos tus datos y nuestro equipo te contactará con una propuesta personalizada."
 
 msgid "Your case is specific. Let's talk directly."
 msgstr "Tu caso es específico. Hablemos directamente."

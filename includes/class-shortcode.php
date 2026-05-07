@@ -266,6 +266,10 @@ final class Shortcode {
 			'taskPack'      => __( 'Labels / packaging', 'bomedia-quote-wizard' ),
 			'taskUnsure'    => __( "I'm not sure", 'bomedia-quote-wizard' ),
 			'typeHere'      => __( 'Or type your answer freely…', 'bomedia-quote-wizard' ),
+			'optionsOnly'   => __( 'Pick an option above…', 'bomedia-quote-wizard' ),
+			'askAnything'   => __( 'Ask anything about these machines…', 'bomedia-quote-wizard' ),
+			'continueToQuote' => __( 'Continue and request quote →', 'bomedia-quote-wizard' ),
+			'skipQuestion'  => __( 'Skip this question', 'bomedia-quote-wizard' ),
 			'send'          => __( 'Send', 'bomedia-quote-wizard' ),
 		];
 	}

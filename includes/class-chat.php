@@ -16,191 +16,524 @@ defined( 'ABSPATH' ) || exit;
 
 final class Chat {
 
-	private const TEMP        = 0.4;
-	private const HISTORY_MAX = 30;
-
 	public static function register(): void {
-		add_action( 'wp_ajax_bqw_chat_message',        [ self::class, 'handle_message' ] );
-		add_action( 'wp_ajax_nopriv_bqw_chat_message', [ self::class, 'handle_message' ] );
+		add_action( 'wp_ajax_bqw_chat_init',           [ self::class, 'handle_init' ] );
+		add_action( 'wp_ajax_nopriv_bqw_chat_init',    [ self::class, 'handle_init' ] );
+		add_action( 'wp_ajax_bqw_chat_advance',        [ self::class, 'handle_advance' ] );
+		add_action( 'wp_ajax_nopriv_bqw_chat_advance', [ self::class, 'handle_advance' ] );
 	}
 
 	/* ============================================================
-	 * AJAX entry
+	 * Scripted backbone — the conversation is a fixed graph; OpenAI
+	 * is only invoked for free-text mapping, recommendations, and the
+	 * post-recommendation Q&A. This guarantees the bot always opens
+	 * with a real first question instead of waiting for the user.
 	 * ============================================================ */
 
-	public static function handle_message(): void {
+	public static function script(): array {
+		return [
+			'welcome' => [
+				'message' => __( "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine in 2 minutes. Ready?", 'bomedia-quote-wizard' ),
+				'type'    => 'options',
+				'options' => [
+					[ 'label' => __( "Yes, let's go", 'bomedia-quote-wizard' ),    'next' => 'task_type' ],
+					[ 'label' => __( 'I already know which machine', 'bomedia-quote-wizard' ), 'next' => '__woo_classic' ],
+				],
+			],
+			'task_type' => [
+				'message' => __( 'Great. What are you interested in doing? You can pick more than one.', 'bomedia-quote-wizard' ),
+				'type'    => 'multi_options',
+				'options' => [
+					[ 'label' => __( 'Print on objects (UV-LED)', 'bomedia-quote-wizard' ), 'icon' => 'package' ],
+					[ 'label' => __( 'Print on textile', 'bomedia-quote-wizard' ),         'icon' => 'tshirt'  ],
+					[ 'label' => __( 'Cut/engrave with laser', 'bomedia-quote-wizard' ),   'icon' => 'metal'   ],
+					[ 'label' => __( 'Labels / packaging', 'bomedia-quote-wizard' ),       'icon' => 'package' ],
+					[ 'label' => __( "I'm not sure", 'bomedia-quote-wizard' ),             'icon' => 'help'    ],
+				],
+				'allow_free_text' => true,
+				'next'            => 'application',
+				'saves_to'        => 'task_types',
+			],
+			'application' => [
+				'message' => __( "Got it. What kind of products will you mostly produce?", 'bomedia-quote-wizard' ),
+				'type'    => 'multi_options',
+				'options' => [
+					[ 'label' => __( 'Textile / fashion', 'bomedia-quote-wizard' ),  'icon' => 'tshirt' ],
+					[ 'label' => __( 'Packaging', 'bomedia-quote-wizard' ),          'icon' => 'package' ],
+					[ 'label' => __( 'Promotional / merch', 'bomedia-quote-wizard' ),'icon' => 'gift' ],
+					[ 'label' => __( 'Industrial', 'bomedia-quote-wizard' ),         'icon' => 'factory' ],
+					[ 'label' => __( 'Decoration / signage', 'bomedia-quote-wizard' ),'icon' => 'home' ],
+					[ 'label' => __( 'Other', 'bomedia-quote-wizard' ),              'icon' => 'help' ],
+				],
+				'allow_free_text' => true,
+				'next'            => 'materials',
+				'saves_to'        => 'applications',
+			],
+			'materials' => [
+				'message' => __( 'Which materials will you print on most often?', 'bomedia-quote-wizard' ),
+				'type'    => 'multi_options',
+				'options' => [
+					[ 'label' => __( 'Cotton', 'bomedia-quote-wizard' ),    'icon' => 'fabric' ],
+					[ 'label' => __( 'Polyester', 'bomedia-quote-wizard' ), 'icon' => 'fabric' ],
+					[ 'label' => __( 'PVC / acrylic', 'bomedia-quote-wizard' ), 'icon' => 'plastic' ],
+					[ 'label' => __( 'Wood', 'bomedia-quote-wizard' ),      'icon' => 'wood' ],
+					[ 'label' => __( 'Metal', 'bomedia-quote-wizard' ),     'icon' => 'metal' ],
+					[ 'label' => __( 'Glass', 'bomedia-quote-wizard' ),     'icon' => 'glass' ],
+					[ 'label' => __( 'Leather', 'bomedia-quote-wizard' ),   'icon' => 'leather' ],
+					[ 'label' => __( 'Cardboard', 'bomedia-quote-wizard' ), 'icon' => 'cardboard' ],
+				],
+				'allow_free_text' => true,
+				'next'            => 'volume',
+				'saves_to'        => 'materials',
+			],
+			'volume' => [
+				'message' => __( 'Roughly, what monthly volume do you expect?', 'bomedia-quote-wizard' ),
+				'type'    => 'single_option',
+				'options' => [
+					[ 'label' => __( '< 100 / month', 'bomedia-quote-wizard' ),   'icon' => 'volume-low' ],
+					[ 'label' => __( '100 – 500', 'bomedia-quote-wizard' ),      'icon' => 'volume-mid' ],
+					[ 'label' => __( '500 – 2000', 'bomedia-quote-wizard' ),     'icon' => 'volume-mid' ],
+					[ 'label' => __( '> 2000', 'bomedia-quote-wizard' ),         'icon' => 'volume-high' ],
+					[ 'label' => __( "Don't know yet", 'bomedia-quote-wizard' ), 'icon' => 'help' ],
+				],
+				'allow_free_text' => true,
+				'next'            => 'format',
+				'saves_to'        => 'volume',
+			],
+			'format' => [
+				'message' => __( 'What max piece size do you need? You can skip this question.', 'bomedia-quote-wizard' ),
+				'type'    => 'multi_options',
+				'options' => [
+					[ 'label' => __( 'A4 (210×297 mm)', 'bomedia-quote-wizard' ), 'icon' => 'format-small' ],
+					[ 'label' => __( 'A3 (297×420 mm)', 'bomedia-quote-wizard' ), 'icon' => 'format-medium' ],
+					[ 'label' => __( '60×90 cm', 'bomedia-quote-wizard' ),        'icon' => 'format-large' ],
+					[ 'label' => __( 'Larger than 60×90', 'bomedia-quote-wizard' ), 'icon' => 'format-large' ],
+				],
+				'allow_free_text' => true,
+				'allow_skip'      => true,
+				'next'            => 'budget',
+				'saves_to'        => 'formats',
+			],
+			'budget' => [
+				'message' => __( 'Any rough budget? Optional.', 'bomedia-quote-wizard' ),
+				'type'    => 'single_option',
+				'options' => [
+					[ 'label' => __( 'Up to 5,000 €', 'bomedia-quote-wizard' ),    'icon' => 'budget-low' ],
+					[ 'label' => __( '5,000 – 15,000 €', 'bomedia-quote-wizard' ), 'icon' => 'budget-mid' ],
+					[ 'label' => __( '15,000 – 30,000 €', 'bomedia-quote-wizard' ),'icon' => 'budget-mid' ],
+					[ 'label' => __( 'More than 30,000 €', 'bomedia-quote-wizard' ),'icon' => 'budget-high' ],
+					[ 'label' => __( "Rather not say", 'bomedia-quote-wizard' ),    'icon' => 'help' ],
+				],
+				'allow_free_text' => true,
+				'allow_skip'      => true,
+				'next'            => 'recommendations',
+				'saves_to'        => 'budget',
+			],
+			'recommendations' => [
+				'type' => 'ai_recommendations',
+				'next' => 'free_chat',
+			],
+			'free_chat' => [
+				'type' => 'ai_open',
+			],
+			'contact' => [
+				'message' => __( "Perfect. To send your personalised quote, I just need your details.", 'bomedia-quote-wizard' ),
+				'type'    => 'form',
+			],
+		];
+	}
+
+	/* ============================================================
+	 * AJAX entrypoints
+	 * ============================================================ */
+
+	public static function handle_init(): void {
 		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
 			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
 		}
-		$session_id = (string) ( $_POST['session_id'] ?? '' );
-		$content    = sanitize_textarea_field( wp_unslash( (string) ( $_POST['content'] ?? '' ) ) );
-		$buttons    = array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['button_clicks'] ?? [] ) );
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		if ( '' === $session_id ) {
+			wp_send_json_error( [ 'message' => __( 'Missing session.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+
+		$script = self::script();
+		$step   = $script['welcome'];
+		$envelope = self::step_to_envelope( 'welcome', $step );
+
+		// Persist the welcome message only once per session.
+		$existing = Conversations::history( $session_id, 1 );
+		if ( empty( $existing ) ) {
+			Conversations::append( $session_id, 'assistant', (string) $step['message'], [ 'step_id' => 'welcome' ] );
+		}
+
+		wp_send_json_success( [ 'step' => $envelope ] );
+	}
+
+	public static function handle_advance(): void {
+		if ( ! check_ajax_referer( 'bqw_submit', 'nonce', false ) ) {
+			wp_send_json_error( [ 'message' => __( 'Security check failed.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
+		$step_id    = sanitize_text_field( (string) ( $_POST['step_id'] ?? '' ) );
+		$selected   = array_values( array_filter( array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['selected'] ?? [] ) ), 'strlen' ) );
+		$free_text  = sanitize_textarea_field( wp_unslash( (string) ( $_POST['free_text'] ?? '' ) ) );
+		$skip       = ! empty( $_POST['skip'] );
 		$language   = sanitize_text_field( (string) ( $_POST['language'] ?? '' ) );
+		$lang       = '' !== $language ? $language : substr( get_locale(), 0, 2 );
 
-		if ( '' === $session_id || ( '' === $content && empty( $buttons ) ) ) {
-			wp_send_json_error( [ 'message' => __( 'Empty message.', 'bomedia-quote-wizard' ) ], 400 );
+		if ( '' === $session_id || '' === $step_id ) {
+			wp_send_json_error( [ 'message' => __( 'Missing context.', 'bomedia-quote-wizard' ) ], 400 );
 		}
 
-		// Build the user-visible content from clicked options + free text.
-		$visible = trim( implode( ' · ', array_filter( $buttons ) ) );
-		if ( '' !== $content ) {
-			$visible = '' === $visible ? $content : $visible . ' — ' . $content;
+		$script = self::script();
+		if ( ! isset( $script[ $step_id ] ) ) {
+			wp_send_json_error( [ 'message' => __( 'Unknown step.', 'bomedia-quote-wizard' ) ], 400 );
+		}
+		$current = $script[ $step_id ];
+
+		// Persist the user's reply (visible string).
+		$visible = trim( implode( ' · ', $selected ) );
+		if ( '' !== $free_text ) {
+			$visible = '' === $visible ? $free_text : $visible . ' — ' . $free_text;
+		}
+		if ( '' === $visible && $skip ) {
+			$visible = __( '(skipped)', 'bomedia-quote-wizard' );
+		}
+		if ( '' !== $visible ) {
+			Conversations::append( $session_id, 'user', $visible, [
+				'step_id' => $step_id,
+				'selected' => $selected,
+				'free_text' => $free_text,
+				'skipped' => $skip,
+			] );
 		}
 
-		Conversations::append( $session_id, 'user', $visible, [
-			'buttons'  => $buttons,
-			'language' => $language,
-		] );
-
-		// Quota gate (hard cap).
-		if ( OpenAI_Client::over_quota() ) {
-			$fallback = __( "We've received your answers. We'll get back to you soon.", 'bomedia-quote-wizard' );
-			Conversations::append( $session_id, 'assistant', $fallback, [ 'fallback' => true ] );
-			wp_send_json_success( [ 'reply' => self::reply_envelope( $fallback ) ] );
+		// Free-chat step → route to OpenAI Q&A and stay on this step.
+		if ( 'ai_open' === ( $current['type'] ?? '' ) ) {
+			$reply = self::ai_followup( $session_id, $lang );
+			Conversations::append( $session_id, 'assistant', $reply, [ 'step_id' => $step_id ] );
+			wp_send_json_success( [ 'step' => [
+				'id'              => $step_id,
+				'type'            => 'free_chat',
+				'message'         => $reply,
+				'allow_free_text' => true,
+				'cta'             => __( 'I have enough info — request quote →', 'bomedia-quote-wizard' ),
+				'cta_to'          => 'contact',
+			] ] );
 		}
 
-		$reply = self::ask_openai( $session_id, $language );
-		if ( is_wp_error( $reply ) ) {
-			$msg = __( "Sorry, I'm having trouble responding right now. Try again in a moment, or skip to send your details.", 'bomedia-quote-wizard' );
-			Conversations::append( $session_id, 'assistant', $msg, [ 'error' => $reply->get_error_message() ] );
-			wp_send_json_success( [ 'reply' => self::reply_envelope( $msg ) ] );
+		// Free-text mapping when the step has predefined options but the user typed.
+		if ( '' !== $free_text && empty( $selected ) && ! empty( $current['allow_free_text'] ) && ! empty( $current['options'] ) ) {
+			$mapped = self::map_free_text( $current, $free_text, $lang );
+			if ( ! empty( $mapped['matched'] ) ) {
+				$selected = [ $mapped['matched'] ];
+			} elseif ( ! empty( $mapped['clarification'] ) ) {
+				Conversations::append( $session_id, 'assistant', $mapped['clarification'], [ 'step_id' => $step_id, 'clarification' => true ] );
+				$envelope = self::step_to_envelope( $step_id, $current );
+				$envelope['message'] = $mapped['clarification'];
+				wp_send_json_success( [ 'step' => $envelope ] );
+			}
 		}
 
-		$payload = self::reply_envelope_from( $reply );
-		Conversations::append( $session_id, 'assistant', (string) $payload['message'], $payload );
-		wp_send_json_success( [ 'reply' => $payload ] );
+		// Determine next step.
+		$next_id = null;
+		if ( $skip && ! empty( $current['allow_skip'] ) ) {
+			$next_id = $current['next'] ?? null;
+		} elseif ( ! empty( $selected ) ) {
+			// Per-option `next` (e.g. welcome → __woo_classic).
+			foreach ( $selected as $val ) {
+				foreach ( (array) ( $current['options'] ?? [] ) as $o ) {
+					$opt_label = (string) ( $o['label'] ?? '' );
+					if ( isset( $o['next'] ) && $opt_label === $val ) {
+						$next_id = $o['next'];
+						break 2;
+					}
+				}
+			}
+			if ( ! $next_id ) {
+				$next_id = $current['next'] ?? null;
+			}
+		} elseif ( '' !== $free_text ) {
+			$next_id = $current['next'] ?? null;
+		}
+
+		// Special meta target — direct shortcut to the contact form.
+		if ( '__woo_classic' === $next_id ) {
+			$msg = __( 'Got it — drop your details below and our team will reach out.', 'bomedia-quote-wizard' );
+			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'knows_machine' ] );
+			wp_send_json_success( [ 'step' => [
+				'id'      => 'knows_machine',
+				'type'    => 'form',
+				'message' => $msg,
+				'origin_tag' => 'knows-machine',
+			] ] );
+		}
+
+		if ( ! $next_id || ! isset( $script[ $next_id ] ) ) {
+			$msg = __( 'Thanks!', 'bomedia-quote-wizard' );
+			Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => 'end' ] );
+			wp_send_json_success( [ 'step' => [ 'id' => 'end', 'type' => 'end', 'message' => $msg ] ] );
+		}
+		$next = $script[ $next_id ];
+
+		switch ( $next['type'] ?? '' ) {
+			case 'ai_recommendations':
+				$recs = self::generate_recommendations( $session_id, $lang );
+				$msg  = empty( $recs )
+					? __( "Your case is specific. Drop your details below and our team will reach out with a tailored proposal.", 'bomedia-quote-wizard' )
+					: __( "Based on what you told me, here are the machines I'd recommend:", 'bomedia-quote-wizard' );
+				Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => $next_id, 'recommendations' => count( $recs ) ] );
+				wp_send_json_success( [ 'step' => [
+					'id'              => $next_id,
+					'type'            => 'recommendations',
+					'message'         => $msg,
+					'recommendations' => $recs,
+					'cta'             => __( 'Continue and request quote →', 'bomedia-quote-wizard' ),
+					'cta_to'          => empty( $recs ) ? 'contact' : 'free_chat',
+					'free_chat_hint'  => __( 'Ask me anything about these machines, or skip to send.', 'bomedia-quote-wizard' ),
+				] ] );
+
+			case 'ai_open':
+				$msg = __( 'Anything you want to ask about these machines? Or skip straight to sending your details.', 'bomedia-quote-wizard' );
+				Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => $next_id ] );
+				wp_send_json_success( [ 'step' => [
+					'id'              => $next_id,
+					'type'            => 'free_chat',
+					'message'         => $msg,
+					'allow_free_text' => true,
+					'cta'             => __( 'I have enough info — request quote →', 'bomedia-quote-wizard' ),
+					'cta_to'          => 'contact',
+				] ] );
+
+			case 'form':
+				$msg = (string) $next['message'];
+				Conversations::append( $session_id, 'assistant', $msg, [ 'step_id' => $next_id ] );
+				wp_send_json_success( [ 'step' => [
+					'id'      => $next_id,
+					'type'    => 'form',
+					'message' => $msg,
+				] ] );
+
+			default:
+				$envelope = self::step_to_envelope( $next_id, $next );
+				Conversations::append( $session_id, 'assistant', (string) $next['message'], [ 'step_id' => $next_id ] );
+				wp_send_json_success( [ 'step' => $envelope ] );
+		}
 	}
 
 	/* ============================================================
-	 * OpenAI call
+	 * Helpers
 	 * ============================================================ */
 
-	public static function ask_openai( string $session_id, string $language ) {
+	private static function step_to_envelope( string $id, array $step ): array {
+		$opts = [];
+		foreach ( (array) ( $step['options'] ?? [] ) as $o ) {
+			$opts[] = [
+				'label' => sanitize_text_field( (string) ( $o['label'] ?? '' ) ),
+				'icon'  => sanitize_text_field( (string) ( $o['icon'] ?? '' ) ),
+			];
+		}
+		$type = $step['type'] ?? 'options';
+		return [
+			'id'              => $id,
+			'type'            => $type,
+			'message'         => (string) ( $step['message'] ?? '' ),
+			'options'         => $opts,
+			'allow_free_text' => ! empty( $step['allow_free_text'] ),
+			'allow_skip'      => ! empty( $step['allow_skip'] ),
+			'multi_select'    => 'multi_options' === $type || 'options' === $type,
+		];
+	}
+
+	/**
+	 * Aggregates the user's answers per saves_to slot from the conversation
+	 * history (so we never need server-side state).
+	 */
+	private static function collect_answers( string $session_id ): array {
+		$script = self::script();
+		$rows   = Conversations::history( $session_id, 100 );
+		$out    = [
+			'task_types'   => [],
+			'applications' => [],
+			'materials'    => [],
+			'volume'       => '',
+			'formats'      => [],
+			'budget'       => '',
+		];
+		foreach ( $rows as $r ) {
+			if ( 'user' !== $r['role'] ) {
+				continue;
+			}
+			$meta = is_string( $r['metadata'] ) ? json_decode( (string) $r['metadata'], true ) : [];
+			$step = isset( $meta['step_id'] ) ? (string) $meta['step_id'] : '';
+			if ( '' === $step || ! isset( $script[ $step ] ) ) {
+				continue;
+			}
+			$saves_to = $script[ $step ]['saves_to'] ?? '';
+			if ( '' === $saves_to ) {
+				continue;
+			}
+			$selected = (array) ( $meta['selected'] ?? [] );
+			$free     = trim( (string) ( $meta['free_text'] ?? '' ) );
+			$picks    = $selected;
+			if ( '' !== $free && empty( $picks ) ) {
+				$picks = [ $free ];
+			}
+			if ( is_array( $out[ $saves_to ] ) ) {
+				$out[ $saves_to ] = array_values( array_unique( array_merge( $out[ $saves_to ], $picks ) ) );
+			} else {
+				$out[ $saves_to ] = $picks[0] ?? $out[ $saves_to ];
+			}
+		}
+		return $out;
+	}
+
+	private static function generate_recommendations( string $session_id, string $lang ): array {
+		$answers = self::collect_answers( $session_id );
+
 		$enc = (string) Settings::get( 'openai_api_key', '' );
 		$key = '' !== $enc ? Settings::decrypt( $enc ) : '';
 		if ( '' === $key ) {
-			return new WP_Error( 'bqw_openai_not_configured', 'Missing OpenAI key' );
+			return [];
+		}
+		if ( OpenAI_Client::over_quota() ) {
+			return [];
 		}
 
-		$model    = (string) Settings::get( 'openai_model', 'gpt-4o-mini' ) ?: 'gpt-4o-mini';
-		$lang     = '' !== $language ? $language : substr( get_locale(), 0, 2 );
+		// Filter catalog by task_types (best-effort: keep all if unknown).
 		$products = self::catalog_for_prompt( $lang );
-
-		$system = self::system_prompt( $lang, $products );
-
-		$messages   = [ [ 'role' => 'system', 'content' => $system ] ];
-		$history    = Conversations::history( $session_id, self::HISTORY_MAX );
-		foreach ( $history as $row ) {
-			$role = ( 'assistant' === $row['role'] ) ? 'assistant' : 'user';
-			$messages[] = [ 'role' => $role, 'content' => (string) $row['content'] ];
+		if ( empty( $products ) ) {
+			return [];
 		}
+
+		$client = new OpenAI_Client();
+		$result = $client->recommend( [
+			'application' => array_merge( $answers['task_types'], $answers['applications'] ),
+			'materials'   => $answers['materials'],
+			'volume'      => $answers['volume'],
+			'format'      => $answers['formats'],
+			'budget'      => $answers['budget'],
+			'lang'        => $lang,
+		], $products );
+
+		if ( is_wp_error( $result ) || empty( $result['recommendations'] ) ) {
+			return [];
+		}
+
+		$index = [];
+		foreach ( Catalog_Client::get_products() as $p ) {
+			$slug = (string) ( $p['id'] ?? '' );
+			if ( '' !== $slug ) {
+				$index[ $slug ] = $p;
+			}
+		}
+		$cards = [];
+		foreach ( (array) $result['recommendations'] as $r ) {
+			if ( ! is_array( $r ) ) {
+				continue;
+			}
+			$slug = (string) ( $r['product_id'] ?? '' );
+			if ( '' === $slug || ! isset( $index[ $slug ] ) ) {
+				continue;
+			}
+			$loc = Catalog_Client::localize_product( $index[ $slug ], $lang );
+			$cards[] = array_merge( $loc, [
+				'score'   => (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) ),
+				'reasons' => array_slice( array_map( 'sanitize_text_field', (array) ( $r['reasons'] ?? [] ) ), 0, 2 ),
+				'source'  => 'catalog',
+			] );
+		}
+		usort( $cards, static function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+		return array_slice( $cards, 0, 3 );
+	}
+
+	private static function map_free_text( array $step, string $free_text, string $lang ): array {
+		$enc = (string) Settings::get( 'openai_api_key', '' );
+		$key = '' !== $enc ? Settings::decrypt( $enc ) : '';
+		if ( '' === $key || OpenAI_Client::over_quota() ) {
+			return [ 'matched' => null, 'clarification' => null ];
+		}
+		$labels = array_map( static function ( $o ) { return (string) ( $o['label'] ?? '' ); }, (array) ( $step['options'] ?? [] ) );
+
+		$system = 'Map the user\'s free-text answer to one of the predefined options (case-insensitive, intent-based) for a sales chat. If unambiguous, return matched (verbatim from options). If ambiguous or off-topic, return clarification: a short polite reply in language ' . $lang . ' asking the user to clarify (under 25 words). JSON only.';
+		$user   = 'Predefined options: ' . wp_json_encode( $labels ) . "\n"
+			. 'User reply: "' . $free_text . '"' . "\n"
+			. 'Question: "' . ( $step['message'] ?? '' ) . '"';
 
 		$body = [
-			'model'           => $model,
-			'messages'        => $messages,
-			'temperature'     => self::TEMP,
+			'model'           => (string) Settings::get( 'openai_model', 'gpt-4o-mini' ) ?: 'gpt-4o-mini',
+			'messages'        => [
+				[ 'role' => 'system', 'content' => $system ],
+				[ 'role' => 'user',   'content' => $user ],
+			],
+			'temperature'     => 0.0,
 			'response_format' => [ 'type' => 'json_object' ],
 		];
-
 		$response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', [
-			'timeout' => 25,
-			'headers' => [
-				'Authorization' => 'Bearer ' . $key,
-				'Content-Type'  => 'application/json',
-			],
-			'body' => wp_json_encode( $body ),
+			'timeout' => 12,
+			'headers' => [ 'Authorization' => 'Bearer ' . $key, 'Content-Type' => 'application/json' ],
+			'body'    => wp_json_encode( $body ),
 		] );
-
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			return [ 'matched' => null, 'clarification' => null ];
 		}
-		$code = (int) wp_remote_retrieve_response_code( $response );
-		$raw  = (string) wp_remote_retrieve_body( $response );
-		$json = json_decode( $raw, true );
-		if ( $code < 200 || $code >= 300 || ! is_array( $json ) ) {
-			return new WP_Error( 'bqw_openai_http_' . $code, $json['error']['message'] ?? sprintf( 'HTTP %d', $code ) );
-		}
+		$json    = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 		$content = $json['choices'][0]['message']['content'] ?? '';
 		$parsed  = json_decode( (string) $content, true );
 		if ( ! is_array( $parsed ) ) {
-			return new WP_Error( 'bqw_openai_bad_json', 'malformed JSON from assistant' );
+			return [ 'matched' => null, 'clarification' => null ];
 		}
-
-		// Cost accounting (best-effort).
-		$usage = $json['usage'] ?? [];
-		$cost  = OpenAI_Client::estimate_cost( $model, (int) ( $usage['prompt_tokens'] ?? 0 ), (int) ( $usage['completion_tokens'] ?? 0 ) );
-		OpenAI_Client::accumulate_cost( $cost );
-		update_option( 'bqw_openai_last_call', [
-			'ts'       => gmdate( 'Y-m-d H:i:s' ),
-			'model'    => $model,
-			'prompt'   => (int) ( $usage['prompt_tokens'] ?? 0 ),
-			'output'   => (int) ( $usage['completion_tokens'] ?? 0 ),
-			'cost_usd' => $cost,
-		], false );
-
-		return $parsed;
+		$matched = isset( $parsed['matched'] ) ? sanitize_text_field( (string) $parsed['matched'] ) : '';
+		// Verify matched is one of the actual labels.
+		if ( '' !== $matched && ! in_array( $matched, $labels, true ) ) {
+			$matched = '';
+		}
+		$clarif = isset( $parsed['clarification'] ) ? sanitize_text_field( (string) $parsed['clarification'] ) : '';
+		return [ 'matched' => $matched ?: null, 'clarification' => $clarif ?: null ];
 	}
 
-	private static function reply_envelope( string $msg ): array {
-		return [
-			'message'  => $msg,
-			'options'  => [],
-			'free_text_hint' => '',
-			'recommendations' => [],
-			'ready_for_contact' => false,
-			'extracted_fields'  => [],
+	private static function ai_followup( string $session_id, string $lang ) {
+		$enc = (string) Settings::get( 'openai_api_key', '' );
+		$key = '' !== $enc ? Settings::decrypt( $enc ) : '';
+		if ( '' === $key || OpenAI_Client::over_quota() ) {
+			return __( "Sorry, I can't answer that right now. Drop your details below and our team will help you.", 'bomedia-quote-wizard' );
+		}
+		$model    = (string) Settings::get( 'openai_model', 'gpt-4o-mini' ) ?: 'gpt-4o-mini';
+		$products = self::catalog_for_prompt( $lang );
+		$system   = 'You are a Bomedia sales assistant. The user just received product recommendations. Answer their follow-up question briefly (<60 words) in language ' . $lang . '. Never invent capabilities not in the catalog. If asked about prices, say a personalised quote will be sent. Catalog (only these are available): ' . wp_json_encode( $products );
+
+		$messages = [ [ 'role' => 'system', 'content' => $system ] ];
+		foreach ( Conversations::history( $session_id, 30 ) as $row ) {
+			$messages[] = [
+				'role'    => ( 'assistant' === $row['role'] ) ? 'assistant' : 'user',
+				'content' => (string) $row['content'],
+			];
+		}
+
+		$body = [
+			'model'       => $model,
+			'messages'    => $messages,
+			'temperature' => 0.5,
 		];
+		$response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', [
+			'timeout' => 18,
+			'headers' => [ 'Authorization' => 'Bearer ' . $key, 'Content-Type' => 'application/json' ],
+			'body'    => wp_json_encode( $body ),
+		] );
+		if ( is_wp_error( $response ) ) {
+			return __( "Sorry, I had a glitch. Try again in a moment.", 'bomedia-quote-wizard' );
+		}
+		$json = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		$msg  = isset( $json['choices'][0]['message']['content'] ) ? trim( (string) $json['choices'][0]['message']['content'] ) : '';
+		// Cost accounting.
+		$usage = $json['usage'] ?? [];
+		OpenAI_Client::accumulate_cost( OpenAI_Client::estimate_cost( $model, (int) ( $usage['prompt_tokens'] ?? 0 ), (int) ( $usage['completion_tokens'] ?? 0 ) ) );
+		return $msg ?: __( 'Could you rephrase that?', 'bomedia-quote-wizard' );
 	}
 
-	private static function reply_envelope_from( array $parsed ): array {
-		$envelope = self::reply_envelope( (string) ( $parsed['message'] ?? '' ) );
-
-		if ( isset( $parsed['options'] ) && is_array( $parsed['options'] ) ) {
-			foreach ( $parsed['options'] as $opt ) {
-				if ( is_array( $opt ) && isset( $opt['label'] ) ) {
-					$envelope['options'][] = [
-						'label'     => sanitize_text_field( (string) $opt['label'] ),
-						'icon_hint' => sanitize_text_field( (string) ( $opt['icon_hint'] ?? '' ) ),
-					];
-				} elseif ( is_string( $opt ) ) {
-					$envelope['options'][] = [ 'label' => sanitize_text_field( $opt ), 'icon_hint' => '' ];
-				}
-			}
-		}
-		$envelope['free_text_hint']    = isset( $parsed['free_text_hint'] ) ? sanitize_text_field( (string) $parsed['free_text_hint'] ) : '';
-		$envelope['ready_for_contact'] = ! empty( $parsed['ready_for_contact'] );
-
-		// Hydrate recommendations from the catalog when the assistant signals.
-		if ( ! empty( $parsed['recommendations'] ) && is_array( $parsed['recommendations'] ) ) {
-			$lang  = substr( get_locale(), 0, 2 );
-			$index = [];
-			foreach ( Catalog_Client::get_products() as $p ) {
-				$slug = (string) ( $p['id'] ?? '' );
-				if ( '' !== $slug ) {
-					$index[ $slug ] = $p;
-				}
-			}
-			foreach ( $parsed['recommendations'] as $r ) {
-				if ( ! is_array( $r ) ) {
-					continue;
-				}
-				$slug = (string) ( $r['product_id'] ?? '' );
-				if ( '' === $slug || ! isset( $index[ $slug ] ) ) {
-					continue;
-				}
-				$loc = Catalog_Client::localize_product( $index[ $slug ], $lang );
-				$envelope['recommendations'][] = array_merge( $loc, [
-					'score'   => (int) max( 0, min( 100, (int) ( $r['score'] ?? 0 ) ) ),
-					'reasons' => array_slice( array_map( 'sanitize_text_field', (array) ( $r['reasons'] ?? [] ) ), 0, 2 ),
-					'source'  => 'catalog',
-				] );
-			}
-		}
-		if ( isset( $parsed['extracted_fields'] ) && is_array( $parsed['extracted_fields'] ) ) {
-			$envelope['extracted_fields'] = self::sanitize_extracted_fields( $parsed['extracted_fields'] );
-		}
-		return $envelope;
-	}
+	/* ============================================================
+	 * Field sanitiser used by submit + summariser
+	 * ============================================================ */
 
 	public static function sanitize_extracted_fields( array $f ): array {
 		return [
@@ -219,7 +552,7 @@ final class Chat {
 	}
 
 	/* ============================================================
-	 * Helpers
+	 * Catalog helpers
 	 * ============================================================ */
 
 	private static function catalog_for_prompt( string $lang ): array {
@@ -237,34 +570,6 @@ final class Chat {
 			];
 		}
 		return array_slice( $out, 0, 50 );
-	}
-
-	private static function system_prompt( string $lang, array $products ): string {
-		return 'You are a helpful sales assistant for Bomedia SL, a European distributor of UV-LED industrial printers, DTG/DTF textile printers, and laser cutting/engraving machines (artisJet, MBO, Flux, smartJet, pimpam brands).' . "\n\n"
-			. 'You are conducting a conversational needs-assessment with a website visitor in their language. Be warm, brief and curious. Avoid corporate jargon.' . "\n\n"
-			. 'CONVERSATION GOAL: understand the visitor\'s production task, materials, monthly volume, max format, budget; then propose up to 3 machines that match. After they pick or accept the recommendations, ask for first name, company, email, phone, country, in any natural order. When you have enough, set ready_for_contact=true to invite them to submit. Do not actually submit — the frontend will show a contact form.' . "\n\n"
-			. 'STRICT RULES:' . "\n"
-			. '- Always reply in language: "' . $lang . '". If the user writes in another language, switch to it.' . "\n"
-			. '- Never invent products outside the catalog provided below.' . "\n"
-			. '- Never quote prices. If asked, say the price is confirmed with a personalised quote.' . "\n"
-			. '- The cards on the frontend already render the product name, image, area, feat1, feat2 and link. Do NOT repeat them in the message text.' . "\n"
-			. '- Keep "message" under 60 words.' . "\n"
-			. '- "options" are short clickable answers that move the conversation forward (multi-select friendly). Use empty array when free-text is more appropriate.' . "\n"
-			. '- Show recommendations only once you have at least task type + one of (materials, volume, format).' . "\n\n"
-			. 'OUTPUT JSON SCHEMA (always exactly this structure):' . "\n"
-			. '{' . "\n"
-			. '  "message": "<your message in user\'s language>",' . "\n"
-			. '  "options": [{"label":"<short text>", "icon_hint":"tshirt|package|gift|factory|home|sign|fabric|plastic|wood|metal|glass|ceramic|leather|cardboard|paper|volume-low|volume-mid|volume-high|format-small|format-medium|format-large|budget-low|budget-mid|budget-high|help"}, ...] | [],' . "\n"
-			. '  "free_text_hint": "<short placeholder for the free-text input, optional>",' . "\n"
-			. '  "recommendations": [{"product_id":"<slug from catalog>", "score":<0-100>, "reasons":["<short reason>", "<short reason>"]}] | [],' . "\n"
-			. '  "ready_for_contact": <bool>,' . "\n"
-			. '  "extracted_fields": {' . "\n"
-			. '    "applications":[],"materials":[],"volume":"","format":[],"budget":"",' . "\n"
-			. '    "first_name":"","last_name":"","company":"","email":"","phone":"","country":""' . "\n"
-			. '  }' . "\n"
-			. '}' . "\n\n"
-			. 'CATALOG (JSON, only use these product_ids):' . "\n"
-			. wp_json_encode( $products );
 	}
 
 	/* ============================================================

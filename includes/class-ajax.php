@@ -650,11 +650,14 @@ final class Ajax {
 			$tags[] = 'marketing-optin';
 		}
 		// Tag origin so sales sees the path the user took.
-		if ( ! empty( $data['flow_origin'] ) && 'skip' === $data['flow_origin'] ) {
+		$origin = (string) ( $data['flow_origin'] ?? '' );
+		if ( 'skip' === $origin ) {
 			$tags[] = 'direct-send';
 			if ( ! empty( $data['conversation_user_messages'] ) ) {
 				$tags[] = 'partial-conversation';
 			}
+		} elseif ( 'knows-machine' === $origin ) {
+			$tags[] = 'knows-machine';
 		}
 		$tags = array_values( array_unique( $tags ) );
 
