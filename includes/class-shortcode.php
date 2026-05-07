@@ -272,6 +272,11 @@ final class Shortcode {
 			'skipQuestion'  => __( 'Skip this question', 'bomedia-quote-wizard' ),
 			'send'          => __( 'Send', 'bomedia-quote-wizard' ),
 			'recPlaceholder' => __( 'Your recommended machines will appear here as we chat.', 'bomedia-quote-wizard' ),
+			'requestQuote'  => __( 'Request quote', 'bomedia-quote-wizard' ),
+			'startOver'     => __( '↺ Start over', 'bomedia-quote-wizard' ),
+			'notConvinced'  => __( "Not convinced — contact me", 'bomedia-quote-wizard' ),
+			'viewOn'        => __( 'View on', 'bomedia-quote-wizard' ),
+			'selectedSuffix'=> __( 'selected', 'bomedia-quote-wizard' ),
 		];
 	}
 

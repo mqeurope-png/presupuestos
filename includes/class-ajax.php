@@ -488,11 +488,10 @@ final class Ajax {
 		);
 		$volume = sanitize_text_field( wp_unslash( $_POST['volume'] ?? '' ) );
 
-		if ( ! $first || ! $last ) {
-			return new \WP_Error( 'bqw_missing', __( 'Name is required.', 'bomedia-quote-wizard' ) );
-		}
-		if ( ! $company ) {
-			return new \WP_Error( 'bqw_missing', __( 'Company is required.', 'bomedia-quote-wizard' ) );
+		// v1.7.6 — only first name and email are required. Last name and
+		// company are optional (company input was removed from the form).
+		if ( ! $first ) {
+			return new \WP_Error( 'bqw_missing', __( 'First name is required.', 'bomedia-quote-wizard' ) );
 		}
 		if ( ! $email || ! is_email( $email ) ) {
 			return new \WP_Error( 'bqw_email', __( 'A valid email is required.', 'bomedia-quote-wizard' ) );
@@ -663,8 +662,12 @@ final class Ajax {
 			if ( ! empty( $data['conversation_user_messages'] ) ) {
 				$tags[] = 'partial-conversation';
 			}
-		} elseif ( 'knows-machine' === $origin ) {
-			$tags[] = 'knows-machine';
+		} elseif ( 'direct-catalog' === $origin || 'knows-machine' === $origin ) {
+			// v1.7.6 renamed from knows-machine. Both legacy and new origins
+			// land on the same tag.
+			$tags[] = 'direct-catalog';
+		} elseif ( 'not-convinced' === $origin ) {
+			$tags[] = 'not-convinced';
 		}
 		// No matching machine in the brand filter — sales should reach out manually.
 		if ( ! empty( $data['no_match_brand_filter'] ) ) {

@@ -26,7 +26,7 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 
 	<?php if ( $hero_on ) :
 		$hero_bg = $bqw_config['hero_image_url'] ?? '';
-		$hero_classes = 'bqw-chat-hero' . ( $hero_bg ? ' has-bg-image' : '' );
+		$hero_classes = 'bqw-chat-hero is-permanent' . ( $hero_bg ? ' has-bg-image' : '' );
 		$hero_style   = $hero_bg ? '--bqw-hero-bg: url(' . esc_url( $hero_bg ) . ');' : '';
 		?>
 		<header class="<?php echo esc_attr( $hero_classes ); ?>" id="bqw-chat-hero" style="<?php echo esc_attr( $hero_style ); ?>">
@@ -55,14 +55,19 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 
 			<div class="bqw-chat-options" id="bqw-chat-options"></div>
 
-			<form class="bqw-chat-input" id="bqw-chat-form" autocomplete="off">
-				<input type="text" id="bqw-chat-text" name="content"
-					placeholder="<?php esc_attr_e( 'Or type your answer freely…', 'bomedia-quote-wizard' ); ?>"
-					autocomplete="off" />
-				<button type="submit" class="bqw-chat-send" aria-label="<?php esc_attr_e( 'Send', 'bomedia-quote-wizard' ); ?>">
-					<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-				</button>
-			</form>
+			<!-- Bomedia full catalog browse view (revealed when the welcome
+			     card "Browse the full Bomedia catalog" is picked). -->
+			<div class="bqw-browse-view" id="bqw-browse-view" hidden>
+				<div class="bqw-browse-filters">
+					<input type="search" id="bqw-browse-search" placeholder="<?php esc_attr_e( 'Search machines…', 'bomedia-quote-wizard' ); ?>" />
+					<select id="bqw-browse-brand" multiple aria-label="<?php esc_attr_e( 'Filter by brand', 'bomedia-quote-wizard' ); ?>"></select>
+				</div>
+				<div class="bqw-browse-grid" id="bqw-browse-grid"></div>
+				<div class="bqw-browse-foot">
+					<span class="bqw-rec-counter" id="bqw-browse-counter">0</span>
+					<button type="button" class="bqw-btn bqw-btn-primary" id="bqw-browse-cta" disabled><?php esc_html_e( 'Continue', 'bomedia-quote-wizard' ); ?> →</button>
+				</div>
+			</div>
 		</main>
 
 		<aside class="bqw-rec-panel" id="bqw-rec-panel" aria-label="<?php esc_attr_e( 'Recommended machines', 'bomedia-quote-wizard' ); ?>">
@@ -116,15 +121,13 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 					<input type="text" id="bqw-first-name" name="first_name" required autocomplete="given-name" />
 				</div>
 				<div class="bqw-field">
-					<label for="bqw-last-name"><?php esc_html_e( 'Last name', 'bomedia-quote-wizard' ); ?> *</label>
-					<input type="text" id="bqw-last-name" name="last_name" required autocomplete="family-name" />
+					<label for="bqw-last-name"><?php esc_html_e( 'Last name', 'bomedia-quote-wizard' ); ?></label>
+					<input type="text" id="bqw-last-name" name="last_name" autocomplete="family-name" />
 				</div>
 			</div>
 
-			<div class="bqw-field">
-				<label for="bqw-company"><?php esc_html_e( 'Company', 'bomedia-quote-wizard' ); ?> *</label>
-				<input type="text" id="bqw-company" name="company" required autocomplete="organization" />
-			</div>
+			<!-- Hidden empty company so legacy AgileCRM mapping doesn't break. -->
+			<input type="hidden" id="bqw-company" name="company" value="" />
 
 			<div class="bqw-row">
 				<div class="bqw-field">
@@ -140,9 +143,10 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 			<div class="bqw-field">
 				<label for="bqw-phone"><?php esc_html_e( 'Phone', 'bomedia-quote-wizard' ); ?> *</label>
 				<div class="bqw-phone-wrap">
-					<span class="bqw-dial" id="bqw-dial">+34</span>
+					<select id="bqw-dial-prefix" class="bqw-dial-select" aria-label="<?php esc_attr_e( 'Country code', 'bomedia-quote-wizard' ); ?>"></select>
 					<input type="tel" id="bqw-phone" name="phone" required autocomplete="tel" />
 				</div>
+				<input type="hidden" id="bqw-dial" value="+34" />
 			</div>
 
 			<div class="bqw-field">

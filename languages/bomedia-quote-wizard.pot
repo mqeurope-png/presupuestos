@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.5\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.6\n"
 "Report-Msgid-Bugs-To: https://bomedia.net/\n"
 "POT-Creation-Date: 2026-05-06 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: bomedia-quote-wizard\n"
 
-#: includes/class-settings.php:903
+#: includes/class-settings.php:914
 msgid "%1$s ago · %2$d products cached"
 msgstr ""
 
@@ -18,28 +18,32 @@ msgstr ""
 msgid "%s, our team will contact you shortly with a personalized quote."
 msgstr ""
 
-#: includes/class-settings.php:1143
+#: includes/class-settings.php:1190
 msgid "(no entries yet — run the chatbot once)"
 msgstr ""
 
-#: includes/class-chat.php:267
+#: includes/class-chat.php:287
 msgid "(skipped)"
 msgstr ""
 
-#: includes/class-ajax.php:498
+#: includes/class-ajax.php:497
 msgid "A valid email is required."
 msgstr ""
 
-#: includes/class-settings.php:849
+#: includes/class-settings.php:860
 msgid "AI Catalog source"
 msgstr ""
 
-#: includes/class-settings.php:767
+#: includes/class-settings.php:778
 msgid "AI Recommendations (OpenAI)"
 msgstr ""
 
-#: includes/class-settings.php:537
+#: includes/class-settings.php:539
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
+msgstr ""
+
+#: includes/class-chat.php:68
+msgid "AI recommends the ideal machine in 5 questions"
 msgstr ""
 
 #: includes/class-lead-cpt.php:43
@@ -51,7 +55,7 @@ msgstr ""
 msgid "Abandoned conversations"
 msgstr ""
 
-#: includes/class-settings.php:607
+#: includes/class-settings.php:609
 msgid "Account email"
 msgstr ""
 
@@ -59,12 +63,12 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: includes/class-settings.php:495
-#: includes/class-settings.php:1336
+#: includes/class-settings.php:497
+#: includes/class-settings.php:1383
 msgid "Add"
 msgstr ""
 
-#: includes/class-settings.php:1289
+#: includes/class-settings.php:1336
 msgid "Add categories from the list on the left."
 msgstr ""
 
@@ -72,12 +76,12 @@ msgstr ""
 msgid "Add machines from another category"
 msgstr ""
 
-#: includes/class-settings.php:496
-#: includes/class-settings.php:1336
+#: includes/class-settings.php:498
+#: includes/class-settings.php:1383
 msgid "Added"
 msgstr ""
 
-#: includes/class-settings.php:522
+#: includes/class-settings.php:524
 msgid "AgileCRM"
 msgstr ""
 
@@ -99,15 +103,19 @@ msgstr ""
 msgid "AgileCRM is not configured."
 msgstr ""
 
+#: includes/class-chat.php:86
+msgid "All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)"
+msgstr ""
+
 #: includes/class-lead-cpt.php:242
 msgid "All statuses"
 msgstr ""
 
-#: includes/class-chat.php:118
+#: includes/class-chat.php:141
 msgid "Any rough budget? Optional."
 msgstr ""
 
-#: includes/class-chat.php:392
+#: includes/class-chat.php:403
 msgid "Anything you want to ask about these machines? Or skip straight to sending your details."
 msgstr ""
 
@@ -120,7 +128,7 @@ msgstr ""
 msgid "Application (one or more)"
 msgstr ""
 
-#: includes/class-settings.php:659
+#: includes/class-settings.php:661
 msgid "Application step"
 msgstr ""
 
@@ -132,15 +140,15 @@ msgstr ""
 msgid "Ask anything about these machines…"
 msgstr ""
 
-#: includes/class-chat.php:388
+#: includes/class-chat.php:399
 msgid "Ask me anything about these machines, or skip to send."
 msgstr ""
 
-#: includes/class-settings.php:1675
+#: includes/class-settings.php:1722
 msgid "Auto (site language)"
 msgstr ""
 
-#: includes/class-settings.php:1258
+#: includes/class-settings.php:1305
 msgid "Available categories"
 msgstr ""
 
@@ -169,11 +177,11 @@ msgstr ""
 msgid "Back to list"
 msgstr ""
 
-#: includes/class-settings.php:716
+#: includes/class-settings.php:718
 msgid "Background image"
 msgstr ""
 
-#: includes/class-chat.php:374
+#: includes/class-chat.php:385
 msgid "Based on what you told me, here are the machines I'd recommend:"
 msgstr ""
 
@@ -181,9 +189,9 @@ msgstr ""
 msgid "Best matches for you"
 msgstr ""
 
-#: includes/class-settings.php:505
-#: includes/class-settings.php:506
-#: includes/class-settings.php:528
+#: includes/class-settings.php:507
+#: includes/class-settings.php:508
+#: includes/class-settings.php:530
 msgid "Bomedia Quote Wizard"
 msgstr ""
 
@@ -195,51 +203,59 @@ msgstr ""
 msgid "Bomedia assistant"
 msgstr ""
 
-#: includes/class-settings.php:921
+#: includes/class-settings.php:932
 msgid "Bot verification"
 msgstr ""
 
-#: includes/class-settings.php:1128
+#: includes/class-settings.php:1175
 msgid "Brands in catalog:"
+msgstr ""
+
+#: includes/class-chat.php:76
+msgid "Browse %s catalog"
+msgstr ""
+
+#: includes/class-chat.php:85
+msgid "Browse the full Bomedia catalog"
 msgstr ""
 
 #: includes/class-shortcode.php:255
 msgid "Budget"
 msgstr ""
 
-#: includes/class-settings.php:740
+#: includes/class-settings.php:751
 msgid "Budget step"
 msgstr ""
 
-#: includes/class-settings.php:1001
+#: includes/class-settings.php:1012
 msgid "Bulk AI notes"
 msgstr ""
 
-#: includes/class-settings.php:1002
+#: includes/class-settings.php:1013
 msgid "Bulk-edit the per-product internal AI notes by slug. Format: { \"product-slug\": \"notes…\" }."
 msgstr ""
 
-#: includes/class-settings.php:927
+#: includes/class-settings.php:938
 msgid "Captcha provider"
 msgstr ""
 
-#: includes/class-settings.php:868
+#: includes/class-settings.php:879
 msgid "Catalog API key"
 msgstr ""
 
-#: includes/class-settings.php:859
+#: includes/class-settings.php:870
 msgid "Catalog URL"
 msgstr ""
 
-#: includes/class-settings.php:551
+#: includes/class-settings.php:553
 msgid "Catalog uploaded: %d products cached."
 msgstr ""
 
-#: includes/class-settings.php:1163
+#: includes/class-settings.php:1210
 msgid "Change"
 msgstr ""
 
-#: includes/class-settings.php:982
+#: includes/class-settings.php:993
 msgid "Checkbox label"
 msgstr ""
 
@@ -251,7 +267,7 @@ msgstr ""
 msgid "Choose a model"
 msgstr ""
 
-#: templates/chat.php:71
+#: templates/chat.php:76
 #: templates/wizard.php:384
 msgid "Close"
 msgstr ""
@@ -260,24 +276,19 @@ msgstr ""
 msgid "Cloudflare Turnstile"
 msgstr ""
 
-#: includes/class-settings.php:626
+#: includes/class-settings.php:628
 msgid "Comma separated, e.g. web-lead, boprint"
 msgstr ""
 
-#: includes/class-settings.php:1180
+#: includes/class-settings.php:1227
 msgid "Comma separated."
 msgstr ""
 
 #: includes/class-shortcode.php:225
 #: includes/class-lead-cpt.php:202
 #: includes/class-mailer.php:39
-#: templates/chat.php:125
 #: templates/wizard.php:191
 msgid "Company"
-msgstr ""
-
-#: includes/class-ajax.php:495
-msgid "Company is required."
 msgstr ""
 
 #: includes/class-shortcode.php:218
@@ -285,11 +296,11 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
-#: includes/class-settings.php:493
+#: includes/class-settings.php:495
 msgid "Connection OK"
 msgstr ""
 
-#: includes/class-settings.php:494
+#: includes/class-settings.php:496
 msgid "Connection failed: "
 msgstr ""
 
@@ -297,48 +308,49 @@ msgstr ""
 msgid "Contact us"
 msgstr ""
 
+#: templates/chat.php:68
 #: templates/wizard.php:371
 msgid "Continue"
 msgstr ""
 
-#: includes/class-chat.php:386
+#: includes/class-chat.php:397
 #: includes/class-shortcode.php:271
 msgid "Continue and request quote →"
 msgstr ""
 
-#: includes/class-settings.php:544
+#: includes/class-settings.php:546
 msgid "Could not parse the JSON file."
 msgstr ""
 
-#: includes/class-settings.php:557
+#: includes/class-settings.php:559
 msgid "Could not parse the catalog JSON."
-msgstr ""
-
-#: includes/class-chat.php:688
-msgid "Could you rephrase that?"
 msgstr ""
 
 #: includes/class-shortcode.php:228
 #: includes/class-mailer.php:42
-#: templates/chat.php:135
+#: templates/chat.php:138
 #: templates/wizard.php:201
 msgid "Country"
+msgstr ""
+
+#: templates/chat.php:146
+msgid "Country code"
 msgstr ""
 
 #: includes/class-mailer.php:46
 msgid "Customer is not sure, asks for help."
 msgstr ""
 
-#: includes/class-settings.php:843
+#: includes/class-settings.php:854
 msgid "Customer wizard answers are sent to OpenAI to generate recommendations. Personal data (name, email, phone) is NOT sent."
 msgstr ""
 
-#: includes/class-settings.php:1042
+#: includes/class-settings.php:1053
 #: includes/class-shortcode.php:265
 msgid "Cut/engrave with laser"
 msgstr ""
 
-#: includes/class-settings.php:884
+#: includes/class-settings.php:895
 msgid "Daily"
 msgstr ""
 
@@ -346,7 +358,7 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: includes/class-settings.php:622
+#: includes/class-settings.php:624
 msgid "Default tags"
 msgstr ""
 
@@ -358,16 +370,16 @@ msgstr ""
 msgid "Delete this conversation?"
 msgstr ""
 
-#: includes/class-settings.php:599
+#: includes/class-settings.php:601
 msgid "Domain"
 msgstr ""
 
-#: includes/class-settings.php:1442
+#: includes/class-settings.php:1489
 msgid "Drag products to reorder. In \"Show all published\" mode, dragging will switch to manual to preserve the new order."
 msgstr ""
 
-#: includes/class-settings.php:1356
-#: includes/class-settings.php:1429
+#: includes/class-settings.php:1403
+#: includes/class-settings.php:1476
 msgid "Drag to reorder"
 msgstr ""
 
@@ -378,32 +390,32 @@ msgstr ""
 #: includes/class-shortcode.php:226
 #: includes/class-lead-cpt.php:203
 #: includes/class-mailer.php:40
-#: templates/chat.php:131
+#: templates/chat.php:134
 #: templates/wizard.php:197
 msgid "Email"
 msgstr ""
 
-#: includes/class-settings.php:1184
+#: includes/class-settings.php:1231
 msgid "Email subject"
 msgstr ""
 
-#: includes/class-settings.php:661
-#: includes/class-settings.php:669
-#: includes/class-settings.php:676
-#: includes/class-settings.php:734
-#: includes/class-settings.php:742
+#: includes/class-settings.php:663
+#: includes/class-settings.php:671
+#: includes/class-settings.php:678
+#: includes/class-settings.php:745
+#: includes/class-settings.php:753
 msgid "Enable"
 msgstr ""
 
-#: includes/class-settings.php:923
+#: includes/class-settings.php:934
 msgid "Enable captcha challenge before submit."
 msgstr ""
 
-#: includes/class-settings.php:726
+#: includes/class-settings.php:737
 msgid "Enable matchmaker"
 msgstr ""
 
-#: includes/class-settings.php:825
+#: includes/class-settings.php:836
 msgid "Estimated cost this month:"
 msgstr ""
 
@@ -415,27 +427,31 @@ msgstr ""
 msgid "Estimated monthly volume?"
 msgstr ""
 
-#: includes/class-settings.php:883
+#: includes/class-settings.php:894
 msgid "Every 6 hours"
 msgstr ""
 
-#: includes/class-settings.php:882
+#: includes/class-settings.php:893
 msgid "Every hour"
 msgstr ""
 
-#: includes/class-settings.php:1357
+#: includes/class-settings.php:1404
 msgid "Expand"
 msgstr ""
 
-#: includes/class-settings.php:1005
+#: includes/class-settings.php:1016
 msgid "Export JSON"
 msgstr ""
 
-#: includes/class-settings.php:1192
+#: includes/class-settings.php:1239
 msgid "File logging"
 msgstr ""
 
-#: includes/class-settings.php:1123
+#: templates/chat.php:63
+msgid "Filter by brand"
+msgstr ""
+
+#: includes/class-settings.php:1170
 msgid "Filter diagnostic"
 msgstr ""
 
@@ -444,21 +460,25 @@ msgid "First message"
 msgstr ""
 
 #: includes/class-shortcode.php:223
-#: templates/chat.php:115
+#: templates/chat.php:120
 #: templates/wizard.php:181
 msgid "First name"
 msgstr ""
 
-#: includes/class-settings.php:761
+#: includes/class-ajax.php:494
+msgid "First name is required."
+msgstr ""
+
+#: includes/class-settings.php:772
 msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
 msgstr ""
 
-#: includes/class-settings.php:1469
-#: includes/class-settings.php:1484
-#: includes/class-settings.php:1498
+#: includes/class-settings.php:1516
 #: includes/class-settings.php:1531
-#: includes/class-settings.php:1547
-#: includes/class-settings.php:1582
+#: includes/class-settings.php:1545
+#: includes/class-settings.php:1578
+#: includes/class-settings.php:1594
+#: includes/class-settings.php:1629
 #: includes/class-lead-cpt.php:113
 #: includes/class-lead-cpt.php:282
 msgid "Forbidden"
@@ -468,7 +488,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: includes/class-settings.php:732
+#: includes/class-settings.php:743
 msgid "Format step"
 msgstr ""
 
@@ -480,59 +500,59 @@ msgstr ""
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr ""
 
-#: includes/class-chat.php:351
-msgid "Got it — drop your details below and our team will reach out."
-msgstr ""
-
-#: includes/class-chat.php:81
+#: includes/class-chat.php:104
 msgid "Got it. What kind of products will you mostly produce?"
 msgstr ""
 
-#: includes/class-chat.php:72
+#: includes/class-chat.php:95
 msgid "Great. What are you interested in doing? You can pick more than one."
 msgstr ""
 
-#: includes/class-settings.php:801
+#: includes/class-settings.php:812
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
 msgstr ""
 
+#: includes/class-chat.php:67
 #: templates/wizard.php:62
 msgid "Help me choose"
 msgstr ""
 
-#: templates/chat.php:173
+#: templates/chat.php:177
 #: templates/wizard.php:239
 msgid "Helps us avoid spam."
 msgstr ""
 
-#: includes/class-settings.php:699
+#: includes/class-chat.php:347
+msgid "Here's our store catalog. Pick the machines you're interested in."
+msgstr ""
+
+#: includes/class-chat.php:359
+msgid "Here's the full Bomedia catalog. Pick the machines you'd like a quote for."
+msgstr ""
+
+#: includes/class-settings.php:701
 msgid "Hero (welcome screen)"
 msgstr ""
 
 #: includes/class-chat.php:63
-msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine in 2 minutes. Ready?"
+msgid "Hi! How would you like to choose your machine?"
 msgstr ""
 
 #: includes/class-shortcode.php:262
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr ""
 
-#: includes/class-chat.php:67
-msgid "I already know which machine"
-msgstr ""
-
-#: includes/class-chat.php:301
-#: includes/class-chat.php:399
+#: includes/class-chat.php:410
 msgid "I have enough info — request quote →"
 msgstr ""
 
-#: templates/chat.php:186
+#: templates/chat.php:190
 #: templates/wizard.php:252
 msgid "I have read and accept the <a href=\"%s\" target=\"_blank\" rel=\"noopener\">privacy policy</a>"
 msgstr ""
 
 #: includes/class-shortcode.php:238
-#: templates/chat.php:192
+#: templates/chat.php:196
 #: templates/wizard.php:258
 msgid "I have read and accept the privacy policy"
 msgstr ""
@@ -541,8 +561,8 @@ msgstr ""
 msgid "I know which machine I want"
 msgstr ""
 
-#: includes/class-ajax.php:550
-#: includes/class-settings.php:1044
+#: includes/class-ajax.php:549
+#: includes/class-settings.php:1055
 #: includes/class-shortcode.php:267
 msgid "I'm not sure"
 msgstr ""
@@ -555,20 +575,20 @@ msgstr ""
 msgid "IP"
 msgstr ""
 
-#: includes/class-settings.php:1012
+#: includes/class-settings.php:1023
 msgid "Import JSON"
 msgstr ""
 
-#: includes/class-settings.php:1043
+#: includes/class-settings.php:1054
 #: includes/class-shortcode.php:266
 msgid "Labels / packaging"
 msgstr ""
 
-#: includes/class-settings.php:830
+#: includes/class-settings.php:841
 msgid "Last call:"
 msgstr ""
 
-#: includes/class-settings.php:895
+#: includes/class-settings.php:906
 msgid "Last fetch"
 msgstr ""
 
@@ -577,12 +597,12 @@ msgid "Last message"
 msgstr ""
 
 #: includes/class-shortcode.php:224
-#: templates/chat.php:119
+#: templates/chat.php:124
 #: templates/wizard.php:185
 msgid "Last name"
 msgstr ""
 
-#: includes/class-settings.php:1141
+#: includes/class-settings.php:1188
 msgid "Last recommendation calls:"
 msgstr ""
 
@@ -594,8 +614,12 @@ msgstr ""
 msgid "Lead data missing or corrupt."
 msgstr ""
 
-#: includes/class-settings.php:864
+#: includes/class-settings.php:875
 msgid "Leave empty to use the default Bomedia Composer endpoint."
+msgstr ""
+
+#: includes/class-settings.php:1123
+msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
 msgstr ""
 
 #: includes/class-shortcode.php:243
@@ -610,11 +634,11 @@ msgstr ""
 msgid "Machines of interest:"
 msgstr ""
 
-#: includes/class-settings.php:992
+#: includes/class-settings.php:1003
 msgid "Manual catalog upload"
 msgstr ""
 
-#: includes/class-settings.php:976
+#: includes/class-settings.php:987
 msgid "Marketing opt-in"
 msgstr ""
 
@@ -626,7 +650,7 @@ msgstr ""
 msgid "Matchmaker AI internal notes"
 msgstr ""
 
-#: includes/class-settings.php:723
+#: includes/class-settings.php:734
 msgid "Matchmaker mode"
 msgstr ""
 
@@ -639,7 +663,7 @@ msgstr ""
 msgid "Materials (multi-select)"
 msgstr ""
 
-#: includes/class-settings.php:667
+#: includes/class-settings.php:669
 msgid "Materials step"
 msgstr ""
 
@@ -647,7 +671,7 @@ msgstr ""
 msgid "Math (no setup)"
 msgstr ""
 
-#: includes/class-settings.php:798
+#: includes/class-settings.php:809
 msgid "Max calls per day"
 msgstr ""
 
@@ -656,7 +680,7 @@ msgid "Maximum piece size?"
 msgstr ""
 
 #: includes/class-shortcode.php:229
-#: templates/chat.php:149
+#: templates/chat.php:153
 #: templates/wizard.php:215
 msgid "Message (optional)"
 msgstr ""
@@ -673,15 +697,15 @@ msgstr ""
 msgid "Missing category."
 msgstr ""
 
-#: includes/class-chat.php:252
+#: includes/class-chat.php:272
 msgid "Missing context."
 msgstr ""
 
-#: includes/class-chat.php:209
+#: includes/class-chat.php:229
 msgid "Missing session."
 msgstr ""
 
-#: includes/class-settings.php:787
+#: includes/class-settings.php:798
 msgid "Model"
 msgstr ""
 
@@ -694,7 +718,7 @@ msgstr ""
 msgid "Monthly volume"
 msgstr ""
 
-#: includes/class-settings.php:674
+#: includes/class-settings.php:676
 msgid "Monthly volume step"
 msgstr ""
 
@@ -702,23 +726,19 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: includes/class-ajax.php:492
-msgid "Name is required."
-msgstr ""
-
-#: includes/class-settings.php:959
+#: includes/class-settings.php:970
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
 msgstr ""
 
-#: includes/class-settings.php:947
+#: includes/class-settings.php:958
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Google reCAPTCHA Admin</a>."
 msgstr ""
 
-#: includes/class-settings.php:971
+#: includes/class-settings.php:982
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hCaptcha Dashboard</a>."
 msgstr ""
 
-#: includes/class-settings.php:908
+#: includes/class-settings.php:919
 msgid "Never"
 msgstr ""
 
@@ -737,7 +757,7 @@ msgstr ""
 msgid "No abandoned conversations with 3+ messages."
 msgstr ""
 
-#: includes/class-settings.php:1050
+#: includes/class-settings.php:1061
 msgid "No brands cached yet. Click \"Refresh now\" in the AI Catalog source section, then come back."
 msgstr ""
 
@@ -749,23 +769,27 @@ msgstr ""
 msgid "No machines selected."
 msgstr ""
 
-#: includes/class-settings.php:1229
+#: includes/class-settings.php:1276
 msgid "No product categories found."
 msgstr ""
 
-#: includes/class-settings.php:1421
+#: includes/class-settings.php:1468
 msgid "No published products in this category."
+msgstr ""
+
+#: includes/class-shortcode.php:277
+msgid "Not convinced — contact me"
 msgstr ""
 
 #: includes/class-product-meta.php:51
 msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
 msgstr ""
 
-#: includes/class-settings.php:524
+#: includes/class-settings.php:526
 msgid "Notifications"
 msgstr ""
 
-#: includes/class-settings.php:728
+#: includes/class-settings.php:739
 msgid "Offer \"Help me choose\" path that recommends top-3 products by score."
 msgstr ""
 
@@ -773,24 +797,24 @@ msgstr ""
 msgid "On which materials?"
 msgstr ""
 
-#: includes/class-settings.php:663
+#: includes/class-settings.php:665
 msgid "One option per line."
 msgstr ""
 
-#: includes/class-settings.php:736
-#: includes/class-settings.php:744
+#: includes/class-settings.php:747
+#: includes/class-settings.php:755
 msgid "One option per line. The chat shows a \"Skip\" chip too."
 msgstr ""
 
-#: includes/class-settings.php:752
+#: includes/class-settings.php:763
 msgid "One per line, format: stable_value|Visible label. The stable_value is what the brand-mapping below uses."
 msgstr ""
 
-#: templates/chat.php:92
+#: templates/chat.php:97
 msgid "Open chat again →"
 msgstr ""
 
-#: includes/class-settings.php:776
+#: includes/class-settings.php:787
 msgid "OpenAI API key"
 msgstr ""
 
@@ -799,7 +823,7 @@ msgstr ""
 msgid "OpenAI API key is missing."
 msgstr ""
 
-#: includes/class-settings.php:1539
+#: includes/class-settings.php:1586
 msgid "OpenAI OK"
 msgstr ""
 
@@ -820,22 +844,21 @@ msgid "OpenAI returned malformed data."
 msgstr ""
 
 #: includes/class-shortcode.php:268
-#: templates/chat.php:60
 msgid "Or type your answer freely…"
 msgstr ""
 
-#: includes/class-chat.php:134
+#: includes/class-chat.php:154
 msgid "Perfect. To send your personalised quote, I just need your details."
 msgstr ""
 
 #: includes/class-shortcode.php:227
 #: includes/class-mailer.php:41
-#: templates/chat.php:141
+#: templates/chat.php:144
 #: templates/wizard.php:207
 msgid "Phone"
 msgstr ""
 
-#: includes/class-ajax.php:501
+#: includes/class-ajax.php:500
 msgid "Phone is required."
 msgstr ""
 
@@ -847,15 +870,15 @@ msgstr ""
 msgid "Pick an option above…"
 msgstr ""
 
-#: includes/class-settings.php:655
+#: includes/class-settings.php:657
 msgid "Pick categories from the left, drag to reorder on the right. Expand a row to refine which products are exposed and in what order."
 msgstr ""
 
-#: includes/class-settings.php:1163
+#: includes/class-settings.php:1210
 msgid "Pick image"
 msgstr ""
 
-#: includes/class-settings.php:1188
+#: includes/class-settings.php:1235
 msgid "Placeholders: {nombre}, {empresa}, {producto}"
 msgstr ""
 
@@ -867,7 +890,7 @@ msgstr ""
 msgid "Please pick at least one application."
 msgstr ""
 
-#: includes/class-ajax.php:511
+#: includes/class-ajax.php:510
 msgid "Please pick at least one machine."
 msgstr ""
 
@@ -875,21 +898,21 @@ msgstr ""
 msgid "Please take a moment before submitting."
 msgstr ""
 
-#: includes/class-settings.php:1198
+#: includes/class-settings.php:1245
 msgid "Post-submit redirect URL"
 msgstr ""
 
-#: includes/class-settings.php:1040
+#: includes/class-settings.php:1051
 #: includes/class-shortcode.php:263
 msgid "Print on objects (UV-LED)"
 msgstr ""
 
-#: includes/class-settings.php:1041
+#: includes/class-settings.php:1052
 #: includes/class-shortcode.php:264
 msgid "Print on textile"
 msgstr ""
 
-#: includes/class-settings.php:691
+#: includes/class-settings.php:693
 msgid "Privacy policy URL"
 msgstr ""
 
@@ -897,7 +920,7 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: includes/class-settings.php:652
+#: includes/class-settings.php:654
 msgid "Product categories"
 msgstr ""
 
@@ -905,16 +928,20 @@ msgstr ""
 msgid "Product of interest"
 msgstr ""
 
+#: includes/class-chat.php:79
+msgid "Products available on this store"
+msgstr ""
+
 #: templates/wizard.php:98
 msgid "Products of interest"
 msgstr ""
 
-#: templates/chat.php:167
+#: templates/chat.php:171
 #: templates/wizard.php:233
 msgid "Protected by Google reCAPTCHA."
 msgstr ""
 
-#: templates/chat.php:157
+#: templates/chat.php:161
 #: templates/wizard.php:223
 msgid "Quick check:"
 msgstr ""
@@ -936,37 +963,41 @@ msgstr ""
 msgid "Quote request wizard"
 msgstr ""
 
-#: includes/class-settings.php:614
+#: includes/class-settings.php:616
 msgid "REST API Key"
 msgstr ""
 
-#: includes/class-settings.php:1176
+#: includes/class-settings.php:1223
 msgid "Recipient emails"
 msgstr ""
 
-#: templates/chat.php:68
+#: templates/chat.php:73
 msgid "Recommended machines"
 msgstr ""
 
-#: includes/class-settings.php:876
+#: includes/class-settings.php:887
 msgid "Refresh interval"
 msgstr ""
 
-#: includes/class-settings.php:912
+#: includes/class-settings.php:923
 msgid "Refresh now"
 msgstr ""
 
-#: includes/class-settings.php:1164
-#: includes/class-settings.php:1359
+#: includes/class-settings.php:1211
+#: includes/class-settings.php:1406
 #: includes/class-shortcode.php:251
 msgid "Remove"
 msgstr ""
 
-#: includes/class-settings.php:704
+#: includes/class-settings.php:706
 msgid "Render a welcome screen before step 1."
 msgstr ""
 
-#: templates/chat.php:78
+#: includes/class-shortcode.php:275
+msgid "Request quote"
+msgstr ""
+
+#: templates/chat.php:83
 msgid "Request quote →"
 msgstr ""
 
@@ -978,42 +1009,50 @@ msgstr ""
 msgid "Retry send"
 msgstr ""
 
-#: includes/class-chat.php:99
-msgid "Roughly, what monthly volume do you expect?"
+#: includes/class-chat.php:122
+msgid "Roughly, what monthly volume do you plan to produce?"
 msgstr ""
 
-#: includes/class-settings.php:809
+#: includes/class-settings.php:820
 msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr ""
 
-#: includes/class-settings.php:634
+#: includes/class-settings.php:636
 msgid "Save your changes before testing."
 msgstr ""
 
-#: includes/class-settings.php:1131
+#: includes/class-settings.php:1178
 msgid "Saved mapping:"
 msgstr ""
 
-#: includes/class-settings.php:1262
+#: includes/class-settings.php:1121
+msgid "Script diagnostic"
+msgstr ""
+
+#: includes/class-settings.php:1309
 msgid "Search categories"
 msgstr ""
 
-#: includes/class-settings.php:1261
+#: templates/chat.php:62
+msgid "Search machines…"
+msgstr ""
+
+#: includes/class-settings.php:1308
 msgid "Search…"
 msgstr ""
 
-#: includes/class-settings.php:941
-#: includes/class-settings.php:956
-#: includes/class-settings.php:968
+#: includes/class-settings.php:952
+#: includes/class-settings.php:967
+#: includes/class-settings.php:979
 msgid "Secret key"
 msgstr ""
 
-#: includes/class-settings.php:918
+#: includes/class-settings.php:929
 msgid "Security & marketing"
 msgstr ""
 
-#: includes/class-chat.php:205
-#: includes/class-chat.php:241
+#: includes/class-chat.php:225
+#: includes/class-chat.php:261
 #: includes/class-ajax.php:42
 #: includes/class-ajax.php:190
 msgid "Security check failed."
@@ -1027,20 +1066,19 @@ msgstr ""
 msgid "See recommendations"
 msgstr ""
 
-#: includes/class-settings.php:1277
+#: includes/class-settings.php:1324
 msgid "Selected (drag to reorder)"
 msgstr ""
 
 #: includes/class-shortcode.php:273
-#: templates/chat.php:62
 msgid "Send"
 msgstr ""
 
-#: includes/class-chat.php:386
+#: includes/class-chat.php:397
 msgid "Send my details →"
 msgstr ""
 
-#: templates/chat.php:209
+#: templates/chat.php:213
 msgid "Send my request"
 msgstr ""
 
@@ -1049,7 +1087,7 @@ msgstr ""
 msgid "Send request"
 msgstr ""
 
-#: includes/class-settings.php:772
+#: includes/class-settings.php:783
 msgid "Send the customer's answers to OpenAI to score products. Disabling this returns an empty result with a fallback CTA."
 msgstr ""
 
@@ -1065,33 +1103,37 @@ msgstr ""
 msgid "Sessions with at least 3 messages that did not result in a lead. Click a row to view the conversation."
 msgstr ""
 
-#: includes/class-settings.php:979
+#: includes/class-settings.php:990
 msgid "Show a marketing opt-in checkbox in the contact step."
 msgstr ""
 
-#: includes/class-settings.php:1417
+#: includes/class-settings.php:1464
 msgid "Show all published products"
 msgstr ""
 
-#: includes/class-settings.php:1265
+#: includes/class-settings.php:1312
 msgid "Show empty"
 msgstr ""
 
-#: includes/class-settings.php:702
+#: includes/class-settings.php:704
 msgid "Show hero"
 msgstr ""
 
-#: templates/chat.php:83
+#: templates/chat.php:88
 msgid "Show recommended machines"
 msgstr ""
 
-#: includes/class-settings.php:750
+#: includes/class-settings.php:761
 msgid "Show the first \"What do you want to do?\" question."
 msgstr ""
 
-#: includes/class-settings.php:939
-#: includes/class-settings.php:954
-#: includes/class-settings.php:966
+#: includes/class-settings.php:724
+msgid "Site display name"
+msgstr ""
+
+#: includes/class-settings.php:950
+#: includes/class-settings.php:965
+#: includes/class-settings.php:977
 msgid "Site key"
 msgstr ""
 
@@ -1115,14 +1157,6 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: includes/class-chat.php:632
-msgid "Sorry, I can't answer that right now. Drop your details below and our team will help you."
-msgstr ""
-
-#: includes/class-chat.php:674
-msgid "Sorry, I had a glitch. Try again in a moment."
-msgstr ""
-
 #: includes/class-mailer.php:66
 msgid "Source URL"
 msgstr ""
@@ -1139,19 +1173,19 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: includes/class-settings.php:872
+#: includes/class-settings.php:883
 msgid "Stored encrypted with AUTH_KEY. Leave empty to use the default publishable key."
 msgstr ""
 
-#: includes/class-settings.php:618
+#: includes/class-settings.php:620
 msgid "Stored encrypted with AUTH_KEY. Leave the masked value to keep current."
 msgstr ""
 
-#: includes/class-settings.php:782
+#: includes/class-settings.php:793
 msgid "Stored encrypted with AUTH_KEY. Need a key? Create one at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a>."
 msgstr ""
 
-#: includes/class-settings.php:712
+#: includes/class-settings.php:714
 msgid "Subtitle"
 msgstr ""
 
@@ -1159,37 +1193,37 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: includes/class-settings.php:757
+#: includes/class-settings.php:768
 msgid "Task type → brands mapping"
 msgstr ""
 
-#: includes/class-settings.php:748
+#: includes/class-settings.php:759
 msgid "Task types (step 1)"
 msgstr ""
 
-#: includes/class-settings.php:1125
+#: includes/class-settings.php:1172
 msgid "Tasks defined:"
 msgstr ""
 
-#: templates/chat.php:150
+#: templates/chat.php:154
 msgid "Tell us what you need…"
 msgstr ""
 
-#: includes/class-settings.php:805
-#: includes/class-settings.php:807
+#: includes/class-settings.php:816
+#: includes/class-settings.php:818
 msgid "Test API connection"
 msgstr ""
 
-#: includes/class-settings.php:630
 #: includes/class-settings.php:632
+#: includes/class-settings.php:634
 msgid "Test connection"
 msgstr ""
 
-#: includes/class-settings.php:492
+#: includes/class-settings.php:494
 msgid "Testing…"
 msgstr ""
 
-#: includes/class-chat.php:362
+#: includes/class-chat.php:373
 msgid "Thanks!"
 msgstr ""
 
@@ -1198,7 +1232,7 @@ msgstr ""
 msgid "Thanks! We received your request."
 msgstr ""
 
-#: includes/class-settings.php:854
+#: includes/class-settings.php:865
 msgid "The matchmaker reads products from a remote Supabase endpoint. Only the products and brands fields are extracted; any other data (users, keys, activity log, templates) is discarded immediately on fetch and never persisted."
 msgstr ""
 
@@ -1214,15 +1248,15 @@ msgstr ""
 msgid "This field is required."
 msgstr ""
 
-#: includes/class-settings.php:1149
+#: includes/class-settings.php:1196
 msgid "Tip: a [NO MATCH] line means the filter dropped every product. Lines like \"products=0/30\" mean the brand IDs you selected do not match any product's \"brand\" field in the catalog."
 msgstr ""
 
-#: includes/class-settings.php:708
+#: includes/class-settings.php:710
 msgid "Title"
 msgstr ""
 
-#: includes/class-settings.php:1327
+#: includes/class-settings.php:1374
 msgid "Toggle children"
 msgstr ""
 
@@ -1230,7 +1264,7 @@ msgstr ""
 msgid "Turnstile could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:952
+#: includes/class-settings.php:963
 msgid "Turnstile keys"
 msgstr ""
 
@@ -1238,28 +1272,36 @@ msgstr ""
 msgid "Turnstile verification failed."
 msgstr ""
 
-#: includes/class-chat.php:257
+#: includes/class-chat.php:277
 msgid "Unknown step."
 msgstr ""
 
-#: includes/class-settings.php:993
+#: includes/class-settings.php:1004
 msgid "Upload a JSON file with { products: [...], brands: [...] } to override the cache when the upstream endpoint is unavailable."
 msgstr ""
 
-#: includes/class-settings.php:998
+#: includes/class-settings.php:1009
 msgid "Upload manual JSON"
 msgstr ""
 
-#: includes/class-settings.php:813
+#: includes/class-settings.php:824
 msgid "Usage today"
 msgstr ""
 
-#: includes/class-settings.php:770
+#: includes/class-settings.php:781
 msgid "Use AI for recommendations"
+msgstr ""
+
+#: includes/class-settings.php:729
+msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …)."
 msgstr ""
 
 #: includes/class-lead-cpt.php:86
 msgid "View"
+msgstr ""
+
+#: includes/class-shortcode.php:278
+msgid "View on"
 msgstr ""
 
 #: includes/class-shortcode.php:257
@@ -1277,7 +1319,7 @@ msgstr ""
 msgid "We've received your answers. We'll get back to you with a personalized recommendation."
 msgstr ""
 
-#: includes/class-settings.php:885
+#: includes/class-settings.php:896
 msgid "Weekly"
 msgstr ""
 
@@ -1285,43 +1327,39 @@ msgstr ""
 msgid "What do you want to produce?"
 msgstr ""
 
-#: includes/class-chat.php:108
+#: includes/class-chat.php:131
 msgid "What max piece size do you need? You can skip this question."
 msgstr ""
 
-#: includes/class-settings.php:1202
+#: includes/class-settings.php:1249
 msgid "When set, after a successful submit the user is redirected here with ?lead_id={id}. Useful for conversion tracking. Leave empty to show the built-in thank-you screen."
 msgstr ""
 
-#: includes/class-chat.php:90
+#: includes/class-chat.php:113
 msgid "Which materials will you print on most often?"
 msgstr ""
 
-#: includes/class-settings.php:523
+#: includes/class-settings.php:525
 msgid "Wizard"
 msgstr ""
 
-#: includes/class-settings.php:681
+#: includes/class-settings.php:683
 msgid "Wizard language"
 msgstr ""
 
-#: includes/class-settings.php:1217
+#: includes/class-settings.php:1264
 msgid "WooCommerce is not active. Activate it to pick categories."
 msgstr ""
 
-#: includes/class-settings.php:1194
+#: includes/class-settings.php:1241
 msgid "Write log file in uploads/bqw-logs/"
 msgstr ""
 
-#: includes/class-chat.php:66
-msgid "Yes, let's go"
-msgstr ""
-
-#: templates/chat.php:91
+#: templates/chat.php:96
 msgid "You chose to skip the conversation. Want to use the assistant instead?"
 msgstr ""
 
-#: includes/class-ajax.php:504
+#: includes/class-ajax.php:503
 msgid "You must accept the privacy policy."
 msgstr ""
 
@@ -1338,7 +1376,7 @@ msgstr ""
 msgid "Your application"
 msgstr ""
 
-#: includes/class-chat.php:373
+#: includes/class-chat.php:384
 msgid "Your case is specific. Drop your details below and our team will reach out with a tailored proposal."
 msgstr ""
 
@@ -1347,17 +1385,17 @@ msgid "Your case is specific. Let's talk directly."
 msgstr ""
 
 #: includes/class-shortcode.php:217
-#: templates/chat.php:111
+#: templates/chat.php:116
 #: templates/wizard.php:177
 msgid "Your details"
 msgstr ""
 
-#: templates/chat.php:70
+#: templates/chat.php:75
 msgid "Your recommendations"
 msgstr ""
 
 #: includes/class-shortcode.php:274
-#: templates/chat.php:74
+#: templates/chat.php:79
 msgid "Your recommended machines will appear here as we chat."
 msgstr ""
 
@@ -1369,15 +1407,15 @@ msgstr ""
 msgid "Your submission looks suspicious. Try again."
 msgstr ""
 
-#: includes/class-settings.php:1137
+#: includes/class-settings.php:1184
 msgid "all brands (no filter)"
 msgstr ""
 
-#: includes/class-settings.php:823
+#: includes/class-settings.php:834
 msgid "calls today"
 msgstr ""
 
-#: includes/class-settings.php:603
+#: includes/class-settings.php:605
 msgid "e.g. \"bomedia\" for bomedia.agilecrm.com"
 msgstr ""
 
@@ -1393,7 +1431,7 @@ msgstr ""
 msgid "hCaptcha could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:964
+#: includes/class-settings.php:975
 msgid "hCaptcha keys"
 msgstr ""
 
@@ -1406,7 +1444,7 @@ msgstr ""
 msgid "reCAPTCHA could not verify your submission."
 msgstr ""
 
-#: includes/class-settings.php:937
+#: includes/class-settings.php:948
 msgid "reCAPTCHA keys"
 msgstr ""
 
@@ -1415,20 +1453,25 @@ msgstr ""
 msgid "reCAPTCHA verification failed."
 msgstr ""
 
-#: includes/class-settings.php:497
+#: includes/class-settings.php:499
+#: includes/class-shortcode.php:279
 msgid "selected"
 msgstr ""
 
-#: includes/class-settings.php:943
+#: includes/class-settings.php:954
 msgid "v3 score threshold (0.0–1.0):"
 msgstr ""
 
-#: includes/class-settings.php:794
+#: includes/class-settings.php:805
 msgid "~$0.001 per recommendation with gpt-4o-mini. Other models are 5–60× more expensive."
 msgstr ""
 
 #: includes/class-shortcode.php:242
 #: templates/wizard.php:116
 msgid "← Back to categories"
+msgstr ""
+
+#: includes/class-shortcode.php:276
+msgid "↺ Start over"
 msgstr ""
 

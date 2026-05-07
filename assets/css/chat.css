@@ -12,12 +12,8 @@
 	line-height: 1.5;
 }
 
-/* Hero (only on landing).
- * Strategy: solid primary background by default. When the admin uploads an
- * image, the same element paints a uniform 0.6 black overlay on top of it
- * via stacked linear-gradient + the --bqw-hero-bg CSS variable. No separate
- * overlay div, no z-index gymnastics, immune to plugin CSS resets.
- */
+/* Hero — permanent banner above every step. White text, solid primary
+ * fallback, uniform 0.55 black overlay on optional bg image. */
 .bqw-chat-hero {
 	background-color: var(--bqw-primary, #0066cc);
 	background-image: none;
@@ -25,31 +21,230 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	color: #ffffff;
-	padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+	padding: clamp(1.4rem, 3.5vw, 2.2rem) clamp(1rem, 3vw, 2rem);
+	border-radius: 0;
 }
 .bqw-chat-hero.has-bg-image {
-	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--bqw-hero-bg);
+	background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), var(--bqw-hero-bg);
 }
-.bqw-chat-hero-content {
-	max-width: 760px;
-	margin: 0 auto;
-}
+.bqw-chat-hero-content { max-width: 760px; margin: 0 auto; text-align: center; }
 .bqw-chat-hero-title,
 .bqw-chat-hero-sub {
 	color: #ffffff !important;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 .bqw-chat-hero-title {
 	margin: 0;
-	font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+	font-size: clamp(1.3rem, 2.6vw, 1.7rem);
 	font-weight: 800;
 	letter-spacing: -0.01em;
 }
 .bqw-chat-hero-sub {
-	margin: 0.4rem 0 0;
-	font-size: clamp(0.92rem, 1.4vw, 1rem);
+	margin: 0.45rem 0 0;
+	font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+	opacity: 0.95;
 }
-.bqw-chat-wrap.is-flow-active .bqw-chat-hero { display: none !important; }
+/* v1.7.6 — hero no longer hides on flow-active (override stays solid): */
+.bqw-chat-wrap.is-flow-active .bqw-chat-hero.is-permanent { display: block !important; }
+
+/* Welcome 3 cards. */
+.bqw-welcome-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 14px;
+	margin: 0;
+	padding: 0;
+}
+.bqw-welcome-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 10px;
+	padding: 22px 18px;
+	border: 2px solid var(--bqw-border, #e5e7eb);
+	border-radius: 14px;
+	background: #fff;
+	cursor: pointer;
+	transition: all 0.2s ease-out;
+	font: inherit;
+	color: inherit;
+	box-shadow: var(--bqw-shadow-sm, 0 1px 2px rgba(15,23,42,0.06));
+}
+.bqw-welcome-card:hover {
+	border-color: var(--bqw-primary, #0066cc);
+	transform: translateY(-2px);
+	box-shadow: var(--bqw-shadow-md, 0 6px 18px rgba(15,23,42,0.10));
+}
+.bqw-welcome-card .bqw-welcome-icon {
+	width: 56px; height: 56px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--bqw-primary-soft, rgba(0,102,204,0.08));
+	color: var(--bqw-primary, #0066cc);
+}
+.bqw-welcome-card strong { font-size: 1rem; font-weight: 700; }
+.bqw-welcome-card .bqw-welcome-sub {
+	font-size: 0.82rem;
+	color: var(--bqw-muted, #64748b);
+	line-height: 1.35;
+}
+
+/* Option cards (replaces the old chip pill design). */
+.bqw-chat-options.bqw-opt-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 12px;
+	padding: 0;
+	margin-top: 6px;
+}
+.bqw-chat-options.bqw-opt-cards .bqw-chip {
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 16px 14px;
+	border: 2px solid var(--bqw-border, #e5e7eb);
+	border-radius: 10px;
+	background: #fff;
+	font-size: 0.92rem;
+	font-weight: 600;
+	transition: all 0.2s ease-out;
+	position: relative;
+	min-height: 92px;
+	text-align: center;
+}
+.bqw-chat-options.bqw-opt-cards .bqw-chip svg {
+	width: 28px; height: 28px;
+	color: var(--bqw-primary, #0066cc);
+	flex: 0 0 auto;
+}
+.bqw-chat-options.bqw-opt-cards .bqw-chip:hover {
+	border-color: var(--bqw-primary, #0066cc);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 14px rgba(0,102,204,0.10);
+}
+.bqw-chat-options.bqw-opt-cards .bqw-chip.is-selected {
+	background: var(--bqw-primary-soft, rgba(0,102,204,0.10));
+	border-color: var(--bqw-primary, #0066cc);
+	color: var(--bqw-primary, #0066cc);
+}
+.bqw-chat-options.bqw-opt-cards .bqw-chip.is-selected::after {
+	content: "✓";
+	position: absolute;
+	top: 6px; right: 8px;
+	width: 22px; height: 22px;
+	border-radius: 50%;
+	background: var(--bqw-primary, #0066cc);
+	color: #fff;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.78rem;
+	font-weight: 700;
+}
+@media (max-width: 480px) {
+	.bqw-chat-options.bqw-opt-cards { grid-template-columns: repeat(2, 1fr); }
+	.bqw-chat-options.bqw-opt-cards .bqw-chip { padding: 12px 10px; font-size: 0.85rem; min-height: 76px; }
+}
+
+/* Bomedia catalog browse view. */
+.bqw-browse-view { padding: 0.75rem 0.5rem 1rem; }
+.bqw-browse-filters {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 12px;
+	flex-wrap: wrap;
+}
+.bqw-browse-filters input[type="search"] {
+	flex: 1 1 200px;
+	padding: 8px 12px;
+	border: 1px solid var(--bqw-border, #e5e7eb);
+	border-radius: 8px;
+	font: inherit;
+	font-size: 0.9rem;
+}
+.bqw-browse-filters select {
+	min-width: 180px;
+	padding: 6px 10px;
+	border: 1px solid var(--bqw-border, #e5e7eb);
+	border-radius: 8px;
+	font: inherit;
+	font-size: 0.85rem;
+}
+.bqw-browse-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 12px;
+}
+.bqw-browse-card {
+	border: 2px solid var(--bqw-border, #e5e7eb);
+	border-radius: 10px;
+	background: #fff;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	font-size: 0.86rem;
+}
+.bqw-browse-card.is-selected { border-color: var(--bqw-primary, #0066cc); }
+.bqw-browse-card-img {
+	width: 100%; height: 130px; object-fit: cover;
+	background: var(--bqw-bg-soft, #f8fafc);
+}
+.bqw-browse-card-body { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.bqw-browse-card-name { font-weight: 700; }
+.bqw-browse-card-brand { color: var(--bqw-muted, #64748b); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.bqw-browse-card-feats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.bqw-browse-card-feats span { background: var(--bqw-bg-soft, #f8fafc); padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; color: var(--bqw-text); }
+.bqw-browse-card-actions { display: flex; gap: 6px; padding: 8px 12px 12px; }
+.bqw-browse-card-actions .bqw-btn-primary { flex: 1; }
+.bqw-browse-card-actions a {
+	font-size: 0.78rem;
+	color: var(--bqw-primary, #0066cc);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+.bqw-browse-foot {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 4px 0;
+}
+
+/* Post-recommendation 3-button row. */
+.bqw-post-recs {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px 16px;
+	border-top: 1px solid var(--bqw-border, #e5e7eb);
+}
+.bqw-post-recs .bqw-link-btn {
+	background: transparent;
+	border: 0;
+	color: var(--bqw-muted, #64748b);
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.82rem;
+	padding: 4px 8px;
+	text-decoration: underline;
+}
+.bqw-post-recs .bqw-link-btn:hover { color: var(--bqw-primary, #0066cc); }
+
+/* Phone prefix dropdown (native select, no custom widget). */
+.bqw-dial-select {
+	min-width: 120px;
+	padding: 0.55rem 0.4rem;
+	font: inherit;
+	font-size: 0.92rem;
+	border: 1px solid var(--bqw-border, #e5e7eb);
+	border-radius: 8px;
+	background: #fff;
+}
 
 /* Two-column layout (chat + recommendations panel). */
 .bqw-chat-layout {

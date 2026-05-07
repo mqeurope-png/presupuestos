@@ -88,6 +88,7 @@ final class Settings {
 			'hero_title'            => 'Encuentra tu solución de impresión ideal',
 			'hero_subtitle'         => 'Configuremos tu presupuesto juntos en pocos minutos',
 			'hero_image_id'         => 0,
+			'site_display_name'     => 'boprint.net',
 			// Microcopy retired in v1.7.0 (chatbot replaces step-based flow).
 			'enable_matchmaker'     => 1,
 			'matchmaker_format_options'  => "A4 (210×297 mm)\nA3 (297×420 mm)\n60×90 cm\nMayor de 60×90 cm",
@@ -320,6 +321,7 @@ final class Settings {
 		$out['hero_title']       = sanitize_text_field( $input['hero_title'] ?? '' );
 		$out['hero_subtitle']    = sanitize_text_field( $input['hero_subtitle'] ?? '' );
 		$out['hero_image_id']    = absint( $input['hero_image_id'] ?? 0 );
+		$out['site_display_name']= sanitize_text_field( $input['site_display_name'] ?? '' );
 		// v1.6.1 — trust signals dropped; clean up legacy value if it was saved.
 		unset( $out['hero_trust'] );
 
@@ -718,6 +720,15 @@ final class Settings {
 						<?php $this->render_media_picker( 'hero_image_id', (int) ( $s['hero_image_id'] ?? 0 ) ); ?>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_site_display_name"><?php esc_html_e( 'Site display name', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="text" id="bqw_site_display_name" class="regular-text"
+							name="<?php echo esc_attr( self::OPT_WIZARD ); ?>[site_display_name]"
+							value="<?php echo esc_attr( $s['site_display_name'] ?? '' ); ?>" placeholder="boprint.net" />
+						<p class="description"><?php esc_html_e( 'Used in the welcome card "View {site_name} catalog". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …).', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
 			</table>
 
 			<h2 class="title"><?php esc_html_e( 'Matchmaker mode', 'bomedia-quote-wizard' ); ?></h2>
@@ -1098,8 +1109,44 @@ final class Settings {
 		<?php endforeach; ?>
 		</div>
 		<?php
-		// Diagnostic panel reading the live recommendations.log.
+		// Diagnostic panels: brand filter + script.
 		$this->render_brand_filter_diagnostic( $tasks, $brands, $current );
+		$this->render_script_diagnostic();
+	}
+
+	private function render_script_diagnostic(): void {
+		$script = Chat::script();
+		?>
+		<details style="margin-top:14px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;">
+			<summary style="padding:10px 14px;cursor:pointer;font-weight:700;"><?php esc_html_e( 'Script diagnostic', 'bomedia-quote-wizard' ); ?></summary>
+			<div style="padding:12px 18px;font-size:13px;color:#0f172a;">
+				<p style="margin:0 0 6px;color:#475569;font-size:12px;"><?php esc_html_e( 'Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step.', 'bomedia-quote-wizard' ); ?></p>
+				<table style="width:100%;border-collapse:collapse;">
+					<thead><tr style="background:#e2e8f0;text-align:left;font-size:11px;">
+						<th style="padding:6px 8px;">Step</th>
+						<th style="padding:6px 8px;">Enabled</th>
+						<th style="padding:6px 8px;">Type</th>
+						<th style="padding:6px 8px;">Options</th>
+						<th style="padding:6px 8px;">Next</th>
+					</tr></thead>
+					<tbody>
+					<?php foreach ( $script as $id => $step ) :
+						$enabled = ! array_key_exists( 'enabled', $step ) || ! empty( $step['enabled'] );
+						$labels  = array_map( static function ( $o ) { return (string) ( $o['label'] ?? '' ); }, (array) ( $step['options'] ?? [] ) );
+						?>
+						<tr style="border-top:1px solid #e5e7eb;font-size:12px;">
+							<td style="padding:6px 8px;"><code><?php echo esc_html( (string) $id ); ?></code></td>
+							<td style="padding:6px 8px;color:<?php echo $enabled ? '#16a34a' : '#dc2626'; ?>;"><?php echo $enabled ? '✓' : '✗'; ?></td>
+							<td style="padding:6px 8px;"><code><?php echo esc_html( (string) ( $step['type'] ?? '' ) ); ?></code></td>
+							<td style="padding:6px 8px;"><?php echo esc_html( implode( ' · ', $labels ) ); ?></td>
+							<td style="padding:6px 8px;"><code><?php echo esc_html( (string) ( $step['next'] ?? '' ) ); ?></code></td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		</details>
+		<?php
 	}
 
 	private function render_brand_filter_diagnostic( array $tasks, array $brands, array $current ): void {

@@ -127,12 +127,13 @@
 
 	function renderOptions(step) {
 		optionsWrap.innerHTML = '';
+		optionsWrap.classList.add('bqw-opt-cards');
 		state.pending_buttons = [];
 
-		var allow_free = !!step.allow_free_text;
+		// Free text input is no longer accepted on option steps (v1.7.6 — closed dialog).
+		if (textInput) textInput.disabled = true;
+
 		var allow_skip = !!step.allow_skip;
-		textInput.disabled = !allow_free;
-		textInput.placeholder = allow_free ? (i18n.typeHere || 'Or type your answer freely…') : (i18n.optionsOnly || 'Pick an option above…');
 
 		(step.options || []).forEach(function (opt) {
 			var btn = document.createElement('button');
@@ -151,7 +152,6 @@
 						btn.classList.add('is-selected');
 					}
 				} else {
-					// Single-select: click immediately advances.
 					optionsWrap.querySelectorAll('.is-selected').forEach(function (e) { e.classList.remove('is-selected'); });
 					btn.classList.add('is-selected');
 					state.pending_buttons = [opt.label];
@@ -161,7 +161,6 @@
 			optionsWrap.appendChild(btn);
 		});
 
-		// Confirm button for multi-select / when free text is allowed.
 		if (step.multi_select && (step.options || []).length > 0) {
 			var ok = document.createElement('button');
 			ok.type = 'button';
@@ -170,7 +169,6 @@
 			ok.addEventListener('click', function () { sendAdvance(); });
 			optionsWrap.appendChild(ok);
 		}
-
 		if (allow_skip) {
 			var sk = document.createElement('button');
 			sk.type = 'button';
@@ -179,6 +177,139 @@
 			sk.addEventListener('click', function () { sendAdvance({ skip: true }); });
 			optionsWrap.appendChild(sk);
 		}
+	}
+
+	function renderWelcomeCards(step) {
+		optionsWrap.innerHTML = '';
+		optionsWrap.classList.remove('bqw-opt-cards');
+		var grid = document.createElement('div');
+		grid.className = 'bqw-welcome-grid';
+		(step.options || []).forEach(function (opt) {
+			var card = document.createElement('button');
+			card.type = 'button';
+			card.className = 'bqw-welcome-card';
+			card.innerHTML =
+				'<span class="bqw-welcome-icon">' + (opt.icon ? iconForHint(opt.icon) : '★') + '</span>' +
+				'<strong>' + escapeHtml(opt.label) + '</strong>' +
+				(opt.subtitle ? '<span class="bqw-welcome-sub">' + escapeHtml(opt.subtitle) + '</span>' : '');
+			card.addEventListener('click', function () {
+				state.pending_buttons = [opt.label];
+				sendAdvance();
+			});
+			grid.appendChild(card);
+		});
+		optionsWrap.appendChild(grid);
+	}
+
+	function renderBomediaCatalog(step) {
+		optionsWrap.innerHTML = '';
+		optionsWrap.classList.remove('bqw-opt-cards');
+		var view = document.getElementById('bqw-browse-view');
+		var grid = document.getElementById('bqw-browse-grid');
+		var search = document.getElementById('bqw-browse-search');
+		var brandSel = document.getElementById('bqw-browse-brand');
+		var counter = document.getElementById('bqw-browse-counter');
+		var cta = document.getElementById('bqw-browse-cta');
+		view.hidden = false;
+
+		var products = (step.products || []).slice();
+		var brands   = step.brands || [];
+
+		brandSel.innerHTML = '';
+		brands.forEach(function (b) {
+			var o = document.createElement('option');
+			o.value = b.id; o.textContent = b.label || b.id;
+			brandSel.appendChild(o);
+		});
+
+		function paint() {
+			var q = (search.value || '').toLowerCase().trim();
+			var picked = Array.from(brandSel.selectedOptions).map(function (o) { return o.value; });
+			grid.innerHTML = '';
+			products.forEach(function (p) {
+				if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return;
+				if (picked.length && picked.indexOf(p.brand) === -1) return;
+				grid.appendChild(buildBrowseCard(p));
+			});
+		}
+
+		function buildBrowseCard(p) {
+			var card = document.createElement('div');
+			card.className = 'bqw-browse-card';
+			card.dataset.productId = p.id;
+			if (state.selection.some(function (s) { return s.id === p.id; })) card.classList.add('is-selected');
+
+			var feats = [];
+			if (p.area)  feats.push('<span>' + escapeHtml(p.area) + '</span>');
+			if (p.feat1) feats.push('<span>' + escapeHtml(p.feat1) + '</span>');
+			if (p.feat2) feats.push('<span>' + escapeHtml(p.feat2) + '</span>');
+
+			var siteHost = (window.location && window.location.hostname) || '';
+			var linkHost = '';
+			try { linkHost = new URL(p.link).hostname; } catch (e) {}
+			var offsiteLink = '';
+			if (p.link && linkHost && linkHost.replace(/^www\./, '') !== siteHost.replace(/^www\./, '')) {
+				offsiteLink = '<a href="' + p.link + '" target="_blank" rel="noopener">' + escapeHtml((i18n.viewOn || 'View on') + ' ' + linkHost) + ' ↗</a>';
+			} else if (p.link) {
+				offsiteLink = '<a href="' + p.link + '" target="_blank" rel="noopener">' + escapeHtml(i18n.viewProduct || 'View product →') + '</a>';
+			}
+
+			card.innerHTML =
+				(p.img ? '<img class="bqw-browse-card-img" src="' + p.img + '" alt="" loading="lazy">' : '<div class="bqw-browse-card-img"></div>') +
+				'<div class="bqw-browse-card-body">' +
+					'<span class="bqw-browse-card-brand">' + escapeHtml(p.brand || '') + '</span>' +
+					'<span class="bqw-browse-card-name">' + escapeHtml(p.name || '') + '</span>' +
+					(feats.length ? '<div class="bqw-browse-card-feats">' + feats.join('') + '</div>' : '') +
+				'</div>' +
+				'<div class="bqw-browse-card-actions">' +
+					'<button type="button" class="bqw-btn bqw-btn-primary bqw-browse-pick">' + escapeHtml(i18n.requestQuote || 'Request quote') + '</button>' +
+					offsiteLink +
+				'</div>';
+
+			card.querySelector('.bqw-browse-pick').addEventListener('click', function () {
+				var picked = !card.classList.contains('is-selected');
+				if (picked) {
+					card.classList.add('is-selected');
+					addSelection({
+						id: p.id, name: p.name, image: p.img || '', sku: '',
+						brand: p.brand || '', price: '', area: p.area || '', link: p.link || '',
+						source: 'catalog', categoryId: 0, categorySlug: p.brand || '', categoryName: p.brand || '',
+					});
+				} else {
+					card.classList.remove('is-selected');
+					removeSelection(p.id);
+				}
+				updateBrowseCounter();
+			});
+			return card;
+		}
+
+		function updateBrowseCounter() {
+			counter.textContent = state.selection.length + (i18n.selectedSuffix ? ' ' + i18n.selectedSuffix : '');
+			cta.disabled = state.selection.length === 0;
+		}
+
+		search.oninput = paint;
+		brandSel.onchange = paint;
+		cta.onclick = function () {
+			view.hidden = true;
+			revealContactForm({ withHint: false });
+			document.getElementById('bqw-flow').value = 'direct-catalog';
+			state.flow_origin = 'direct-catalog';
+		};
+
+		paint();
+		updateBrowseCounter();
+	}
+
+	function renderSiteCatalogTodo() {
+		// Camino B (WooCommerce categories): minimal v1.7.6 — point the user
+		// to the contact form with a brief explanation. A full Woo browser
+		// will land in a follow-up; the existing classic flow already covers
+		// theme overrides for shops that need it.
+		revealContactForm({ withHint: false });
+		document.getElementById('bqw-flow').value = 'direct-catalog';
+		state.flow_origin = 'direct-catalog';
 	}
 
 	function renderRecommendations(recs) {
@@ -335,12 +466,12 @@
 		opts = opts || {};
 		if (!state.current_step) return;
 		var clicks = state.pending_buttons.slice();
-		var text   = textInput.value.trim();
+		var text   = textInput && textInput.value ? textInput.value.trim() : '';
 		if (opts.skip) { clicks = []; text = ''; }
 		if (!opts.skip && !clicks.length && !text) return;
 
 		appendBubble('user', text, { chips: clicks });
-		textInput.value = '';
+		if (textInput) textInput.value = '';
 		state.pending_buttons = [];
 		optionsWrap.innerHTML = '';
 		appendTyping();
@@ -409,48 +540,79 @@
 		if (step.message) appendBubble('assistant', step.message);
 
 		switch (step.type) {
+			case 'welcome_cards':
+				renderWelcomeCards(step);
+				break;
+
 			case 'options':
 			case 'multi_options':
 			case 'single_option':
 				renderOptions(step);
 				break;
 
+			case 'site_catalog':
+				renderSiteCatalogTodo();
+				break;
+
+			case 'bomedia_catalog':
+				renderBomediaCatalog(step);
+				break;
+
 			case 'recommendations':
 				renderRecommendations(step.recommendations || []);
 				optionsWrap.innerHTML = '';
-				if (step.cta_to === 'free_chat') {
-					// Allow free-text Q&A immediately while the panel sits on the right.
-					textInput.disabled = false;
-					textInput.placeholder = step.free_chat_hint || (i18n.askAnything || 'Ask anything about these machines…');
-				} else {
-					textInput.disabled = true;
-				}
-				break;
-
-			case 'free_chat':
-				optionsWrap.innerHTML = '';
-				renderCtaToContact(step.cta);
-				textInput.disabled = false;
-				textInput.placeholder = i18n.askAnything || 'Ask anything…';
-				if (step.actions && step.actions.length) {
-					applyActions(step.actions);
-				}
+				renderPostRecActions(step);
 				break;
 
 			case 'form':
 				revealContactForm({ withHint: false });
-				if (step.origin_tag === 'knows-machine') {
-					state.flow_origin = 'knows-machine';
-					document.getElementById('bqw-flow').value = 'knows-machine';
-				}
 				break;
 
 			case 'end':
 			default:
 				optionsWrap.innerHTML = '';
-				textInput.disabled = true;
 				break;
 		}
+	}
+
+	function renderPostRecActions(step) {
+		// Three buttons under the chat: primary "Request quote",
+		// secondary "Start over", subtle "Not convinced — contact me".
+		var bar = document.createElement('div');
+		bar.className = 'bqw-post-recs';
+
+		var primary = document.createElement('button');
+		primary.type = 'button';
+		primary.className = 'bqw-btn bqw-btn-primary';
+		primary.textContent = step.cta || (i18n.requestQuote || 'Request quote') + ' →';
+		primary.addEventListener('click', function () {
+			if (recPanel) recPanel.classList.remove('is-open');
+			revealContactForm({ withHint: false });
+		});
+		bar.appendChild(primary);
+
+		var restart = document.createElement('button');
+		restart.type = 'button';
+		restart.className = 'bqw-link-btn';
+		restart.textContent = i18n.startOver || '↺ Start over';
+		restart.addEventListener('click', function () {
+			try { sessionStorage.removeItem('bqw_session_id'); } catch (e) {}
+			window.location.reload();
+		});
+		bar.appendChild(restart);
+
+		var nope = document.createElement('button');
+		nope.type = 'button';
+		nope.className = 'bqw-link-btn';
+		nope.textContent = i18n.notConvinced || 'Not convinced — contact me';
+		nope.addEventListener('click', function () {
+			document.getElementById('bqw-flow').value = 'not-convinced';
+			state.flow_origin = 'not-convinced';
+			revealContactForm({ withHint: false });
+		});
+		bar.appendChild(nope);
+
+		optionsWrap.appendChild(bar);
 	}
 
 	/* =========================================================
@@ -477,20 +639,45 @@
 	 * Country select + dial code
 	 * ========================================================= */
 	function buildCountries() {
-		var sel  = document.getElementById('bqw-country');
-		var dial = document.getElementById('bqw-dial');
+		var sel    = document.getElementById('bqw-country');
+		var prefix = document.getElementById('bqw-dial-prefix');
+		var dial   = document.getElementById('bqw-dial');
+
 		(countries || []).forEach(function (c) {
 			var opt = document.createElement('option');
 			opt.value = c.code; opt.textContent = c.name; opt.dataset.dial = c.dial;
 			if (c.code === detected) opt.selected = true;
 			sel.appendChild(opt);
+
+			if (prefix) {
+				var p = document.createElement('option');
+				p.value = c.dial;
+				p.dataset.code = c.code;
+				p.textContent = c.dial + ' — ' + c.name;
+				if (c.code === detected) p.selected = true;
+				prefix.appendChild(p);
+			}
 		});
 		var match = (countries || []).find(function (c) { return c.code === detected; });
-		if (match) dial.textContent = match.dial;
+		if (match && dial) dial.value = match.dial;
+
 		sel.addEventListener('change', function () {
 			var opt = sel.options[sel.selectedIndex];
-			dial.textContent = opt ? (opt.dataset.dial || '+') : '+';
+			var d = opt ? (opt.dataset.dial || '+') : '+';
+			if (dial) dial.value = d;
+			// Keep the prefix dropdown synced when the user picks a country.
+			if (prefix) {
+				for (var i = 0; i < prefix.options.length; i++) {
+					if (prefix.options[i].value === d) { prefix.selectedIndex = i; break; }
+				}
+			}
 		});
+		if (prefix) {
+			prefix.addEventListener('change', function () {
+				var v = prefix.value;
+				if (dial) dial.value = v;
+			});
+		}
 	}
 
 	/* =========================================================
@@ -523,8 +710,9 @@
 
 		ensureCaptchaToken().then(function () {
 			var fd = new FormData(form);
-			var dial = document.getElementById('bqw-dial').textContent.trim();
-			fd.set('phone', dial + ' ' + (fd.get('phone') || ''));
+			var dialEl = document.getElementById('bqw-dial');
+			var dial   = dialEl ? (dialEl.value || dialEl.textContent || '').trim() : '';
+			fd.set('phone', (dial || '') + ' ' + (fd.get('phone') || ''));
 
 			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
 				.then(function (r) { return r.json(); })
@@ -614,16 +802,7 @@
 		buildCountries();
 		resetRecPanel();
 
-		chatForm.addEventListener('submit', function (e) {
-			e.preventDefault();
-			sendAdvance();
-		});
-		textInput.addEventListener('keydown', function (e) {
-			if (e.key === 'Enter' && !e.shiftKey) {
-				e.preventDefault();
-				chatForm.requestSubmit ? chatForm.requestSubmit() : sendAdvance();
-			}
-		});
+		// v1.7.6 — chat input form was removed; nothing to wire here.
 		skipBtn.addEventListener('click', function () { revealContactForm({ withHint: true }); });
 		backToChat.addEventListener('click', function (e) { e.preventDefault(); hideContactForm(); });
 

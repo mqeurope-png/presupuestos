@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.5\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.6\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -33,6 +33,9 @@ msgstr "Recomendaciones con IA (OpenAI)"
 
 msgid "AI notes import: %1$d products updated, %2$d slugs not found."
 msgstr "Importación de notas IA: %1$d productos actualizados, %2$d slugs no encontrados."
+
+msgid "AI recommends the ideal machine in 5 questions"
+msgstr "La IA te recomienda la ideal en 5 preguntas"
 
 msgid "Abandoned"
 msgstr "Abandonadas"
@@ -72,6 +75,9 @@ msgstr "Las credenciales de AgileCRM están incompletas."
 
 msgid "AgileCRM is not configured."
 msgstr "AgileCRM no está configurado."
+
+msgid "All machines from the group (artisJet, MBO, Flux, PimPam, SmartJet)"
+msgstr "Todas las máquinas del grupo (artisJet, MBO, Flux, PimPam, SmartJet)"
 
 msgid "All statuses"
 msgstr "Todos los estados"
@@ -142,6 +148,12 @@ msgstr "Verificación anti-bot"
 msgid "Brands in catalog:"
 msgstr "Marcas en catálogo:"
 
+msgid "Browse %s catalog"
+msgstr "Ver catálogo de %s"
+
+msgid "Browse the full Bomedia catalog"
+msgstr "Ver catálogo Bomedia completo"
+
 msgid "Budget"
 msgstr "Presupuesto"
 
@@ -193,9 +205,6 @@ msgstr "Separados por comas."
 msgid "Company"
 msgstr "Empresa"
 
-msgid "Company is required."
-msgstr "La empresa es obligatoria."
-
 msgid "Confirmation"
 msgstr "Confirmación"
 
@@ -220,11 +229,11 @@ msgstr "No se pudo procesar el archivo JSON."
 msgid "Could not parse the catalog JSON."
 msgstr "No se pudo procesar el JSON del catálogo."
 
-msgid "Could you rephrase that?"
-msgstr "¿Puedes reformularlo?"
-
 msgid "Country"
 msgstr "País"
+
+msgid "Country code"
+msgstr "Prefijo internacional"
 
 msgid "Customer is not sure, asks for help."
 msgstr "El cliente no está seguro, pide ayuda."
@@ -301,6 +310,9 @@ msgstr "Exportar JSON"
 msgid "File logging"
 msgstr "Registro a archivo"
 
+msgid "Filter by brand"
+msgstr "Filtrar por marca"
+
 msgid "Filter diagnostic"
 msgstr "Diagnóstico del filtro"
 
@@ -309,6 +321,9 @@ msgstr "Primer mensaje"
 
 msgid "First name"
 msgstr "Nombre"
+
+msgid "First name is required."
+msgstr "El nombre es obligatorio."
 
 msgid "For each first-step task, choose which Supabase brands the AI is allowed to recommend. Brands are read from the catalog cache; click \"Refresh now\" above first if you do not see all of them."
 msgstr "Para cada tarea del primer paso, elige qué marcas de Supabase puede recomendar la IA. Las marcas se leen del cache; pulsa \"Refrescar ahora\" arriba si no ves todas."
@@ -328,9 +343,6 @@ msgstr "Google reCAPTCHA v2 (checkbox)"
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr "Google reCAPTCHA v3 (invisible, score)"
 
-msgid "Got it — drop your details below and our team will reach out."
-msgstr "Hecho — déjanos tus datos abajo y nuestro equipo te contactará."
-
 msgid "Got it. What kind of products will you mostly produce?"
 msgstr "¡Bien! ¿Qué tipo de productos vas a producir principalmente?"
 
@@ -346,17 +358,20 @@ msgstr "Ayúdame a elegir"
 msgid "Helps us avoid spam."
 msgstr "Nos ayuda a evitar spam."
 
+msgid "Here's our store catalog. Pick the machines you're interested in."
+msgstr "Este es nuestro catálogo. Elige las máquinas que te interesan."
+
+msgid "Here's the full Bomedia catalog. Pick the machines you'd like a quote for."
+msgstr "Este es el catálogo Bomedia completo. Elige las máquinas para las que quieres presupuesto."
+
 msgid "Hero (welcome screen)"
 msgstr "Hero (pantalla de bienvenida)"
 
-msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine in 2 minutes. Ready?"
-msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la solución de impresión ideal en 2 minutos. ¿Empezamos?"
+msgid "Hi! How would you like to choose your machine?"
+msgstr "Hola, ¿cómo quieres elegir tu máquina?"
 
 msgid "Hi! I'm the Bomedia assistant. I'll help you find the right printing or laser machine."
 msgstr "Hola, soy el asistente de Bomedia. Te ayudo a encontrar la impresora o máquina láser ideal."
-
-msgid "I already know which machine"
-msgstr "Ya sé qué máquina necesito"
 
 msgid "I have enough info — request quote →"
 msgstr "Tengo bastante info — pedir presupuesto →"
@@ -408,6 +423,9 @@ msgstr "Faltan datos del lead o están corruptos."
 
 msgid "Leave empty to use the default Bomedia Composer endpoint."
 msgstr "Déjalo vacío para usar el endpoint por defecto de Bomedia Composer."
+
+msgid "Live snapshot of the chatbot script. Each step shows enabled state, type, the options served to the visitor and the next step."
+msgstr "Snapshot en vivo del script. Cada paso muestra el estado de activación, tipo, opciones servidas al visitante y el siguiente paso."
 
 msgid "Loading models…"
 msgstr "Cargando modelos…"
@@ -484,9 +502,6 @@ msgstr "Paso de volumen mensual"
 msgid "Name"
 msgstr "Nombre"
 
-msgid "Name is required."
-msgstr "El nombre es obligatorio."
-
 msgid "Need keys? Create them at <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
 msgstr "¿No tienes claves? Créalas en <a href=\"%s\" target=\"_blank\" rel=\"noopener\">Cloudflare Turnstile</a>."
 
@@ -519,6 +534,9 @@ msgstr "No se encontraron categorías de producto."
 
 msgid "No published products in this category."
 msgstr "No hay productos publicados en esta categoría."
+
+msgid "Not convinced — contact me"
+msgstr "No me convence — contactarme"
 
 msgid "Notes the AI will use to recommend this machine. Examples: \"ideal for beginners\", \"EU stock\", \"best for small textile shops\", \"avoid for >2000/month\". Not shown to the customer."
 msgstr "Notas que la IA usará para recomendar esta máquina. Ejemplos: \"ideal para principiantes\", \"stock EU\", \"ideal para talleres textiles pequeños\", \"evitar para >2000/mes\". No se muestran al cliente."
@@ -625,6 +643,9 @@ msgstr "Categorías de producto"
 msgid "Product of interest"
 msgstr "Producto de interés"
 
+msgid "Products available on this store"
+msgstr "Productos disponibles en esta tienda"
+
 msgid "Products of interest"
 msgstr "Productos de interés"
 
@@ -667,6 +688,9 @@ msgstr "Quitar"
 msgid "Render a welcome screen before step 1."
 msgstr "Renderiza una pantalla de bienvenida antes del paso 1."
 
+msgid "Request quote"
+msgstr "Pedir presupuesto"
+
 msgid "Request quote →"
 msgstr "Pedir presupuesto →"
 
@@ -676,8 +700,8 @@ msgstr "Modelo solicitado:"
 msgid "Retry send"
 msgstr "Reintentar envío"
 
-msgid "Roughly, what monthly volume do you expect?"
-msgstr "¿Qué volumen mensual estimas, aproximadamente?"
+msgid "Roughly, what monthly volume do you plan to produce?"
+msgstr "¿Qué volumen mensual estimas producir, aproximadamente?"
 
 msgid "Save changes first. Sends a 5-token ping to OpenAI."
 msgstr "Guarda los cambios antes. Envía un ping de 5 tokens a OpenAI."
@@ -688,8 +712,14 @@ msgstr "Guarda los cambios antes de probar."
 msgid "Saved mapping:"
 msgstr "Mapping guardado:"
 
+msgid "Script diagnostic"
+msgstr "Diagnóstico del script"
+
 msgid "Search categories"
 msgstr "Buscar categorías"
+
+msgid "Search machines…"
+msgstr "Buscar máquinas…"
 
 msgid "Search…"
 msgstr "Buscar…"
@@ -754,6 +784,9 @@ msgstr "Ver máquinas recomendadas"
 msgid "Show the first \"What do you want to do?\" question."
 msgstr "Mostrar la primera pregunta \"¿Qué te interesa hacer?\"."
 
+msgid "Site display name"
+msgstr "Nombre del sitio"
+
 msgid "Site key"
 msgstr "Site key"
 
@@ -771,12 +804,6 @@ msgstr "Solicitud presupuesto web"
 
 msgid "Something went wrong. Please try again."
 msgstr "Algo ha fallado. Inténtalo de nuevo."
-
-msgid "Sorry, I can't answer that right now. Drop your details below and our team will help you."
-msgstr "Lo siento, no puedo responder ahora. Déjanos tus datos abajo y nuestro equipo te ayudará."
-
-msgid "Sorry, I had a glitch. Try again in a moment."
-msgstr "Disculpa, tuve un fallo. Inténtalo de nuevo en un momento."
 
 msgid "Source URL"
 msgstr "URL de origen"
@@ -877,8 +904,14 @@ msgstr "Uso hoy"
 msgid "Use AI for recommendations"
 msgstr "Usar IA para recomendaciones"
 
+msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand name of the site where the plugin runs (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+msgstr "Se usa en la card del welcome \"Ver catálogo de {site_name}\". Pon el nombre del sitio donde corre el plugin (boprint.net, mboprinters.com, fluxlasers.eu, …)."
+
 msgid "View"
 msgstr "Ver"
+
+msgid "View on"
+msgstr "Ver en"
 
 msgid "View product →"
 msgstr "Ver producto →"
@@ -915,9 +948,6 @@ msgstr "WooCommerce no está activo. Actívalo para elegir categorías."
 
 msgid "Write log file in uploads/bqw-logs/"
 msgstr "Escribir archivo de log en uploads/bqw-logs/"
-
-msgid "Yes, let's go"
-msgstr "Sí, vamos"
 
 msgid "You chose to skip the conversation. Want to use the assistant instead?"
 msgstr "Has decidido saltarte la conversación. ¿Quieres volver al asistente?"
@@ -999,4 +1029,7 @@ msgstr "~$0.001 por recomendación con gpt-4o-mini. Otros modelos son 5–60× m
 
 msgid "← Back to categories"
 msgstr "← Volver a categorías"
+
+msgid "↺ Start over"
+msgstr "↺ Empezar de nuevo"
 
