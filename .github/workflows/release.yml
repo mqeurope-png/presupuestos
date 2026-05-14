@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release tag (e.g. v1.7.7)'
+        description: 'Release tag (e.g. v1.7.13)'
         required: true
         type: string
 
@@ -26,10 +26,12 @@ jobs:
         id: ver
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+            TAG="${{ inputs.version }}"
           else
-            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            TAG="${GITHUB_REF_NAME}"
           fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag: $TAG"
 
       - name: Build zip
         run: |
@@ -43,16 +45,38 @@ jobs:
                    --exclude='.gitignore' \
                    --exclude='*.zip' \
                    ./ build/bomedia-quote-wizard/
-          cd build && zip -r "../bomedia-quote-wizard-${{ steps.ver.outputs.tag }}.zip" bomedia-quote-wizard
+          cd build && zip -qr "../bomedia-quote-wizard-${{ steps.ver.outputs.tag }}.zip" bomedia-quote-wizard
+          ls -lh "../bomedia-quote-wizard-${{ steps.ver.outputs.tag }}.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bomedia-quote-wizard
+          name: bomedia-quote-wizard-${{ steps.ver.outputs.tag }}
           path: bomedia-quote-wizard-*.zip
 
-      - name: Attach to release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.ver.outputs.tag }}
-          files: bomedia-quote-wizard-*.zip
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          set -e
+          ZIP="bomedia-quote-wizard-${TAG}.zip"
+
+          # Create the tag at the dispatched commit when missing.
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG}" -m "Release ${TAG}" "${GITHUB_SHA}"
+            git push origin "refs/tags/${TAG}"
+          fi
+
+          # Idempotent: create the release or replace its zip asset.
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists — uploading asset (clobber)."
+            gh release upload "${TAG}" "${ZIP}" --clobber
+          else
+            gh release create "${TAG}" "${ZIP}" \
+              --title "${TAG}" \
+              --notes "Automated build of ${TAG}." \
+              --target "${GITHUB_SHA}"
+          fi
