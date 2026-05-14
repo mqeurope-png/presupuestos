@@ -45,19 +45,33 @@
 	backBtn.addEventListener('click', goBack);
 	if (callmeBtn) {
 		callmeBtn.textContent = (i18n.callmeButton || '📞 Prefiero que me llamen');
-		callmeBtn.addEventListener('click', renderCallme);
+		callmeBtn.addEventListener('click', function (e) {
+			// Second line of defence in case the button is forced-visible
+			// via DevTools. The server validates again on submit.
+			if (!introIsComplete()) { e.preventDefault(); return; }
+			renderCallme();
+		});
 	}
 
-	// v1.7.14 — the callme entry-point should be visible from the moment we
-	// have a name+email captured (screens 2+) but never on the intro, the
-	// final form, the callme screen itself, or the thank-you page.
+	// v1.7.16 — the callme entry-point requires a completed screen-1 lead
+	// (name + valid email + explicit privacy consent). Without that, leads
+	// generated from "Prefiero que me llamen" would be GDPR-illegal and
+	// commercially useless. Guard both the visibility and the click.
+	function introIsComplete() {
+		var c = state.contact_partial;
+		if (!c || !c.name) return false;
+		if (!c.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email)) return false;
+		if (!c.privacy_accepted) return false;
+		return true;
+	}
 	function setCallmeVisible(visible) {
 		if (!callmeBtn) return;
-		callmeBtn.hidden = !visible;
+		var allowed = visible && introIsComplete();
+		callmeBtn.hidden = !allowed;
 		// The nav element hosts both the progress dots AND the callme button.
 		// When dots are not needed but the callme entry-point is, keep the
 		// nav itself visible so the button is reachable.
-		if (visible) {
+		if (allowed) {
 			progress.hidden = false;
 			dotsEl.hidden = true;
 			stepLabel.hidden = true;

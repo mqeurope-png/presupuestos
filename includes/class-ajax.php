@@ -465,6 +465,25 @@ final class Ajax {
 		$flow_origin  = sanitize_text_field( (string) ( $_POST['flow'] ?? 'chat' ) );
 		$session_id   = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
 
+		// v1.7.16 — GDPR + spam guard. The "Prefiero que me llamen" entry
+		// point is gated client-side on a completed screen 1, but a
+		// motivated user could spoof the submit. Server-side we require
+		// the partial lead to exist with privacy_accepted=1 + a real name
+		// and email before accepting any callme submission.
+		if ( 'callme' === $flow_origin ) {
+			$partial = Partial_Leads::get( $session_id );
+			$incomplete = ! $partial
+				|| empty( $partial['name'] )
+				|| empty( $partial['email'] )
+				|| ! is_email( (string) $partial['email'] )
+				|| empty( $partial['privacy_accepted'] );
+			if ( $incomplete ) {
+				wp_send_json_error( [
+					'message' => __( 'Insufficient data — please complete the initial form first.', 'bomedia-quote-wizard' ),
+				], 403 );
+			}
+		}
+
 		$extracted = [];
 		$ext_raw   = (string) wp_unslash( $_POST['extracted_fields_json'] ?? '' );
 		if ( '' !== $ext_raw ) {

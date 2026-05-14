@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.15\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.16\n"
 "Report-Msgid-Bugs-To: https://bomedia.net/\n"
 "POT-Creation-Date: 2026-05-06 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "1 machine in your request:"
 msgstr ""
 
-#: includes/class-ajax.php:502
+#: includes/class-ajax.php:521
 msgid "A valid email is required."
 msgstr ""
 
@@ -619,7 +619,7 @@ msgstr ""
 msgid "First name"
 msgstr ""
 
-#: includes/class-ajax.php:499
+#: includes/class-ajax.php:518
 #: includes/class-shortcode.php:310
 msgid "First name is required."
 msgstr ""
@@ -730,7 +730,7 @@ msgstr ""
 msgid "I want to receive product updates from Bomedia."
 msgstr ""
 
-#: includes/class-ajax.php:553
+#: includes/class-ajax.php:572
 #: includes/class-settings.php:1312
 #: includes/class-shortcode.php:287
 msgid "I'm not sure"
@@ -747,6 +747,10 @@ msgstr ""
 
 #: includes/class-settings.php:1280
 msgid "Import JSON"
+msgstr ""
+
+#: includes/class-ajax.php:482
+msgid "Insufficient data — please complete the initial form first."
 msgstr ""
 
 #: includes/class-settings.php:921
@@ -1080,7 +1084,7 @@ msgstr ""
 msgid "Phone field label"
 msgstr ""
 
-#: includes/class-ajax.php:505
+#: includes/class-ajax.php:524
 #: includes/class-shortcode.php:312
 msgid "Phone is required."
 msgstr ""
@@ -1708,7 +1712,7 @@ msgstr ""
 msgid "Write log file in uploads/bqw-logs/"
 msgstr ""
 
-#: includes/class-ajax.php:508
+#: includes/class-ajax.php:527
 msgid "You must accept the privacy policy."
 msgstr ""
 
