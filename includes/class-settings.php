@@ -123,10 +123,13 @@ final class Settings {
 
 	public static function default_notifications(): array {
 		return [
-			'notify_emails'  => get_option( 'admin_email' ),
-			'notify_subject' => 'Nueva solicitud de presupuesto: {producto} - {empresa}',
-			'enable_log'     => 1,
-			'redirect_url'   => '',
+			'notify_emails'         => get_option( 'admin_email' ),
+			'notify_subject'        => 'Nueva solicitud de presupuesto: {producto} - {empresa}',
+			'notify_subject_callme' => '📞 Solicitud de llamada — {nombre}',
+			'notify_body'           => '',
+			'notify_body_callme'    => '',
+			'enable_log'            => 1,
+			'redirect_url'          => '',
 		];
 	}
 
@@ -196,6 +199,9 @@ final class Settings {
 			// v1.7.14 — screen 1 phone + opt-in helper.
 			'intro_phone_label'   => 'Teléfono (opcional, si quieres que te llamemos en cualquier momento)',
 			'intro_optin_label'   => 'Quiero recibir información sobre productos y novedades de Bomedia',
+			// v1.7.15 — privacy check on screen 1.
+			'intro_privacy_label' => 'Acepto la política de privacidad y el tratamiento de mis datos',
+			'submit_legal_note'   => 'Al enviar aceptas la política de privacidad indicada al inicio.',
 
 			// v1.7.14 — "Prefiero que me llamen" path.
 			'callme_button'      => '📞 Prefiero que me llamen',
@@ -521,10 +527,13 @@ final class Settings {
 		$current = self::get_notifications();
 		$out     = $current;
 
-		$out['notify_emails']  = sanitize_text_field( $input['notify_emails'] ?? '' );
-		$out['notify_subject'] = sanitize_text_field( $input['notify_subject'] ?? '' );
-		$out['enable_log']     = ! empty( $input['enable_log'] ) ? 1 : 0;
-		$out['redirect_url']   = esc_url_raw( $input['redirect_url'] ?? '' );
+		$out['notify_emails']         = sanitize_text_field( $input['notify_emails'] ?? '' );
+		$out['notify_subject']        = sanitize_text_field( $input['notify_subject'] ?? '' );
+		$out['notify_subject_callme'] = sanitize_text_field( $input['notify_subject_callme'] ?? '' );
+		$out['notify_body']           = wp_kses_post( (string) ( $input['notify_body'] ?? '' ) );
+		$out['notify_body_callme']    = wp_kses_post( (string) ( $input['notify_body_callme'] ?? '' ) );
+		$out['enable_log']            = ! empty( $input['enable_log'] ) ? 1 : 0;
+		$out['redirect_url']          = esc_url_raw( $input['redirect_url'] ?? '' );
 
 		return $out;
 	}
@@ -899,10 +908,12 @@ final class Settings {
 				<?php
 				$copy_groups = [
 					__( 'Screen 1 — Intro', 'bomedia-quote-wizard' ) => [
-						'intro_helper'      => __( 'Helper text above the inputs', 'bomedia-quote-wizard' ),
-						'intro_below'       => __( 'Reassurance text below the button', 'bomedia-quote-wizard' ),
-						'intro_phone_label' => __( 'Phone field label', 'bomedia-quote-wizard' ),
-						'intro_optin_label' => __( 'Marketing opt-in label', 'bomedia-quote-wizard' ),
+						'intro_helper'        => __( 'Helper text above the inputs', 'bomedia-quote-wizard' ),
+						'intro_below'         => __( 'Reassurance text below the button', 'bomedia-quote-wizard' ),
+						'intro_phone_label'   => __( 'Phone field label', 'bomedia-quote-wizard' ),
+						'intro_privacy_label' => __( 'Privacy check label (required)', 'bomedia-quote-wizard' ),
+						'intro_optin_label'   => __( 'Marketing opt-in label (optional)', 'bomedia-quote-wizard' ),
+						'submit_legal_note'   => __( 'Reminder under the final Send button', 'bomedia-quote-wizard' ),
 					],
 					__( 'Prefiero que me llamen', 'bomedia-quote-wizard' ) => [
 						'callme_button'      => __( 'Top-right button label', 'bomedia-quote-wizard' ),
@@ -1474,11 +1485,32 @@ final class Settings {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="bqw_notify_subject"><?php esc_html_e( 'Email subject', 'bomedia-quote-wizard' ); ?></label></th>
+					<th scope="row"><label for="bqw_notify_subject"><?php esc_html_e( 'Email subject — quote flow', 'bomedia-quote-wizard' ); ?></label></th>
 					<td>
 						<input type="text" id="bqw_notify_subject" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[notify_subject]" class="large-text"
 							value="<?php echo esc_attr( $s['notify_subject'] ); ?>" />
-						<p class="description"><?php esc_html_e( 'Placeholders: {nombre}, {empresa}, {producto}', 'bomedia-quote-wizard' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Variables: {nombre}, {empresa}, {producto}, {productos}, {telefono}, {pais}, {idioma}, {ip}, {fecha}, {site_display_name}, {bot_name}.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_notify_body"><?php esc_html_e( 'Email body — quote flow', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<textarea id="bqw_notify_body" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[notify_body]" rows="6" class="large-text code"><?php echo esc_textarea( $s['notify_body'] ?? '' ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'HTML body for the quote-flow email. Leave empty to use the built-in plain text template. Variables: {nombre}, {email}, {telefono}, {pais}, {idioma}, {ip}, {mensaje}, {productos}, {fecha}, {site_display_name}, {bot_name}.', 'bomedia-quote-wizard' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_notify_subject_callme"><?php esc_html_e( 'Email subject — "I prefer a call"', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<input type="text" id="bqw_notify_subject_callme" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[notify_subject_callme]" class="large-text"
+							value="<?php echo esc_attr( $s['notify_subject_callme'] ?? '' ); ?>" placeholder="📞 Solicitud de llamada — {nombre}" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="bqw_notify_body_callme"><?php esc_html_e( 'Email body — "I prefer a call"', 'bomedia-quote-wizard' ); ?></label></th>
+					<td>
+						<textarea id="bqw_notify_body_callme" name="<?php echo esc_attr( self::OPT_NOTIF ); ?>[notify_body_callme]" rows="6" class="large-text code"><?php echo esc_textarea( $s['notify_body_callme'] ?? '' ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'HTML body for the callme email. {cuando} is the optional time-of-day text. Leave empty to use the built-in default.', 'bomedia-quote-wizard' ); ?></p>
 					</td>
 				</tr>
 				<tr>

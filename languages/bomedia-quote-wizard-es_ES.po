@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.14\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.15\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -373,8 +373,17 @@ msgstr "Editar selección"
 msgid "Email"
 msgstr "Email"
 
-msgid "Email subject"
-msgstr "Asunto del email"
+msgid "Email body — \"I prefer a call\""
+msgstr ""
+
+msgid "Email body — quote flow"
+msgstr ""
+
+msgid "Email subject — \"I prefer a call\""
+msgstr ""
+
+msgid "Email subject — quote flow"
+msgstr ""
 
 msgid "Empty request message"
 msgstr ""
@@ -450,6 +459,12 @@ msgstr "Google reCAPTCHA v2 (checkbox)"
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
 msgstr "Google reCAPTCHA v3 (invisible, score)"
+
+msgid "HTML body for the callme email. {cuando} is the optional time-of-day text. Leave empty to use the built-in default."
+msgstr ""
+
+msgid "HTML body for the quote-flow email. Leave empty to use the built-in plain text template. Variables: {nombre}, {email}, {telefono}, {pais}, {idioma}, {ip}, {mensaje}, {productos}, {fecha}, {site_display_name}, {bot_name}."
+msgstr ""
 
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
 msgstr "Tope estricto para evitar facturas sorpresa. Se reinicia a medianoche UTC."
@@ -569,6 +584,9 @@ msgid "Marketing opt-in"
 msgstr "Opt-in de marketing"
 
 msgid "Marketing opt-in label"
+msgstr ""
+
+msgid "Marketing opt-in label (optional)"
 msgstr ""
 
 msgid "Matches at"
@@ -760,9 +778,6 @@ msgstr "Elige categorías en la columna de la izquierda y arrastra para reordena
 msgid "Pick image"
 msgstr "Elegir imagen"
 
-msgid "Placeholders: {nombre}, {empresa}, {producto}"
-msgstr "Placeholders: {nombre}, {empresa}, {producto}"
-
 msgid "Please accept the privacy policy."
 msgstr ""
 
@@ -778,9 +793,6 @@ msgstr "Introduce un nombre y un email válidos."
 msgid "Please pick at least one application."
 msgstr "Selecciona al menos una aplicación."
 
-msgid "Please pick at least one machine."
-msgstr "Selecciona al menos una máquina."
-
 msgid "Please take a moment before submitting."
 msgstr "Tómate un momento antes de enviar."
 
@@ -795,6 +807,9 @@ msgstr "Imprimir sobre objetos (UV-LED)"
 
 msgid "Print on textile"
 msgstr "Imprimir textil"
+
+msgid "Privacy check label (required)"
+msgstr ""
 
 msgid "Privacy checkbox label"
 msgstr ""
@@ -855,6 +870,9 @@ msgstr "Intervalo de refresco"
 
 msgid "Refresh now"
 msgstr "Refrescar ahora"
+
+msgid "Reminder under the final Send button"
+msgstr ""
 
 msgid "Remove"
 msgstr "Quitar"
@@ -1128,6 +1146,9 @@ msgstr "Se usa en la card del welcome \"Ver catálogo de {site_name}\". Pon el n
 
 msgid "Used only when no avatar image is set."
 msgstr "Solo se usa cuando no hay imagen de avatar."
+
+msgid "Variables: {nombre}, {empresa}, {producto}, {productos}, {telefono}, {pais}, {idioma}, {ip}, {fecha}, {site_display_name}, {bot_name}."
+msgstr ""
 
 msgid "View"
 msgstr "Ver"

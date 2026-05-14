@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.14\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.15\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -373,7 +373,16 @@ msgstr "Editar seleção"
 msgid "Email"
 msgstr "E-mail"
 
-msgid "Email subject"
+msgid "Email body — \"I prefer a call\""
+msgstr ""
+
+msgid "Email body — quote flow"
+msgstr ""
+
+msgid "Email subject — \"I prefer a call\""
+msgstr ""
+
+msgid "Email subject — quote flow"
 msgstr ""
 
 msgid "Empty request message"
@@ -449,6 +458,12 @@ msgid "Google reCAPTCHA v2 (checkbox)"
 msgstr ""
 
 msgid "Google reCAPTCHA v3 (invisible, score)"
+msgstr ""
+
+msgid "HTML body for the callme email. {cuando} is the optional time-of-day text. Leave empty to use the built-in default."
+msgstr ""
+
+msgid "HTML body for the quote-flow email. Leave empty to use the built-in plain text template. Variables: {nombre}, {email}, {telefono}, {pais}, {idioma}, {ip}, {mensaje}, {productos}, {fecha}, {site_display_name}, {bot_name}."
 msgstr ""
 
 msgid "Hard cap to avoid surprise bills. Hit at midnight UTC."
@@ -569,6 +584,9 @@ msgid "Marketing opt-in"
 msgstr ""
 
 msgid "Marketing opt-in label"
+msgstr ""
+
+msgid "Marketing opt-in label (optional)"
 msgstr ""
 
 msgid "Matches at"
@@ -760,9 +778,6 @@ msgstr ""
 msgid "Pick image"
 msgstr ""
 
-msgid "Placeholders: {nombre}, {empresa}, {producto}"
-msgstr ""
-
 msgid "Please accept the privacy policy."
 msgstr ""
 
@@ -778,9 +793,6 @@ msgstr ""
 msgid "Please pick at least one application."
 msgstr "Selecione pelo menos uma aplicação."
 
-msgid "Please pick at least one machine."
-msgstr "Selecione pelo menos uma máquina."
-
 msgid "Please take a moment before submitting."
 msgstr ""
 
@@ -794,6 +806,9 @@ msgid "Print on objects (UV-LED)"
 msgstr ""
 
 msgid "Print on textile"
+msgstr ""
+
+msgid "Privacy check label (required)"
 msgstr ""
 
 msgid "Privacy checkbox label"
@@ -854,6 +869,9 @@ msgid "Refresh interval"
 msgstr ""
 
 msgid "Refresh now"
+msgstr ""
+
+msgid "Reminder under the final Send button"
 msgstr ""
 
 msgid "Remove"
@@ -1127,6 +1145,9 @@ msgid "Used in the welcome card \"View {site_name} catalog\". Set to the brand n
 msgstr ""
 
 msgid "Used only when no avatar image is set."
+msgstr ""
+
+msgid "Variables: {nombre}, {empresa}, {producto}, {productos}, {telefono}, {pais}, {idioma}, {ip}, {fecha}, {site_display_name}, {bot_name}."
 msgstr ""
 
 msgid "View"

@@ -33,7 +33,7 @@
 
 	var state = {
 		session_id: ensureSessionId(),
-		contact_partial: { name: '', email: '', phone: '', dial: '+34', marketing_optin: false },
+		contact_partial: { name: '', email: '', phone: '', dial: '+34', marketing_optin: false, privacy_accepted: false },
 		selection: [],
 		stack: [],          // [{kind: 'server'|'intro'|'callme', step: {...}, picks: [labels]}]
 		current: null,      // current frame
@@ -353,8 +353,13 @@
 			'<p class="bqw-wiz-sub">' + escapeHtml(bqwInterpolate(i18n.introSub || 'It takes 2 minutes. No spam — we only reply to your enquiry.')) + '</p>';
 		wrap.appendChild(hbox);
 
-		var phoneLabel = i18n.introPhoneLabel || 'Phone (optional — if you would prefer a call)';
-		var optinLabel = i18n.introOptinLabel || (cfg.email_optin_label || 'I want to receive product updates from Bomedia.');
+		var phoneLabel   = i18n.introPhoneLabel || 'Phone (optional — if you would prefer a call)';
+		var privacyTxt   = bqwInterpolate(i18n.introPrivacyLabel || 'I accept the privacy policy and the processing of my data');
+		var privacyUrl   = cfg.privacy_url || '';
+		var privacyHtml  = privacyUrl
+			? privacyTxt.replace(/política de privacidad|privacy policy/i, function (m) { return '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + m + '</a>'; })
+			: escapeHtml(privacyTxt);
+		var optinLabel   = i18n.introOptinLabel || (cfg.email_optin_label || 'I want to receive product updates from Bomedia.');
 
 		var fields = document.createElement('div');
 		fields.innerHTML =
@@ -365,6 +370,8 @@
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(phoneLabel) + '</span>' +
 				'<div class="bqw-phone-wrap"><select id="bqw-intro-dial" class="bqw-dial-select"></select>' +
 				'<input type="tel" id="bqw-intro-phone" autocomplete="tel" value="' + escapeHtml(state.contact_partial.phone) + '"></div></label>' +
+			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-intro-privacy"' + (state.contact_partial.privacy_accepted ? ' checked' : '') + ' required>' +
+				'<span>' + privacyHtml + ' *</span></label>' +
 			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-intro-optin"' + (state.contact_partial.marketing_optin ? ' checked' : '') + '>' +
 				'<span>' + escapeHtml(optinLabel) + '</span></label>' +
 			'<p class="bqw-wiz-error" id="bqw-intro-error" hidden></p>' +
@@ -372,35 +379,39 @@
 		wrap.appendChild(fields);
 		screen.appendChild(wrap);
 
-		var nameEl  = wrap.querySelector('#bqw-intro-name');
-		var mailEl  = wrap.querySelector('#bqw-intro-email');
-		var phoneEl = wrap.querySelector('#bqw-intro-phone');
-		var dialEl  = wrap.querySelector('#bqw-intro-dial');
-		var optinEl = wrap.querySelector('#bqw-intro-optin');
-		var errEl   = wrap.querySelector('#bqw-intro-error');
-		var btn     = wrap.querySelector('#bqw-intro-continue');
+		var nameEl    = wrap.querySelector('#bqw-intro-name');
+		var mailEl    = wrap.querySelector('#bqw-intro-email');
+		var phoneEl   = wrap.querySelector('#bqw-intro-phone');
+		var dialEl    = wrap.querySelector('#bqw-intro-dial');
+		var optinEl   = wrap.querySelector('#bqw-intro-optin');
+		var privacyEl = wrap.querySelector('#bqw-intro-privacy');
+		var errEl     = wrap.querySelector('#bqw-intro-error');
+		var btn       = wrap.querySelector('#bqw-intro-continue');
 		populateDialSelect(dialEl, state.contact_partial.dial || detected);
 		nameEl.focus();
 
 		btn.addEventListener('click', function () {
-			var name  = nameEl.value.trim();
-			var email = mailEl.value.trim();
-			var phone = phoneEl.value.trim();
-			var dial  = dialEl.value || '+34';
-			var optin = optinEl.checked;
+			var name    = nameEl.value.trim();
+			var email   = mailEl.value.trim();
+			var phone   = phoneEl.value.trim();
+			var dial    = dialEl.value || '+34';
+			var optin   = optinEl.checked;
+			var privacy = privacyEl.checked;
 			if (!name) { errEl.hidden = false; errEl.textContent = i18n.errName || 'First name is required.'; return; }
 			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.hidden = false; errEl.textContent = i18n.errEmail || 'Please enter a valid email.'; return; }
 			if (phone && phone.replace(/\D/g, '').length < 5) { errEl.hidden = false; errEl.textContent = i18n.errPhoneFormat || 'Phone looks too short.'; return; }
+			if (!privacy) { errEl.hidden = false; errEl.textContent = i18n.errPrivacy || 'Please accept the privacy policy.'; return; }
 			errEl.hidden = true;
 			state.contact_partial.name  = name;
 			state.contact_partial.email = email;
 			state.contact_partial.phone = phone;
 			state.contact_partial.dial  = dial;
 			state.contact_partial.marketing_optin = !!optin;
+			state.contact_partial.privacy_accepted = true;
 			document.getElementById('bqw-first-name').value = name;
 			document.getElementById('bqw-email').value = email;
 			btn.disabled = true;
-			savePartial(name, email, phone ? (dial + ' ' + phone) : '', optin, 'screen_1').then(function () {
+			savePartial(name, email, phone ? (dial + ' ' + phone) : '', optin, 'screen_1', /*privacy*/ true).then(function () {
 				state.stack.push({ kind: 'intro', payload: null, picks: [] });
 				callInit();
 			}).catch(function () {
@@ -425,16 +436,17 @@
 		});
 	}
 
-	function savePartial(name, email, phone, optin, source) {
+	function savePartial(name, email, phone, optin, source, privacyAccepted) {
 		var fd = new FormData();
 		fd.append('action', 'bqw_partial_save');
 		fd.append('nonce', window.BQW.nonce);
 		fd.append('session_id', state.session_id);
 		fd.append('name', name);
 		fd.append('email', email);
-		if (phone)         fd.append('phone', phone);
-		if (optin)         fd.append('marketing_optin', '1');
-		if (source)        fd.append('source', source);
+		if (phone)             fd.append('phone', phone);
+		if (optin)             fd.append('marketing_optin', '1');
+		if (privacyAccepted)   fd.append('privacy_accepted', '1');
+		if (source)            fd.append('source', source);
 		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
 	}
 	function logPartialStep(stepId) {
@@ -601,14 +613,8 @@
 				'<textarea id="bqw-callme-when" rows="2" maxlength="200" placeholder="' + escapeHtml(i18n.callmeWhenPh || '') + '"></textarea></label>';
 		wrap.appendChild(fields);
 
-		var legal = el('div', 'bqw-wiz-legal');
-		var privacyUrl = cfg.privacy_url || '';
-		var privacyTxt = bqwInterpolate(i18n.callmePrivacy || 'I accept the privacy policy and the processing of my data');
-		var privacyHtml = privacyUrl
-			? privacyTxt.replace(/política de privacidad|privacy policy/i, function (m) { return '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + m + '</a>'; })
-			: escapeHtml(privacyTxt);
-		legal.innerHTML = '<label class="bqw-wiz-check"><input type="checkbox" id="bqw-callme-privacy" required><span>' + privacyHtml + ' *</span></label>';
-		wrap.appendChild(legal);
+		// v1.7.15 — privacy consent was captured on screen 1. Show only a
+		// small reminder under the Send button instead of asking again.
 
 		var captchaCfg = cfg.captcha || null;
 		if (cfg.enable_captcha && captchaCfg) {
@@ -636,6 +642,9 @@
 		actions.appendChild(submit);
 		wrap.appendChild(actions);
 
+		var legalNote = el('p', 'bqw-wiz-legal-note', escapeHtml(i18n.submitLegalNote || 'By sending you accept the privacy policy you ticked at the start.'));
+		wrap.appendChild(legalNote);
+
 		var errBox = el('p', 'bqw-wiz-error');
 		errBox.id = 'bqw-callme-error';
 		errBox.hidden = true;
@@ -648,15 +657,13 @@
 	}
 
 	function submitCallme() {
-		var phone   = document.getElementById('bqw-callme-phone').value.trim();
-		var when    = document.getElementById('bqw-callme-when').value.trim();
-		var dial    = document.getElementById('bqw-callme-dial').value || '+34';
-		var privacy = document.getElementById('bqw-callme-privacy').checked;
-		var errBox  = document.getElementById('bqw-callme-error');
+		var phone  = document.getElementById('bqw-callme-phone').value.trim();
+		var when   = document.getElementById('bqw-callme-when').value.trim();
+		var dial   = document.getElementById('bqw-callme-dial').value || '+34';
+		var errBox = document.getElementById('bqw-callme-error');
 		errBox.hidden = true;
 
 		if (!phone) { errBox.hidden = false; errBox.textContent = i18n.errPhone || 'Phone is required.'; return; }
-		if (!privacy) { errBox.hidden = false; errBox.textContent = i18n.errPrivacy || 'Please accept the privacy policy.'; return; }
 
 		var btn = document.getElementById('bqw-callme-submit');
 		var spinner = btn.querySelector('.bqw-spinner');
@@ -1234,17 +1241,9 @@
 				'<textarea id="bqw-message-input" rows="3" placeholder="' + escapeHtml(i18n.tellUs || 'Tell us what you need…') + '"></textarea></label>';
 		left.appendChild(fields);
 
-		var legal = el('div', 'bqw-wiz-legal');
-		var privacyUrl = cfg.privacy_url || '';
-		var privacyHtml = privacyUrl
-			? '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + escapeHtml(i18n.privacyPolicy || 'privacy policy') + '</a>'
-			: escapeHtml(i18n.privacyPolicy || 'privacy policy');
-		// v1.7.14 — opt-in is captured on screen 1 now; only the privacy
-		// check remains here.
-		legal.innerHTML =
-			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-privacy-input" required>' +
-				'<span>' + escapeHtml(i18n.acceptPrivacyPrefix || 'I accept the ') + privacyHtml + escapeHtml(i18n.acceptPrivacySuffix || ' and the processing of my data to receive a quote.') + ' *</span></label>';
-		left.appendChild(legal);
+		// v1.7.15 — privacy + opt-in are captured on screen 1. The final
+		// form shows a small reminder under the Send button instead of
+		// repeating the checkboxes.
 
 		// v1.7.12 — render the captcha widget inside the left column (the
 		// previous version left it inside a hidden <form> so it never showed).
@@ -1263,6 +1262,10 @@
 		submitBtn.innerHTML = '<span class="bqw-submit-label">' + escapeHtml(i18n.send || 'Send') + ' →</span><span class="bqw-spinner" hidden></span>';
 		actions.appendChild(submitBtn);
 		left.appendChild(actions);
+
+		// v1.7.15 — discreet reminder; the actual consent was given on screen 1.
+		var legalNote = el('p', 'bqw-wiz-legal-note', escapeHtml(i18n.submitLegalNote || 'By sending you accept the privacy policy you ticked at the start.'));
+		left.appendChild(legalNote);
 
 		var errBox = el('p', 'bqw-wiz-error', '');
 		errBox.id = 'bqw-final-error';
@@ -1447,17 +1450,15 @@
 		var phone   = document.getElementById('bqw-phone-input').value.trim();
 		var country = document.getElementById('bqw-country-input').value;
 		var message = document.getElementById('bqw-message-input').value.trim();
-		var privacy = document.getElementById('bqw-privacy-input').checked;
-		// v1.7.14 — opt-in captured on screen 1 (intro) carries through.
+		// v1.7.15 — privacy + opt-in captured on screen 1 (intro) carry through.
+		var privacy = !!state.contact_partial.privacy_accepted;
 		var optinV  = !!state.contact_partial.marketing_optin;
-		var optin   = optinV; // keep for clarity downstream
 		var dial    = document.getElementById('bqw-dial-prefix').value || '';
 		var errBox  = document.getElementById('bqw-final-error');
 		errBox.hidden = true;
 
 		if (!phone) { errBox.hidden = false; errBox.textContent = i18n.errPhone || 'Phone is required.'; return; }
 		if (!country) { errBox.hidden = false; errBox.textContent = i18n.errCountry || 'Country is required.'; return; }
-		if (!privacy) { errBox.hidden = false; errBox.textContent = i18n.errPrivacy || 'Please accept the privacy policy.'; return; }
 
 		var btn = document.getElementById('bqw-final-submit');
 		var spinner = btn.querySelector('.bqw-spinner');

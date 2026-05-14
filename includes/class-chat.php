@@ -60,11 +60,12 @@ final class Chat {
 		$email      = sanitize_email( (string) ( $_POST['email'] ?? '' ) );
 		$phone      = sanitize_text_field( (string) ( $_POST['phone'] ?? '' ) );
 		$optin      = ! empty( $_POST['marketing_optin'] );
+		$privacy    = ! empty( $_POST['privacy_accepted'] );
 		$source     = sanitize_text_field( (string) ( $_POST['source'] ?? '' ) );
 		if ( '' === $session_id || '' === $name || ! is_email( $email ) ) {
 			wp_send_json_error( [ 'message' => __( 'Please enter a valid name and email.', 'bomedia-quote-wizard' ) ], 400 );
 		}
-		$extra = [ 'marketing_optin' => $optin ];
+		$extra = [ 'marketing_optin' => $optin, 'privacy_accepted' => $privacy ];
 		if ( '' !== $phone ) {
 			$extra['phone'] = $phone;
 			self::log_partial_phone( $session_id, $source ?: 'unknown' );

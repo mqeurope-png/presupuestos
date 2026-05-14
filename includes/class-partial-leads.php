@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Partial_Leads {
 
-	private const SCHEMA_OPTION  = 'bqw_partial_leads_schema_v2';
+	private const SCHEMA_OPTION  = 'bqw_partial_leads_schema_v3';
 	private const TABLE_BASENAME = 'bqw_partial_leads';
 
 	public static function table(): string {
@@ -35,6 +35,7 @@ final class Partial_Leads {
 			email VARCHAR(160) NOT NULL DEFAULT '',
 			phone VARCHAR(40) NOT NULL DEFAULT '',
 			marketing_optin TINYINT(1) NOT NULL DEFAULT 0,
+			privacy_accepted TINYINT(1) NOT NULL DEFAULT 0,
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME NOT NULL,
 			ip VARCHAR(45) NOT NULL DEFAULT '',
@@ -47,8 +48,9 @@ final class Partial_Leads {
 		) {$charset};";
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
-		// Clear the v1 option so a downgrade-then-upgrade still triggers dbDelta.
+		// Clear older schema markers so a downgrade-then-upgrade re-runs dbDelta.
 		delete_option( 'bqw_partial_leads_schema_v1' );
+		delete_option( 'bqw_partial_leads_schema_v2' );
 		update_option( self::SCHEMA_OPTION, 1 );
 	}
 
@@ -76,12 +78,14 @@ final class Partial_Leads {
 		if ( array_key_exists( 'marketing_optin', $extra ) ) {
 			$row['marketing_optin'] = ! empty( $extra['marketing_optin'] ) ? 1 : 0;
 		}
+		if ( array_key_exists( 'privacy_accepted', $extra ) ) {
+			$row['privacy_accepted'] = ! empty( $extra['privacy_accepted'] ) ? 1 : 0;
+		}
 
 		if ( $existing ) {
-			$formats = array_fill( 0, count( $row ), '%s' );
-			if ( isset( $row['marketing_optin'] ) ) {
-				$keys = array_keys( $row );
-				$formats[ array_search( 'marketing_optin', $keys, true ) ] = '%d';
+			$formats = [];
+			foreach ( array_keys( $row ) as $k ) {
+				$formats[] = in_array( $k, [ 'marketing_optin', 'privacy_accepted' ], true ) ? '%d' : '%s';
 			}
 			$wpdb->update( self::table(), $row, [ 'id' => (int) $existing ], $formats, [ '%d' ] );
 		} else {

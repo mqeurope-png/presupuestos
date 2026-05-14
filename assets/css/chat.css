@@ -789,3 +789,13 @@
 	max-width: 560px;
 }
 .bqw-callme-h { text-align: center; }
+
+/* v1.7.15 — discreet reminder under Send buttons. */
+.bqw-wiz-legal-note {
+	margin: 0;
+	font-size: 0.74rem;
+	color: var(--bqw-muted, #64748b);
+	font-style: italic;
+	text-align: right;
+}
+.bqw-wiz-callme-wrap .bqw-wiz-legal-note { text-align: center; }

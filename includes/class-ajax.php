@@ -507,13 +507,12 @@ final class Ajax {
 		if ( ! $privacy ) {
 			return new \WP_Error( 'bqw_privacy', __( 'You must accept the privacy policy.', 'bomedia-quote-wizard' ) );
 		}
-		// In chat flow the user may submit without explicit picks; the AI
-		// summary + extracted_fields tell sales what they want. Only the
-		// classic step-based flow requires an explicit machine pick.
-		$is_chat_or_skip = in_array( $flow_origin, [ 'chat', 'skip' ], true );
-		if ( ! $is_chat_or_skip && ! $unsure && empty( $selected_products ) ) {
-			return new \WP_Error( 'bqw_no_products', __( 'Please pick at least one machine.', 'bomedia-quote-wizard' ) );
-		}
+		// v1.7.15 — selection of machines is OPTIONAL across every flow.
+		// The wizard captures the lead's intent via answers, tags and the
+		// (optional) selection; sales can reach out either way. The previous
+		// gate (raise error when no products + non-chat/skip flow) blocked
+		// the callme path and "not-convinced" submissions.
+		// No-op kept here as documentation; remove on next refactor.
 
 		// Aggregate fields used for AgileCRM and notifications.
 		$product_names = array_map( static function ( $p ) { return $p['name']; }, $selected_products );

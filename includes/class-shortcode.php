@@ -359,9 +359,11 @@ final class Shortcode {
 			'removeHint'         => $cp( 'remove_hint' ),
 
 			// v1.7.14 — screen 1 phone + opt-in helpers.
-			'introPhoneLabel' => $cp( 'intro_phone_label' ),
-			'introOptinLabel' => $cp( 'intro_optin_label' ),
-			'errPhoneFormat'  => __( 'Phone looks too short.', 'bomedia-quote-wizard' ),
+			'introPhoneLabel'   => $cp( 'intro_phone_label' ),
+			'introOptinLabel'   => $cp( 'intro_optin_label' ),
+			'introPrivacyLabel' => $cp( 'intro_privacy_label' ),
+			'submitLegalNote'   => $cp( 'submit_legal_note' ),
+			'errPhoneFormat'    => __( 'Phone looks too short.', 'bomedia-quote-wizard' ),
 
 			// v1.7.14 — "Prefiero que me llamen".
 			'callmeButton'      => $cp( 'callme_button' ),
