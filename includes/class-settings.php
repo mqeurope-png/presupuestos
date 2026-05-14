@@ -164,7 +164,7 @@ final class Settings {
 
 	public static function default_copy(): array {
 		return [
-			'intro_helper'      => 'Antes de empezar, ¿cómo te llamamos?',
+			'intro_helper'      => 'Antes de empezar, ¿cómo te llamas?',
 			'intro_below'       => 'Te ayudamos en 2 minutos. No te enviamos spam, solo respondemos a tu consulta.',
 			'welcome_title'     => 'Hola {nombre}, ¿cómo quieres elegir tu máquina?',
 			'card_guided_title'    => 'Ayúdame a elegir',
@@ -192,6 +192,22 @@ final class Settings {
 			'optin_label'          => 'Quiero recibir información sobre productos y novedades de Bomedia',
 			'send_btn'             => 'Enviar →',
 			'remove_hint'          => '¿Quitar alguna? Vuelve atrás.',
+
+			// v1.7.14 — screen 1 phone + opt-in helper.
+			'intro_phone_label'   => 'Teléfono (opcional, si quieres que te llamemos en cualquier momento)',
+			'intro_optin_label'   => 'Quiero recibir información sobre productos y novedades de Bomedia',
+
+			// v1.7.14 — "Prefiero que me llamen" path.
+			'callme_button'      => '📞 Prefiero que me llamen',
+			'callme_title'       => 'Te llamamos cuando te venga bien',
+			'callme_intro'       => 'Hola {nombre}, déjanos tu teléfono y nuestro equipo te llamará para asesorarte.',
+			'callme_phone_label' => 'Teléfono *',
+			'callme_when_label'  => '¿Cuándo te viene bien? (opcional)',
+			'callme_when_ph'     => 'Mañanas, tardes, días concretos…',
+			'callme_privacy'     => 'Acepto la política de privacidad y el tratamiento de mis datos',
+			'callme_back_btn'    => '← Volver al asistente',
+			'callme_send_btn'    => 'Enviar →',
+			'callme_thanks'      => 'Gracias {nombre}, te llamaremos pronto.',
 
 			// v1.7.11 — question prompts (each step of the guided path).
 			'q_task_type'   => '¿Qué te interesa hacer? Puedes elegir varias opciones.',
@@ -266,6 +282,28 @@ final class Settings {
 		update_option( self::MIGRATED_FLAG, 1 );
 
 		self::maybe_migrate_v3();
+		self::maybe_migrate_v14_copy();
+	}
+
+	/**
+	 * v1.7.14 — soft-rewrite the screen-1 helper text from the older
+	 * "¿cómo te llamamos?" wording to "¿cómo te llamas?". Only touches the
+	 * value when it matches the legacy default verbatim, so personalised
+	 * overrides remain intact.
+	 */
+	private static function maybe_migrate_v14_copy(): void {
+		$flag = 'bqw_settings_migrated_v14_copy';
+		if ( get_option( $flag ) ) {
+			return;
+		}
+		$wiz = (array) get_option( self::OPT_WIZARD, [] );
+		$old = 'Antes de empezar, ¿cómo te llamamos?';
+		$new = 'Antes de empezar, ¿cómo te llamas?';
+		if ( isset( $wiz['copy']['intro_helper'] ) && $wiz['copy']['intro_helper'] === $old ) {
+			$wiz['copy']['intro_helper'] = $new;
+			update_option( self::OPT_WIZARD, $wiz );
+		}
+		update_option( $flag, 1 );
 	}
 
 	/**
@@ -863,6 +901,20 @@ final class Settings {
 					__( 'Screen 1 — Intro', 'bomedia-quote-wizard' ) => [
 						'intro_helper'      => __( 'Helper text above the inputs', 'bomedia-quote-wizard' ),
 						'intro_below'       => __( 'Reassurance text below the button', 'bomedia-quote-wizard' ),
+						'intro_phone_label' => __( 'Phone field label', 'bomedia-quote-wizard' ),
+						'intro_optin_label' => __( 'Marketing opt-in label', 'bomedia-quote-wizard' ),
+					],
+					__( 'Prefiero que me llamen', 'bomedia-quote-wizard' ) => [
+						'callme_button'      => __( 'Top-right button label', 'bomedia-quote-wizard' ),
+						'callme_title'       => __( 'Screen title', 'bomedia-quote-wizard' ),
+						'callme_intro'       => __( 'Intro paragraph (supports {nombre})', 'bomedia-quote-wizard' ),
+						'callme_phone_label' => __( 'Phone label', 'bomedia-quote-wizard' ),
+						'callme_when_label'  => __( '"When works" label', 'bomedia-quote-wizard' ),
+						'callme_when_ph'     => __( '"When works" placeholder', 'bomedia-quote-wizard' ),
+						'callme_privacy'     => __( 'Privacy checkbox label', 'bomedia-quote-wizard' ),
+						'callme_back_btn'    => __( 'Back-to-assistant button', 'bomedia-quote-wizard' ),
+						'callme_send_btn'    => __( 'Send button', 'bomedia-quote-wizard' ),
+						'callme_thanks'      => __( 'Success message (supports {nombre})', 'bomedia-quote-wizard' ),
 					],
 					__( 'Screen 2 — Path picker', 'bomedia-quote-wizard' ) => [
 						'welcome_title'     => __( 'Title (supports {nombre})', 'bomedia-quote-wizard' ),

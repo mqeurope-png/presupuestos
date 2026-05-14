@@ -766,3 +766,26 @@
 	letter-spacing: 0.02em;
 	text-transform: uppercase;
 }
+
+/* v1.7.14 — top-right "Prefiero que me llamen" button + callme screen. */
+.bqw-wiz-callme {
+	background: transparent;
+	border: 1px solid var(--bqw-primary, #0066cc);
+	color: var(--bqw-primary, #0066cc);
+	border-radius: 999px;
+	padding: 5px 12px;
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.82rem;
+	font-weight: 600;
+	margin-left: auto;
+	transition: background 0.15s, color 0.15s;
+}
+.bqw-wiz-callme:hover {
+	background: var(--bqw-primary, #0066cc);
+	color: #fff;
+}
+.bqw-wiz-callme-wrap {
+	max-width: 560px;
+}
+.bqw-callme-h { text-align: center; }

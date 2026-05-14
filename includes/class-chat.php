@@ -58,11 +58,34 @@ final class Chat {
 		$session_id = sanitize_text_field( (string) ( $_POST['session_id'] ?? '' ) );
 		$name       = sanitize_text_field( (string) ( $_POST['name'] ?? '' ) );
 		$email      = sanitize_email( (string) ( $_POST['email'] ?? '' ) );
+		$phone      = sanitize_text_field( (string) ( $_POST['phone'] ?? '' ) );
+		$optin      = ! empty( $_POST['marketing_optin'] );
+		$source     = sanitize_text_field( (string) ( $_POST['source'] ?? '' ) );
 		if ( '' === $session_id || '' === $name || ! is_email( $email ) ) {
 			wp_send_json_error( [ 'message' => __( 'Please enter a valid name and email.', 'bomedia-quote-wizard' ) ], 400 );
 		}
-		Partial_Leads::upsert( $session_id, $name, $email );
+		$extra = [ 'marketing_optin' => $optin ];
+		if ( '' !== $phone ) {
+			$extra['phone'] = $phone;
+			self::log_partial_phone( $session_id, $source ?: 'unknown' );
+		}
+		Partial_Leads::upsert( $session_id, $name, $email, $extra );
 		wp_send_json_success( [ 'ok' => true ] );
+	}
+
+	private static function log_partial_phone( string $session_id, string $source ): void {
+		$u = wp_upload_dir();
+		if ( ! empty( $u['error'] ) ) return;
+		$dir = trailingslashit( $u['basedir'] ) . 'bqw-logs';
+		if ( ! file_exists( $dir ) ) wp_mkdir_p( $dir );
+		$line = sprintf(
+			"[%s] session=%s event=phone_captured value_present=true source=%s\n",
+			gmdate( 'Y-m-d H:i:s' ),
+			substr( $session_id, 0, 8 ),
+			$source
+		);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		@file_put_contents( $dir . '/partials.log', $line, FILE_APPEND | LOCK_EX );
 	}
 
 	public static function handle_partial_step(): void {

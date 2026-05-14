@@ -39,6 +39,7 @@ $hero_on          = ! empty( $bqw_config['enable_hero'] );
 		<button type="button" class="bqw-wiz-back" id="bqw-wiz-back" hidden aria-label="<?php esc_attr_e( 'Back', 'bomedia-quote-wizard' ); ?>">← <?php esc_html_e( 'Back', 'bomedia-quote-wizard' ); ?></button>
 		<div class="bqw-wiz-dots" id="bqw-wiz-dots" aria-hidden="true"></div>
 		<span class="bqw-wiz-step-label" id="bqw-wiz-step-label"></span>
+		<button type="button" class="bqw-wiz-callme" id="bqw-wiz-callme" hidden></button>
 	</nav>
 
 	<main class="bqw-wiz-screen" id="bqw-wiz-screen" aria-live="polite"></main>

@@ -88,6 +88,8 @@ final class Lead_CPT {
 		echo '<table class="widefat striped"><thead><tr>';
 		echo '<th>' . esc_html__( 'Name', 'bomedia-quote-wizard' ) . '</th>';
 		echo '<th>' . esc_html__( 'Email', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th>' . esc_html__( 'Phone', 'bomedia-quote-wizard' ) . '</th>';
+		echo '<th title="' . esc_attr__( 'Opt-in to marketing', 'bomedia-quote-wizard' ) . '">' . esc_html__( 'Marketing', 'bomedia-quote-wizard' ) . '</th>';
 		echo '<th>' . esc_html__( 'Created', 'bomedia-quote-wizard' ) . '</th>';
 		echo '<th>' . esc_html__( 'Updated', 'bomedia-quote-wizard' ) . '</th>';
 		echo '<th>' . esc_html__( 'Abandoned at step', 'bomedia-quote-wizard' ) . '</th>';
@@ -99,9 +101,13 @@ final class Lead_CPT {
 				admin_url( 'admin-post.php?action=bqw_delete_partial&id=' . (int) $r['id'] ),
 				'bqw_delete_partial_' . (int) $r['id']
 			);
+			$phone = isset( $r['phone'] ) ? (string) $r['phone'] : '';
+			$optin = ! empty( $r['marketing_optin'] );
 			echo '<tr>';
 			echo '<td>' . esc_html( $r['name'] ) . '</td>';
 			echo '<td><a href="mailto:' . esc_attr( $r['email'] ) . '">' . esc_html( $r['email'] ) . '</a></td>';
+			echo '<td>' . ( $phone !== '' ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '<span style="color:#94a3b8">—</span>' ) . '</td>';
+			echo '<td>' . ( $optin ? '✓' : '<span style="color:#94a3b8">—</span>' ) . '</td>';
 			echo '<td>' . esc_html( $r['created_at'] ) . '</td>';
 			echo '<td>' . esc_html( $r['updated_at'] ) . '</td>';
 			echo '<td><code>' . esc_html( $r['abandoned_step'] ?: '—' ) . '</code></td>';

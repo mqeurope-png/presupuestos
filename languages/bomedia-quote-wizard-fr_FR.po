@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.13\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.14\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -11,6 +11,12 @@ msgstr ""
 "X-Domain: bomedia-quote-wizard\n"
 
 msgid " and the processing of my data to receive a quote."
+msgstr ""
+
+msgid "\"When works\" label"
+msgstr ""
+
+msgid "\"When works\" placeholder"
 msgstr ""
 
 msgid "%1$s ago · %2$d products cached"
@@ -152,6 +158,9 @@ msgid "Back to home"
 msgstr "Retour à l'accueil"
 
 msgid "Back to list"
+msgstr ""
+
+msgid "Back-to-assistant button"
 msgstr ""
 
 msgid "Background image"
@@ -499,6 +508,9 @@ msgstr ""
 msgid "Import JSON"
 msgstr ""
 
+msgid "Intro paragraph (supports {nombre})"
+msgstr ""
+
 msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
 msgstr ""
 
@@ -548,6 +560,9 @@ msgid "Machines of interest:"
 msgstr ""
 
 msgid "Manual catalog upload"
+msgstr ""
+
+msgid "Marketing"
 msgstr ""
 
 msgid "Marketing opt-in"
@@ -700,6 +715,9 @@ msgstr ""
 msgid "OpenAI returned malformed data."
 msgstr ""
 
+msgid "Opt-in to marketing"
+msgstr ""
+
 msgid "Or type your answer freely…"
 msgstr ""
 
@@ -718,8 +736,17 @@ msgstr ""
 msgid "Phone"
 msgstr "Téléphone"
 
+msgid "Phone field label"
+msgstr ""
+
 msgid "Phone is required."
 msgstr "Le téléphone est obligatoire."
+
+msgid "Phone label"
+msgstr ""
+
+msgid "Phone looks too short."
+msgstr ""
 
 msgid "Pick"
 msgstr ""
@@ -760,10 +787,16 @@ msgstr ""
 msgid "Post-submit redirect URL"
 msgstr ""
 
+msgid "Prefiero que me llamen"
+msgstr ""
+
 msgid "Print on objects (UV-LED)"
 msgstr ""
 
 msgid "Print on textile"
+msgstr ""
+
+msgid "Privacy checkbox label"
 msgstr ""
 
 msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
@@ -854,6 +887,9 @@ msgid "Screen 1 — Intro"
 msgstr ""
 
 msgid "Screen 2 — Path picker"
+msgstr ""
+
+msgid "Screen title"
 msgstr ""
 
 msgid "Script diagnostic"
@@ -982,6 +1018,9 @@ msgstr ""
 msgid "Subtitle (supports {n})"
 msgstr ""
 
+msgid "Success message (supports {nombre})"
+msgstr ""
+
 msgid "Summary"
 msgstr "Récapitulatif"
 
@@ -1040,6 +1079,9 @@ msgid "Title (supports {nombre})"
 msgstr ""
 
 msgid "Toggle children"
+msgstr ""
+
+msgid "Top-right button label"
 msgstr ""
 
 msgid "Tray label (supports {n})"

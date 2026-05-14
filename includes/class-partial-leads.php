@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class Partial_Leads {
 
-	private const SCHEMA_OPTION  = 'bqw_partial_leads_schema_v1';
+	private const SCHEMA_OPTION  = 'bqw_partial_leads_schema_v2';
 	private const TABLE_BASENAME = 'bqw_partial_leads';
 
 	public static function table(): string {
@@ -33,6 +33,8 @@ final class Partial_Leads {
 			session_id VARCHAR(64) NOT NULL,
 			name VARCHAR(120) NOT NULL DEFAULT '',
 			email VARCHAR(160) NOT NULL DEFAULT '',
+			phone VARCHAR(40) NOT NULL DEFAULT '',
+			marketing_optin TINYINT(1) NOT NULL DEFAULT 0,
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME NOT NULL,
 			ip VARCHAR(45) NOT NULL DEFAULT '',
@@ -45,10 +47,12 @@ final class Partial_Leads {
 		) {$charset};";
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
+		// Clear the v1 option so a downgrade-then-upgrade still triggers dbDelta.
+		delete_option( 'bqw_partial_leads_schema_v1' );
 		update_option( self::SCHEMA_OPTION, 1 );
 	}
 
-	public static function upsert( string $session_id, string $name, string $email ): void {
+	public static function upsert( string $session_id, string $name, string $email, array $extra = [] ): void {
 		global $wpdb;
 		$now = gmdate( 'Y-m-d H:i:s' );
 		$ip  = self::client_ip();
@@ -58,35 +62,33 @@ final class Partial_Leads {
 			'SELECT id FROM ' . self::table() . ' WHERE session_id = %s LIMIT 1',
 			$session_id
 		) );
+
+		$row = [
+			'name'       => $name,
+			'email'      => $email,
+			'updated_at' => $now,
+			'ip'         => $ip,
+			'user_agent' => $ua,
+		];
+		if ( array_key_exists( 'phone', $extra ) ) {
+			$row['phone'] = (string) $extra['phone'];
+		}
+		if ( array_key_exists( 'marketing_optin', $extra ) ) {
+			$row['marketing_optin'] = ! empty( $extra['marketing_optin'] ) ? 1 : 0;
+		}
+
 		if ( $existing ) {
-			$wpdb->update(
-				self::table(),
-				[
-					'name'       => $name,
-					'email'      => $email,
-					'updated_at' => $now,
-					'ip'         => $ip,
-					'user_agent' => $ua,
-				],
-				[ 'id' => (int) $existing ],
-				[ '%s', '%s', '%s', '%s', '%s' ],
-				[ '%d' ]
-			);
+			$formats = array_fill( 0, count( $row ), '%s' );
+			if ( isset( $row['marketing_optin'] ) ) {
+				$keys = array_keys( $row );
+				$formats[ array_search( 'marketing_optin', $keys, true ) ] = '%d';
+			}
+			$wpdb->update( self::table(), $row, [ 'id' => (int) $existing ], $formats, [ '%d' ] );
 		} else {
-			$wpdb->insert(
-				self::table(),
-				[
-					'session_id'     => $session_id,
-					'name'           => $name,
-					'email'          => $email,
-					'created_at'     => $now,
-					'updated_at'     => $now,
-					'ip'             => $ip,
-					'user_agent'     => $ua,
-					'abandoned_step' => '',
-				],
-				[ '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ]
-			);
+			$row['session_id']     = $session_id;
+			$row['created_at']     = $now;
+			$row['abandoned_step'] = '';
+			$wpdb->insert( self::table(), $row );
 		}
 	}
 

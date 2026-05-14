@@ -358,6 +358,23 @@ final class Shortcode {
 			'noResults'          => $cp( 'no_results' ),
 			'removeHint'         => $cp( 'remove_hint' ),
 
+			// v1.7.14 — screen 1 phone + opt-in helpers.
+			'introPhoneLabel' => $cp( 'intro_phone_label' ),
+			'introOptinLabel' => $cp( 'intro_optin_label' ),
+			'errPhoneFormat'  => __( 'Phone looks too short.', 'bomedia-quote-wizard' ),
+
+			// v1.7.14 — "Prefiero que me llamen".
+			'callmeButton'      => $cp( 'callme_button' ),
+			'callmeTitle'       => $cp( 'callme_title' ),
+			'callmeIntro'       => $cp( 'callme_intro' ),
+			'callmePhoneLabel'  => $cp( 'callme_phone_label' ),
+			'callmeWhenLabel'   => $cp( 'callme_when_label' ),
+			'callmeWhenPh'      => $cp( 'callme_when_ph' ),
+			'callmePrivacy'     => $cp( 'callme_privacy' ),
+			'callmeBackBtn'     => $cp( 'callme_back_btn' ),
+			'callmeSendBtn'     => $cp( 'callme_send_btn' ),
+			'callmeThanks'      => $cp( 'callme_thanks' ),
+
 			// v1.7.12 — captcha labels.
 			'captchaQuick'   => __( 'Quick check', 'bomedia-quote-wizard' ),
 			'captchaHelp'    => __( 'Helps us avoid spam.', 'bomedia-quote-wizard' ),

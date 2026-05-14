@@ -20,6 +20,7 @@
 	var dotsEl     = document.getElementById('bqw-wiz-dots');
 	var stepLabel  = document.getElementById('bqw-wiz-step-label');
 	var backBtn    = document.getElementById('bqw-wiz-back');
+	var callmeBtn  = document.getElementById('bqw-wiz-callme');
 	// v1.7.10 — tray is rendered inline inside the active screen.
 	var tray = null, trayLabel = null, trayPills = null, trayCta = null;
 	var form       = document.getElementById('bqw-form');
@@ -32,9 +33,9 @@
 
 	var state = {
 		session_id: ensureSessionId(),
-		contact_partial: { name: '', email: '' },
+		contact_partial: { name: '', email: '', phone: '', dial: '+34', marketing_optin: false },
 		selection: [],
-		stack: [],          // [{kind: 'server'|'intro', step: {...}, picks: [labels]}]
+		stack: [],          // [{kind: 'server'|'intro'|'callme', step: {...}, picks: [labels]}]
 		current: null,      // current frame
 		flow_origin: 'wizard',
 		question_steps_seen: [],
@@ -42,6 +43,26 @@
 	document.getElementById('bqw-session-id').value = state.session_id;
 
 	backBtn.addEventListener('click', goBack);
+	if (callmeBtn) {
+		callmeBtn.textContent = (i18n.callmeButton || '📞 Prefiero que me llamen');
+		callmeBtn.addEventListener('click', renderCallme);
+	}
+
+	// v1.7.14 — the callme entry-point should be visible from the moment we
+	// have a name+email captured (screens 2+) but never on the intro, the
+	// final form, the callme screen itself, or the thank-you page.
+	function setCallmeVisible(visible) {
+		if (!callmeBtn) return;
+		callmeBtn.hidden = !visible;
+		// The nav element hosts both the progress dots AND the callme button.
+		// When dots are not needed but the callme entry-point is, keep the
+		// nav itself visible so the button is reachable.
+		if (visible) {
+			progress.hidden = false;
+			dotsEl.hidden = true;
+			stepLabel.hidden = true;
+		}
+	}
 
 	/* =========================================================
 	 * Session
@@ -127,8 +148,14 @@
 		requestAnimationFrame(function () { screen.classList.remove('is-entering'); });
 	}
 	function setProgress(curIdx, total) {
-		if (total <= 0) { progress.hidden = true; return; }
+		if (total <= 0) {
+			dotsEl.hidden = true;
+			stepLabel.hidden = true;
+			return;
+		}
 		progress.hidden = false;
+		dotsEl.hidden = false;
+		stepLabel.hidden = false;
 		dotsEl.innerHTML = '';
 		for (var i = 0; i < total; i++) {
 			var d = el('span', 'bqw-wiz-dot' + (i < curIdx ? ' is-done' : i === curIdx ? ' is-active' : ''));
@@ -315,7 +342,7 @@
 	function renderContactIntro() {
 		clearScreen();
 		showBack(false);
-		// tray inline only when needed
+		setCallmeVisible(false);
 		progress.hidden = true;
 
 		var wrap = el('div', 'bqw-wiz-card bqw-wiz-intro');
@@ -325,56 +352,89 @@
 			'<h2 class="bqw-wiz-h">' + escapeHtml(bqwInterpolate(i18n.introTitle || 'Before we start, what should we call you?')) + '</h2>' +
 			'<p class="bqw-wiz-sub">' + escapeHtml(bqwInterpolate(i18n.introSub || 'It takes 2 minutes. No spam — we only reply to your enquiry.')) + '</p>';
 		wrap.appendChild(hbox);
-		// (the rest of the intro card follows below)
+
+		var phoneLabel = i18n.introPhoneLabel || 'Phone (optional — if you would prefer a call)';
+		var optinLabel = i18n.introOptinLabel || (cfg.email_optin_label || 'I want to receive product updates from Bomedia.');
+
 		var fields = document.createElement('div');
 		fields.innerHTML =
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.firstName || 'First name') + ' *</span>' +
 				'<input type="text" id="bqw-intro-name" autocomplete="given-name" value="' + escapeHtml(state.contact_partial.name) + '" required></label>' +
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.email || 'Email') + ' *</span>' +
 				'<input type="email" id="bqw-intro-email" autocomplete="email" value="' + escapeHtml(state.contact_partial.email) + '" required></label>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(phoneLabel) + '</span>' +
+				'<div class="bqw-phone-wrap"><select id="bqw-intro-dial" class="bqw-dial-select"></select>' +
+				'<input type="tel" id="bqw-intro-phone" autocomplete="tel" value="' + escapeHtml(state.contact_partial.phone) + '"></div></label>' +
+			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-intro-optin"' + (state.contact_partial.marketing_optin ? ' checked' : '') + '>' +
+				'<span>' + escapeHtml(optinLabel) + '</span></label>' +
 			'<p class="bqw-wiz-error" id="bqw-intro-error" hidden></p>' +
 			'<div class="bqw-wiz-actions"><button type="button" class="bqw-btn bqw-btn-primary" id="bqw-intro-continue">' + escapeHtml(i18n.continue || 'Continue') + ' →</button></div>';
 		wrap.appendChild(fields);
 		screen.appendChild(wrap);
 
-		var nameEl = wrap.querySelector('#bqw-intro-name');
-		var mailEl = wrap.querySelector('#bqw-intro-email');
-		var errEl  = wrap.querySelector('#bqw-intro-error');
-		var btn    = wrap.querySelector('#bqw-intro-continue');
+		var nameEl  = wrap.querySelector('#bqw-intro-name');
+		var mailEl  = wrap.querySelector('#bqw-intro-email');
+		var phoneEl = wrap.querySelector('#bqw-intro-phone');
+		var dialEl  = wrap.querySelector('#bqw-intro-dial');
+		var optinEl = wrap.querySelector('#bqw-intro-optin');
+		var errEl   = wrap.querySelector('#bqw-intro-error');
+		var btn     = wrap.querySelector('#bqw-intro-continue');
+		populateDialSelect(dialEl, state.contact_partial.dial || detected);
 		nameEl.focus();
 
 		btn.addEventListener('click', function () {
 			var name  = nameEl.value.trim();
 			var email = mailEl.value.trim();
+			var phone = phoneEl.value.trim();
+			var dial  = dialEl.value || '+34';
+			var optin = optinEl.checked;
 			if (!name) { errEl.hidden = false; errEl.textContent = i18n.errName || 'First name is required.'; return; }
 			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.hidden = false; errEl.textContent = i18n.errEmail || 'Please enter a valid email.'; return; }
+			if (phone && phone.replace(/\D/g, '').length < 5) { errEl.hidden = false; errEl.textContent = i18n.errPhoneFormat || 'Phone looks too short.'; return; }
 			errEl.hidden = true;
 			state.contact_partial.name  = name;
 			state.contact_partial.email = email;
+			state.contact_partial.phone = phone;
+			state.contact_partial.dial  = dial;
+			state.contact_partial.marketing_optin = !!optin;
 			document.getElementById('bqw-first-name').value = name;
 			document.getElementById('bqw-email').value = email;
 			btn.disabled = true;
-			savePartial(name, email).then(function () {
+			savePartial(name, email, phone ? (dial + ' ' + phone) : '', optin, 'screen_1').then(function () {
 				state.stack.push({ kind: 'intro', payload: null, picks: [] });
 				callInit();
 			}).catch(function () {
-				// Even if save fails we proceed; the lead is captured at submit anyway.
 				state.stack.push({ kind: 'intro', payload: null, picks: [] });
 				callInit();
 			});
 		});
-		[nameEl, mailEl].forEach(function (n) {
+		[nameEl, mailEl, phoneEl].forEach(function (n) {
 			n.addEventListener('keydown', function (e) { if (e.key === 'Enter') btn.click(); });
 		});
 	}
 
-	function savePartial(name, email) {
+	function populateDialSelect(sel, preferred) {
+		sel.innerHTML = '';
+		(countries || []).forEach(function (c) {
+			var o = el('option');
+			o.value = c.dial;
+			o.dataset.code = c.code;
+			o.textContent = c.dial + ' — ' + c.name;
+			if (c.code === preferred || c.dial === preferred) o.selected = true;
+			sel.appendChild(o);
+		});
+	}
+
+	function savePartial(name, email, phone, optin, source) {
 		var fd = new FormData();
 		fd.append('action', 'bqw_partial_save');
 		fd.append('nonce', window.BQW.nonce);
 		fd.append('session_id', state.session_id);
 		fd.append('name', name);
 		fd.append('email', email);
+		if (phone)         fd.append('phone', phone);
+		if (optin)         fd.append('marketing_optin', '1');
+		if (source)        fd.append('source', source);
 		return fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd }).then(function (r) { return r.json(); });
 	}
 	function logPartialStep(stepId) {
@@ -464,6 +524,11 @@
 		// session_id and TTLs out in 10 minutes).
 		maybePrefetchRecs(step.id);
 
+		// v1.7.14 — the "Prefiero que me llamen" entry point is visible on
+		// every server-rendered screen (we have name+email by now). It is
+		// hidden on the intro, the callme form itself and the final form.
+		setCallmeVisible(true);
+
 		switch (step.type) {
 			case 'welcome_cards':       return renderWelcome(step);
 			case 'options':
@@ -508,6 +573,136 @@
 			state.current = prev;
 			applyStep(prev.step, /*replay*/ true);
 		}
+	}
+
+	function renderCallme() {
+		// Push the current frame so the user can return to it via the
+		// "Back to assistant" button.
+		if (state.current) state.stack.push(state.current);
+		state.current = { kind: 'callme', step: { id: 'callme' }, picks: [] };
+
+		clearScreen();
+		showBack(false);
+		setCallmeVisible(false);
+		progress.hidden = true;
+
+		var name = state.contact_partial.name || '';
+		var wrap = el('div', 'bqw-wiz-card bqw-wiz-callme-wrap');
+		wrap.innerHTML =
+			'<h2 class="bqw-wiz-h bqw-callme-h">' + escapeHtml(bqwInterpolate(i18n.callmeTitle || 'We will call you at a good time')) + '</h2>' +
+			'<p class="bqw-wiz-sub">' + escapeHtml(bqwInterpolate(i18n.callmeIntro || 'Hi {nombre}, leave us your phone and our team will call you back.')) + '</p>';
+
+		var fields = el('div', 'bqw-wiz-fields');
+		fields.innerHTML =
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.callmePhoneLabel || 'Phone *') + '</span>' +
+				'<div class="bqw-phone-wrap"><select id="bqw-callme-dial" class="bqw-dial-select"></select>' +
+				'<input type="tel" id="bqw-callme-phone" autocomplete="tel" value="' + escapeHtml(state.contact_partial.phone) + '" required></div></label>' +
+			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.callmeWhenLabel || 'When works for you? (optional)') + '</span>' +
+				'<textarea id="bqw-callme-when" rows="2" maxlength="200" placeholder="' + escapeHtml(i18n.callmeWhenPh || '') + '"></textarea></label>';
+		wrap.appendChild(fields);
+
+		var legal = el('div', 'bqw-wiz-legal');
+		var privacyUrl = cfg.privacy_url || '';
+		var privacyTxt = bqwInterpolate(i18n.callmePrivacy || 'I accept the privacy policy and the processing of my data');
+		var privacyHtml = privacyUrl
+			? privacyTxt.replace(/política de privacidad|privacy policy/i, function (m) { return '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + m + '</a>'; })
+			: escapeHtml(privacyTxt);
+		legal.innerHTML = '<label class="bqw-wiz-check"><input type="checkbox" id="bqw-callme-privacy" required><span>' + privacyHtml + ' *</span></label>';
+		wrap.appendChild(legal);
+
+		var captchaCfg = cfg.captcha || null;
+		if (cfg.enable_captcha && captchaCfg) {
+			var captchaBox = el('div', 'bqw-captcha-inline');
+			wrap.appendChild(captchaBox);
+			renderCaptcha(captchaBox, captchaCfg);
+		}
+
+		var actions = el('div', 'bqw-wiz-actions bqw-wiz-actions-row');
+		var back    = el('button', 'bqw-link-btn');
+		back.type = 'button';
+		back.textContent = i18n.callmeBackBtn || '← Back to assistant';
+		back.addEventListener('click', function () {
+			var prev = state.stack.pop();
+			if (prev && prev.kind === 'server') { state.current = prev; applyStep(prev.step, true); }
+			else if (prev && prev.kind === 'intro') { renderContactIntro(); }
+			else { renderContactIntro(); }
+		});
+		actions.appendChild(back);
+
+		var submit = el('button', 'bqw-btn bqw-btn-primary');
+		submit.type = 'button';
+		submit.id   = 'bqw-callme-submit';
+		submit.innerHTML = '<span>' + escapeHtml(i18n.callmeSendBtn || 'Send') + '</span><span class="bqw-spinner" hidden></span>';
+		actions.appendChild(submit);
+		wrap.appendChild(actions);
+
+		var errBox = el('p', 'bqw-wiz-error');
+		errBox.id = 'bqw-callme-error';
+		errBox.hidden = true;
+		wrap.appendChild(errBox);
+
+		screen.appendChild(wrap);
+		populateDialSelect(document.getElementById('bqw-callme-dial'), state.contact_partial.dial || detected);
+
+		submit.addEventListener('click', submitCallme);
+	}
+
+	function submitCallme() {
+		var phone   = document.getElementById('bqw-callme-phone').value.trim();
+		var when    = document.getElementById('bqw-callme-when').value.trim();
+		var dial    = document.getElementById('bqw-callme-dial').value || '+34';
+		var privacy = document.getElementById('bqw-callme-privacy').checked;
+		var errBox  = document.getElementById('bqw-callme-error');
+		errBox.hidden = true;
+
+		if (!phone) { errBox.hidden = false; errBox.textContent = i18n.errPhone || 'Phone is required.'; return; }
+		if (!privacy) { errBox.hidden = false; errBox.textContent = i18n.errPrivacy || 'Please accept the privacy policy.'; return; }
+
+		var btn = document.getElementById('bqw-callme-submit');
+		var spinner = btn.querySelector('.bqw-spinner');
+		btn.disabled = true; if (spinner) spinner.hidden = false;
+
+		ensureCaptchaToken().then(function () {
+			var fd = new FormData(form);
+			fd.set('first_name', state.contact_partial.name || '');
+			fd.set('email', state.contact_partial.email || '');
+			fd.set('last_name', '');
+			fd.set('company', '');
+			fd.set('phone', (dial || '') + ' ' + phone);
+			fd.set('country', '');
+			fd.set('message', when);
+			fd.set('privacy', '1');
+			fd.set('flow', 'callme');
+			fd.set('email_optin', state.contact_partial.marketing_optin ? '1' : '');
+			if (window.__bqwTurnstileToken) fd.set('cf-turnstile-response', window.__bqwTurnstileToken);
+			if (window.__bqwHcaptchaToken)  fd.set('h-captcha-response', window.__bqwHcaptchaToken);
+
+			fetch(window.BQW.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+				.then(function (r) { return r.json(); })
+				.then(function (json) {
+					if (json && json.success) {
+						state.contact_partial.phone = phone;
+						state.contact_partial.dial  = dial;
+						if (json.data.redirect) { window.location.href = json.data.redirect; return; }
+						screen.innerHTML = '';
+						progress.hidden = true;
+						setCallmeVisible(false);
+						var done = el('div', 'bqw-wiz-card');
+						done.innerHTML = '<h2 class="bqw-wiz-h">' + escapeHtml(bqwInterpolate(i18n.callmeThanks || 'Thanks {nombre}, we will call you soon.')) + '</h2>';
+						screen.appendChild(done);
+					} else {
+						errBox.hidden = false;
+						errBox.textContent = (json && json.data && json.data.message) || i18n.genericError || 'Error';
+						resetCaptcha();
+					}
+				})
+				.catch(function () { errBox.hidden = false; errBox.textContent = i18n.genericError || 'Error'; resetCaptcha(); })
+				.finally(function () { btn.disabled = false; if (spinner) spinner.hidden = true; });
+		}).catch(function (err) {
+			errBox.hidden = false;
+			errBox.textContent = (err && err.message) || (i18n.errCaptcha || 'Please complete the verification.');
+			btn.disabled = false; if (spinner) spinner.hidden = true;
+		});
 	}
 
 	function renderError(msg) {
@@ -1006,6 +1201,7 @@
 		// Move directly to the contact form (skip server "form" round-trip — same outcome).
 		clearScreen();
 		showBack(true);
+		setCallmeVisible(false);
 		progress.hidden = true;
 
 		if (!replay) {
@@ -1031,7 +1227,7 @@
 		fields.innerHTML =
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.phone || 'Phone') + ' *</span>' +
 				'<div class="bqw-phone-wrap"><select id="bqw-dial-prefix" class="bqw-dial-select" aria-label="' + escapeHtml(i18n.countryCode || 'Country code') + '"></select>' +
-				'<input type="tel" id="bqw-phone-input" autocomplete="tel" required></div></label>' +
+				'<input type="tel" id="bqw-phone-input" autocomplete="tel" value="' + escapeHtml(state.contact_partial.phone || '') + '" required></div></label>' +
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.country || 'Country') + ' *</span>' +
 				'<select id="bqw-country-input" required></select></label>' +
 			'<label class="bqw-wiz-field"><span>' + escapeHtml(i18n.message || 'Message (optional)') + '</span>' +
@@ -1043,14 +1239,11 @@
 		var privacyHtml = privacyUrl
 			? '<a href="' + privacyUrl + '" target="_blank" rel="noopener">' + escapeHtml(i18n.privacyPolicy || 'privacy policy') + '</a>'
 			: escapeHtml(i18n.privacyPolicy || 'privacy policy');
+		// v1.7.14 — opt-in is captured on screen 1 now; only the privacy
+		// check remains here.
 		legal.innerHTML =
 			'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-privacy-input" required>' +
 				'<span>' + escapeHtml(i18n.acceptPrivacyPrefix || 'I accept the ') + privacyHtml + escapeHtml(i18n.acceptPrivacySuffix || ' and the processing of my data to receive a quote.') + ' *</span></label>';
-		if (cfg.enable_email_optin) {
-			legal.innerHTML +=
-				'<label class="bqw-wiz-check"><input type="checkbox" id="bqw-optin-input">' +
-					'<span>' + escapeHtml(cfg.email_optin_label || i18n.optinDefault || 'I want to receive product updates from Bomedia.') + '</span></label>';
-		}
 		left.appendChild(legal);
 
 		// v1.7.12 — render the captcha widget inside the left column (the
@@ -1255,8 +1448,9 @@
 		var country = document.getElementById('bqw-country-input').value;
 		var message = document.getElementById('bqw-message-input').value.trim();
 		var privacy = document.getElementById('bqw-privacy-input').checked;
-		var optin   = document.getElementById('bqw-optin-input');
-		var optinV  = optin ? optin.checked : false;
+		// v1.7.14 — opt-in captured on screen 1 (intro) carries through.
+		var optinV  = !!state.contact_partial.marketing_optin;
+		var optin   = optinV; // keep for clarity downstream
 		var dial    = document.getElementById('bqw-dial-prefix').value || '';
 		var errBox  = document.getElementById('bqw-final-error');
 		errBox.hidden = true;
@@ -1279,7 +1473,10 @@
 			fd.set('country', country);
 			fd.set('message', message);
 			fd.set('privacy', privacy ? '1' : '');
-			if (optin) fd.set('email_optin', optinV ? '1' : '');
+			fd.set('email_optin', optinV ? '1' : '');
+			// Also push the latest phone state captured here back to the
+			// partial leads row so admin Partials reflects the final value.
+			savePartial(state.contact_partial.name, state.contact_partial.email, (dial || '') + ' ' + phone, optinV, 'final_form').catch(function(){});
 			if (window.__bqwTurnstileToken) fd.set('cf-turnstile-response', window.__bqwTurnstileToken);
 			if (window.__bqwHcaptchaToken)  fd.set('h-captcha-response', window.__bqwHcaptchaToken);
 

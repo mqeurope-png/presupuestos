@@ -1,7 +1,7 @@
 # Bomedia Quote Wizard translation
 msgid ""
 msgstr ""
-"Project-Id-Version: Bomedia Quote Wizard 1.7.13\n"
+"Project-Id-Version: Bomedia Quote Wizard 1.7.14\n"
 "PO-Revision-Date: 2026-05-06 00:00+0000\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -12,6 +12,12 @@ msgstr ""
 
 msgid " and the processing of my data to receive a quote."
 msgstr " y el tratamiento de mis datos para recibir presupuesto."
+
+msgid "\"When works\" label"
+msgstr ""
+
+msgid "\"When works\" placeholder"
+msgstr ""
 
 msgid "%1$s ago · %2$d products cached"
 msgstr "Hace %1$s · %2$d productos cacheados"
@@ -153,6 +159,9 @@ msgstr "Volver al inicio"
 
 msgid "Back to list"
 msgstr "Volver a la lista"
+
+msgid "Back-to-assistant button"
+msgstr ""
 
 msgid "Background image"
 msgstr "Imagen de fondo"
@@ -499,6 +508,9 @@ msgstr "IP"
 msgid "Import JSON"
 msgstr "Importar JSON"
 
+msgid "Intro paragraph (supports {nombre})"
+msgstr ""
+
 msgid "It takes 2 minutes. No spam — we only reply to your enquiry."
 msgstr "Te ayudamos en 2 minutos. No te enviamos spam, solo respondemos a tu consulta."
 
@@ -549,6 +561,9 @@ msgstr "Máquinas de interés:"
 
 msgid "Manual catalog upload"
 msgstr "Subida manual de catálogo"
+
+msgid "Marketing"
+msgstr "Marketing"
 
 msgid "Marketing opt-in"
 msgstr "Opt-in de marketing"
@@ -700,6 +715,9 @@ msgstr "OpenAI devolvió una respuesta inválida."
 msgid "OpenAI returned malformed data."
 msgstr "OpenAI devolvió datos mal formados."
 
+msgid "Opt-in to marketing"
+msgstr "Acepta marketing"
+
 msgid "Or type your answer freely…"
 msgstr "O escribe tu respuesta libremente…"
 
@@ -718,8 +736,17 @@ msgstr "Perfecto. Para enviarte tu presupuesto personalizado, necesito tus datos
 msgid "Phone"
 msgstr "Teléfono"
 
+msgid "Phone field label"
+msgstr ""
+
 msgid "Phone is required."
 msgstr "El teléfono es obligatorio."
+
+msgid "Phone label"
+msgstr ""
+
+msgid "Phone looks too short."
+msgstr "El teléfono parece demasiado corto."
 
 msgid "Pick"
 msgstr "Seleccionar"
@@ -760,11 +787,17 @@ msgstr "Tómate un momento antes de enviar."
 msgid "Post-submit redirect URL"
 msgstr "URL de redirección post-envío"
 
+msgid "Prefiero que me llamen"
+msgstr "Prefiero que me llamen"
+
 msgid "Print on objects (UV-LED)"
 msgstr "Imprimir sobre objetos (UV-LED)"
 
 msgid "Print on textile"
 msgstr "Imprimir textil"
+
+msgid "Privacy checkbox label"
+msgstr ""
 
 msgid "Privacy checkbox label (no asterisk; the * is added automatically)"
 msgstr ""
@@ -854,6 +887,9 @@ msgid "Screen 1 — Intro"
 msgstr ""
 
 msgid "Screen 2 — Path picker"
+msgstr ""
+
+msgid "Screen title"
 msgstr ""
 
 msgid "Script diagnostic"
@@ -982,6 +1018,9 @@ msgstr "Subtítulo"
 msgid "Subtitle (supports {n})"
 msgstr ""
 
+msgid "Success message (supports {nombre})"
+msgstr ""
+
 msgid "Summary"
 msgstr "Resumen"
 
@@ -1041,6 +1080,9 @@ msgstr ""
 
 msgid "Toggle children"
 msgstr "Mostrar/ocultar hijos"
+
+msgid "Top-right button label"
+msgstr ""
 
 msgid "Tray label (supports {n})"
 msgstr ""

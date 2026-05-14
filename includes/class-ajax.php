@@ -673,6 +673,9 @@ final class Ajax {
 			$tags[] = 'direct-catalog';
 		} elseif ( 'not-convinced' === $origin ) {
 			$tags[] = 'not-convinced';
+		} elseif ( 'callme' === $origin ) {
+			// v1.7.14 — visitor pressed "Prefiero que me llamen".
+			$tags[] = 'prefiere-llamada';
 		}
 		// No matching machine in the brand filter — sales should reach out manually.
 		if ( ! empty( $data['no_match_brand_filter'] ) ) {
